@@ -55,6 +55,9 @@ public class Punto {
         return this.x + this.y;
     }
     
+     public double resPuntos(){
+        return this.x - this.y;
+    }
     @Override
     public String toString() {
         return "Punto{" + "x=" + x + ", y=" + y + '}';

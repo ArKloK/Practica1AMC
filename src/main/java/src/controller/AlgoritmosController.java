@@ -1,0 +1,163 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
+package src.controller;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import src.model.Linea;
+import src.model.Punto;
+
+/**
+ *
+ * @author Usuario
+ */
+@WebServlet(name = "AlgoritmosController", urlPatterns = {"/AlgoritmosController/*"})
+public class AlgoritmosController extends HttpServlet {
+
+    private ArrayList<Punto> puntos;
+
+    public AlgoritmosController() {
+        puntos = new ArrayList<>();
+    }
+
+    public void leerPuntos(String file) {
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+
+            String line;
+            boolean isParsingCoordinates = false;
+
+            while ((line = reader.readLine()) != null) {
+                if (isParsingCoordinates) {
+                    if (line.equals("EOF")) {
+                        break; // Termina cuando se encuentra "EOF"
+                    }
+                    String[] parts = line.split(" ");
+                    if (parts.length == 3) {
+                        int id = Integer.parseInt(parts[0]);
+                        double x = Double.parseDouble(parts[1]);
+                        double y = Double.parseDouble(parts[2]);
+                        puntos.add(new Punto(id, x, y));
+                    }
+                } else if (line.equals("NODE_COORD_SECTION")) {
+                    isParsingCoordinates = true; // Comienza a analizar las coordenadas
+                }
+            }
+        } catch (Exception ex) {
+            ex.getMessage();
+        }
+
+    }
+
+    public Linea Exhaustivo() {
+        double mejorCamino = 90000;
+        Linea mejorLinea = new Linea();
+        
+        leerPuntos("D:\\Documentos\\UHU\\AMC\\berlin52.tsp\\berlin52.tsp");
+
+        for (int i = 0; i < this.puntos.size(); i++) {
+            for (int j = i + 1; j < this.puntos.size(); j++) {
+                Linea l = new Linea(puntos.get(i), puntos.get(j));
+                if (l.distancia() < mejorCamino) {
+                    mejorCamino = l.distancia();
+                    mejorLinea = l;
+                }
+            }
+        }
+
+        return mejorLinea;
+    }
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String accion, vista = "";
+        accion = request.getPathInfo();
+        
+        switch(accion){
+            case "/show":{
+                
+                Linea mejorLinea = Exhaustivo();
+                
+                System.out.println("Numero de puntos dentro " + puntos.size());
+                //System.out.println(mejorLinea);
+                
+                //System.out.println("Los puntos mas cercanos son: " + mejorLinea.getP1().getX() + " y " + mejorLinea.getP2().getY());
+                
+                request.setAttribute("linea", mejorLinea);
+                vista = "/index.jsp";
+            }break;
+        }
+        
+        try {
+            if (!"".equals(vista)) {
+                RequestDispatcher rd = request.getRequestDispatcher(vista);
+                rd.forward(request, response);
+            }
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+}

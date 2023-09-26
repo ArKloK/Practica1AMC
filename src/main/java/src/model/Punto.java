@@ -10,6 +10,7 @@ package src.model;
  */
 public class Punto {
 
+    private int id;
     private double x;
     private double y;
 
@@ -21,6 +22,27 @@ public class Punto {
         super();
         this.x = x;
         this.y = y;
+    }
+    
+    public Punto(int id, double x, double y) {
+        super();
+        this.id = id;
+        this.x = x;
+        this.y = y;
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**
@@ -50,14 +72,7 @@ public class Punto {
     public void setY(double y) {
         this.y = y;
     }
-
-    public double sumPuntos(){
-        return this.x + this.y;
-    }
     
-     public double resPuntos(){
-        return this.x - this.y;
-    }
     @Override
     public String toString() {
         return "Punto{" + "x=" + x + ", y=" + y + '}';

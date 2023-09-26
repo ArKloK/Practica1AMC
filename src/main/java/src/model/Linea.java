@@ -52,9 +52,9 @@ public class Linea {
         this.p2 = p2;
     }
     
-    public double distancia(Punto p2){
-        double distanciaX = p2.getX() - this.p1.getX();
-        double distanciaY = p2.getY() - this.p1.getY();
+    public double distancia(){
+        double distanciaX = this.p2.getX() - this.p1.getX();
+        double distanciaY = this.p2.getY() - this.p1.getY();
         return Math.sqrt(Math.pow(distanciaX, 2) + Math.pow(distanciaY, 2));
     }
 
@@ -62,7 +62,5 @@ public class Linea {
     public String toString() {
         return "Linea{" + "p1=" + p1 + ", p2=" + p2 + '}';
     }
-    
-    
 
 }

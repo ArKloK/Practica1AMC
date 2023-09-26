@@ -51,6 +51,10 @@ public class Punto {
         this.y = y;
     }
 
+    public double sumPuntos(){
+        return this.x + this.y;
+    }
+    
     @Override
     public String toString() {
         return "Punto{" + "x=" + x + ", y=" + y + '}';

@@ -35,7 +35,6 @@ public class AlgoritmosController extends HttpServlet {
     }
 
     public void leerPuntos(File archivo) {
-        //File archivo = new File(file);
         if (archivo.exists()) {
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(archivo));
@@ -62,14 +61,23 @@ public class AlgoritmosController extends HttpServlet {
             } catch (Exception ex) {
                 ex.getMessage();
             }
-        }else {
+        } else {
             System.out.println("El archivo no existe.");
         }
 
     }
 
     public Linea Exhaustivo() {
-        File file = new File(this.rutaDelProyecto + File.separator + "TSP" + File.separator +"berlin52.tsp");
+        File file = new File(this.rutaDelProyecto);
+
+        for (int i = 0; i < 2; i++) {
+            file = file.getParentFile();
+        }
+
+        file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + "berlin52.tsp");
+
+        System.out.println("Directorio: " + file.getAbsolutePath());
+
         double mejorCamino = 90000;
         Linea mejorLinea = new Linea();
         leerPuntos(file);
@@ -101,16 +109,16 @@ public class AlgoritmosController extends HttpServlet {
 
         String accion, vista = "";
         accion = request.getPathInfo();
-        
+
         ServletContext context = getServletContext();
-        rutaDelProyecto = context.getRealPath("/");    
+        rutaDelProyecto = context.getRealPath("/");
+
         switch (accion) {
             case "/show": {
 
                 Linea mejorLinea = Exhaustivo();
 
                 System.out.println("Numero de puntos dentro " + puntos.size());
-                //System.out.println(mejorLinea);
 
                 //System.out.println("Los puntos mas cercanos son: " + mejorLinea.getP1().getX() + " y " + mejorLinea.getP2().getY());
                 request.setAttribute("linea", mejorLinea);

@@ -5,11 +5,13 @@
 package src.controller;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -26,46 +28,51 @@ import src.model.Punto;
 public class AlgoritmosController extends HttpServlet {
 
     private ArrayList<Punto> puntos;
+    private String rutaDelProyecto;
 
     public AlgoritmosController() {
         puntos = new ArrayList<>();
     }
 
-    public void leerPuntos(String file) {
+    public void leerPuntos(File archivo) {
+        //File archivo = new File(file);
+        if (archivo.exists()) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(archivo));
 
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+                String line;
+                boolean isParsingCoordinates = false;
 
-            String line;
-            boolean isParsingCoordinates = false;
-
-            while ((line = reader.readLine()) != null) {
-                if (isParsingCoordinates) {
-                    if (line.equals("EOF")) {
-                        break; // Termina cuando se encuentra "EOF"
+                while ((line = reader.readLine()) != null) {
+                    if (isParsingCoordinates) {
+                        if (line.equals("EOF")) {
+                            break; // Termina cuando se encuentra "EOF"
+                        }
+                        String[] parts = line.split(" ");
+                        if (parts.length == 3) {
+                            int id = Integer.parseInt(parts[0]);
+                            double x = Double.parseDouble(parts[1]);
+                            double y = Double.parseDouble(parts[2]);
+                            puntos.add(new Punto(id, x, y));
+                        }
+                    } else if (line.equals("NODE_COORD_SECTION")) {
+                        isParsingCoordinates = true; // Comienza a analizar las coordenadas
                     }
-                    String[] parts = line.split(" ");
-                    if (parts.length == 3) {
-                        int id = Integer.parseInt(parts[0]);
-                        double x = Double.parseDouble(parts[1]);
-                        double y = Double.parseDouble(parts[2]);
-                        puntos.add(new Punto(id, x, y));
-                    }
-                } else if (line.equals("NODE_COORD_SECTION")) {
-                    isParsingCoordinates = true; // Comienza a analizar las coordenadas
                 }
+            } catch (Exception ex) {
+                ex.getMessage();
             }
-        } catch (Exception ex) {
-            ex.getMessage();
+        }else {
+            System.out.println("El archivo no existe.");
         }
 
     }
 
     public Linea Exhaustivo() {
+        File file = new File(this.rutaDelProyecto + File.separator + "TSP" + File.separator +"berlin52.tsp");
         double mejorCamino = 90000;
         Linea mejorLinea = new Linea();
-        
-        leerPuntos("D:\\Documentos\\UHU\\AMC\\berlin52.tsp\\berlin52.tsp");
+        leerPuntos(file);
 
         for (int i = 0; i < this.puntos.size(); i++) {
             for (int j = i + 1; j < this.puntos.size(); j++) {
@@ -95,21 +102,23 @@ public class AlgoritmosController extends HttpServlet {
         String accion, vista = "";
         accion = request.getPathInfo();
         
-        switch(accion){
-            case "/show":{
-                
+        ServletContext context = getServletContext();
+        rutaDelProyecto = context.getRealPath("/");    
+        switch (accion) {
+            case "/show": {
+
                 Linea mejorLinea = Exhaustivo();
-                
+
                 System.out.println("Numero de puntos dentro " + puntos.size());
                 //System.out.println(mejorLinea);
-                
+
                 //System.out.println("Los puntos mas cercanos son: " + mejorLinea.getP1().getX() + " y " + mejorLinea.getP2().getY());
-                
                 request.setAttribute("linea", mejorLinea);
                 vista = "/index.jsp";
-            }break;
+            }
+            break;
         }
-        
+
         try {
             if (!"".equals(vista)) {
                 RequestDispatcher rd = request.getRequestDispatcher(vista);
@@ -118,7 +127,7 @@ public class AlgoritmosController extends HttpServlet {
         } catch (Exception e) {
             e.getMessage();
         }
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

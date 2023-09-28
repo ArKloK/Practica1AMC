@@ -76,8 +76,6 @@ public class AlgoritmosController extends HttpServlet {
 
         file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + "berlin52.tsp");
 
-        System.out.println("Directorio: " + file.getAbsolutePath());
-
         double mejorCamino = 90000;
         Linea mejorLinea = new Linea();
         leerPuntos(file);

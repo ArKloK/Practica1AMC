@@ -14,23 +14,33 @@ var xyValues = [
     {x: 150, y: 15}
 ];
 
+var puntoLinea = [
+    {x: 50, y: 7},
+    {x: 60, y: 8}
+];
 
 new Chart("grafica", {
-                type: "scatter",
-                data: {
-                    datasets: [{
-                            pointRadius: 4,
-                            pointBackgroundColor: "rgb(0,0,255)",
-                            data: xyValues
-                        }]
-                },
-                options: {
-                    legend: {display: false},
-                    scales: {
-                        xAxes: [{ticks: {min: 40, max: 160}}],
-                        yAxes: [{ticks: {min: 6, max: 16}}],
-                    }
-                }
-            });
+    type: "scatter",
+    data: {
+        datasets: [{
+                pointRadius: 3,
+                pointBackgroundColor: "red",
+                data: xyValues
+            }, {
+                data: puntoLinea,
+                borderColor: 'blue', // Color de la línea
+                borderWidth: 1, // Ancho de la línea
+                fill: false, // No llenar el área bajo la línea
+                type: 'line' // Tipo de gráfico línea
+            }]
+    },
+    options: {
+        legend: {display: false},
+        scales: {
+            xAxes: [{ticks: {min: 40, max: 160}}],
+            yAxes: [{ticks: {min: 6, max: 16}}],
+        }
+    }
+});
 
 

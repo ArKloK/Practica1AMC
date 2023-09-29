@@ -68,14 +68,14 @@ public class AlgoritmosController extends HttpServlet {
 
     }
 
-    public Linea Exhaustivo() {
+    public Linea Exhaustivo(String nombreFichero) {
         File file = new File(this.rutaDelProyecto);
 
         for (int i = 0; i < 2; i++) {
             file = file.getParentFile();
         }
 
-        file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + "berlin52.tsp");
+        file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + nombreFichero);
 
         double mejorCamino = 90000;
         Linea mejorLinea = new Linea();
@@ -115,8 +115,10 @@ public class AlgoritmosController extends HttpServlet {
         switch (accion) {
             case "/show": {
                 
+                String nombreFichero = request.getParameter("opcion");
+                
                 Gson gson = new Gson();
-                Linea mejorLinea = Exhaustivo();
+                Linea mejorLinea = Exhaustivo(nombreFichero);
                 
                 System.out.println("Numero de puntos dentro " + puntos.size());
 

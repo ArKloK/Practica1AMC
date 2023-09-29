@@ -4,6 +4,7 @@
  */
 package src.controller;
 
+import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -113,13 +114,25 @@ public class AlgoritmosController extends HttpServlet {
 
         switch (accion) {
             case "/show": {
-
+                
+                Gson gson = new Gson();
                 Linea mejorLinea = Exhaustivo();
-
+                
                 System.out.println("Numero de puntos dentro " + puntos.size());
 
-                //System.out.println("Los puntos mas cercanos son: " + mejorLinea.getP1().getX() + " y " + mejorLinea.getP2().getY());
+                //Convertimos las variables que vamos a tratar en JS a tipo JSON
+                
+                String puntosJSON = gson.toJson(puntos);
+                String lineaJSON = gson.toJson(mejorLinea);
+                
+                //Mandamos la linea sin convertir para que el h1 del jsp muestre los datos
                 request.setAttribute("linea", mejorLinea);
+                
+                //System.out.println("Los puntos mas cercanos son: " + mejorLinea.getP1().getX() + " y " + mejorLinea.getP2().getY());
+                request.setAttribute("lineaJSON", lineaJSON);
+                request.setAttribute("puntosJSON", puntosJSON);
+                
+                //Indicamos a que vista queremos que nos mande luego de ejecutar todo el codigo anterior
                 vista = "/index.jsp";
             }
             break;

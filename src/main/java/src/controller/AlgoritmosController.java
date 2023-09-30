@@ -38,6 +38,7 @@ public class AlgoritmosController extends HttpServlet {
     public void leerPuntos(File archivo) {
         if (archivo.exists()) {
             try {
+                puntos = new ArrayList<>();
                 BufferedReader reader = new BufferedReader(new FileReader(archivo));
 
                 String line;
@@ -115,15 +116,14 @@ public class AlgoritmosController extends HttpServlet {
         switch (accion) {
             case "/show": {
                 
-                String nombreFichero = request.getParameter("opcion");
-                
+                String nombreFichero = request.getParameter("opcion");  
                 Gson gson = new Gson();
-                Linea mejorLinea = Exhaustivo(nombreFichero);
+                Linea mejorLinea;
+                mejorLinea = Exhaustivo(nombreFichero);
                 
                 System.out.println("Numero de puntos dentro " + puntos.size());
 
                 //Convertimos las variables que vamos a tratar en JS a tipo JSON
-                
                 String puntosJSON = gson.toJson(puntos);
                 String lineaJSON = gson.toJson(mejorLinea);
                 

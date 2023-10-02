@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -78,6 +79,22 @@ public class AlgoritmosController extends HttpServlet {
         file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + nombreFichero);
         return file;
     }
+    
+    public int partition(List<Punto> puntosaux, int primero, int ultimo, Punto pivote){
+        int i = primero;
+        int j = ultimo;
+        
+        while(i<=ultimo){
+            if(puntosaux.get(i).getX() < pivote.getX()){
+                i++;
+            }else{
+                //SEGUIMOS POR AQUI
+            }
+        }
+        
+        return j-1;
+    }
+    
     public Linea Exhaustivo(String nombreFichero) {
         double mejorCamino = 90000;
         Linea mejorLinea = new Linea();

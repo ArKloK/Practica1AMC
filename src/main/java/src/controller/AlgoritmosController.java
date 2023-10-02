@@ -30,7 +30,7 @@ public class AlgoritmosController extends HttpServlet {
 
     private ArrayList<Punto> puntos;
     private String rutaDelProyecto;
-
+    private File file;
     public AlgoritmosController() {
         puntos = new ArrayList<>();
     }
@@ -68,20 +68,21 @@ public class AlgoritmosController extends HttpServlet {
         }
 
     }
-
-    public Linea Exhaustivo(String nombreFichero) {
-        File file = new File(this.rutaDelProyecto);
+    public File buscarRuta(String nombreFichero){
+        this.file = new File(this.rutaDelProyecto);
 
         for (int i = 0; i < 2; i++) {
             file = file.getParentFile();
         }
 
         file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + nombreFichero);
-
+        return file;
+    }
+    public Linea Exhaustivo(String nombreFichero) {
         double mejorCamino = 90000;
         Linea mejorLinea = new Linea();
-        leerPuntos(file);
-
+        leerPuntos(buscarRuta(nombreFichero));
+        long startTime = System.currentTimeMillis();
         for (int i = 0; i < this.puntos.size(); i++) {
             for (int j = i + 1; j < this.puntos.size(); j++) {
                 Linea l = new Linea(puntos.get(i), puntos.get(j));
@@ -91,10 +92,19 @@ public class AlgoritmosController extends HttpServlet {
                 }
             }
         }
+        long endTime = System.currentTimeMillis();
+        long tiempoEjecucion = endTime - startTime;
 
+        System.out.println("Tiempo de ejecución: " + tiempoEjecucion + " milisegundos");
         return mejorLinea;
     }
-
+    
+    public Linea poda(String nombreFichero){
+        buscarRuta(nombreFichero);
+        
+        Linea mejorLinea = new Linea();
+        return mejorLinea;
+    }
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.

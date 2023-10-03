@@ -25,7 +25,7 @@
             <h1>Los puntos mas cercanos son: ${requestScope.linea.p1.id} y ${requestScope.linea.p2.id}</h1>
             <!-- <button type="button" onclick="cargarGrafica()">Cargar</button> -->
             <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
-
+            
             <script>
                 var puntosJSON = <%= request.getAttribute("puntosJSON")%>;
                 var lineaJSON = <%= request.getAttribute("lineaJSON")%>;

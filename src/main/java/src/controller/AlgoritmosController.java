@@ -11,7 +11,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -80,22 +79,39 @@ public class AlgoritmosController extends HttpServlet {
         return file;
     }
     
-    public int partition(List<Punto> puntosaux, int primero, int ultimo, Punto pivote){
+    public void quicksort(ArrayList<Punto> puntosaux, int primero, int ultimo){
+        if (primero< ultimo) {
+            Punto pivote = puntosaux.get(ultimo);
+            int posicion  = partition(puntosaux, primero, ultimo, pivote);
+            quicksort(puntosaux, primero, posicion-1);
+            quicksort(puntosaux, posicion+1, ultimo);
+        }
+    }
+    
+    public int partition(ArrayList<Punto> puntosaux, int primero, int ultimo, Punto pivote){
         int i = primero;
-        int j = ultimo;
+        int j = primero;
         
-        while(i<=ultimo){
-            if(puntosaux.get(i).getX() < pivote.getX()){
+        while(i <= ultimo){
+            if (puntosaux.get(i).getX() > pivote.getX()) {
                 i++;
             }else{
-                //SEGUIMOS POR AQUI
+                intercambiar(puntosaux, i, j);
+                i++;
+                j++;
             }
         }
         
         return j-1;
     }
     
-    public Linea Exhaustivo(String nombreFichero) {
+    public void intercambiar(ArrayList<Punto> puntosaux, int i, int j){
+        Punto temp = puntosaux.get(i);
+        puntosaux.set(i, puntosaux.get(j));
+        puntosaux.set(j, temp);
+    }
+    
+    public Linea exhaustivo(String nombreFichero) {
         double mejorCamino = 90000;
         Linea mejorLinea = new Linea();
         leerPuntos(buscarRuta(nombreFichero));
@@ -146,7 +162,8 @@ public class AlgoritmosController extends HttpServlet {
                 String nombreFichero = request.getParameter("opcion");  
                 Gson gson = new Gson();
                 Linea mejorLinea;
-                mejorLinea = Exhaustivo(nombreFichero);
+                mejorLinea = exhaustivo(nombreFichero);
+                
                 
                 System.out.println("Numero de puntos dentro " + puntos.size());
 

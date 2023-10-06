@@ -26,6 +26,8 @@
             <!-- <button type="button" onclick="cargarGrafica()">Cargar</button> -->
             <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
             
+            <h2>Tiempo de ejecución del algoritmo (en µs): ${requestScope.tiempoEjecucion}</h2>
+            
             <script>
                 var puntosJSON = <%= request.getAttribute("puntosJSON")%>;
                 var lineaJSON = <%= request.getAttribute("lineaJSON")%>;

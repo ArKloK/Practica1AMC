@@ -31,10 +31,13 @@ public class AlgoritmosController extends HttpServlet {
     private ArrayList<Punto> puntos;
     private String rutaDelProyecto;
     private File file;
+    private double tiempoEjecucion;
+
     public AlgoritmosController() {
         puntos = new ArrayList<>();
     }
 
+    //****************************************MANEJO DE FICHERO**********************************************
     public void leerPuntos(File archivo) {
         if (archivo.exists()) {
             try {
@@ -68,7 +71,8 @@ public class AlgoritmosController extends HttpServlet {
         }
 
     }
-    public File buscarRuta(String nombreFichero){
+
+    public File buscarRuta(String nombreFichero) {
         this.file = new File(this.rutaDelProyecto);
 
         for (int i = 0; i < 2; i++) {
@@ -78,43 +82,51 @@ public class AlgoritmosController extends HttpServlet {
         file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + nombreFichero);
         return file;
     }
-    
-    public void quicksort(ArrayList<Punto> puntosaux, int primero, int ultimo){
-        if (primero< ultimo) {
+
+    //****************************************ALGORITMOS DE ORDENACIÓN**********************************************
+    public void quicksort(ArrayList<Punto> puntosaux, int primero, int ultimo) {
+        if (primero < ultimo) {
             Punto pivote = puntosaux.get(ultimo);
-            int posicion  = partition(puntosaux, primero, ultimo, pivote);
-            quicksort(puntosaux, primero, posicion-1);
-            quicksort(puntosaux, posicion+1, ultimo);
+            int posicion = partition(puntosaux, primero, ultimo, pivote);
+            quicksort(puntosaux, primero, posicion - 1);
+            quicksort(puntosaux, posicion + 1, ultimo);
         }
     }
-    
-    public int partition(ArrayList<Punto> puntosaux, int primero, int ultimo, Punto pivote){
+
+    public int partition(ArrayList<Punto> puntosaux, int primero, int ultimo, Punto pivote) {
         int i = primero;
         int j = primero;
-        
-        while(i <= ultimo){
+
+        while (i <= ultimo) {
             if (puntosaux.get(i).getX() > pivote.getX()) {
                 i++;
-            }else{
+            } else {
                 intercambiar(puntosaux, i, j);
                 i++;
                 j++;
             }
         }
-        
-        return j-1;
+
+        return j - 1;
     }
-    
-    public void intercambiar(ArrayList<Punto> puntosaux, int i, int j){
+
+    public void intercambiar(ArrayList<Punto> puntosaux, int i, int j) {
         Punto temp = puntosaux.get(i);
         puntosaux.set(i, puntosaux.get(j));
         puntosaux.set(j, temp);
     }
-    
+
+    //****************************************ALGORITMOS DE BUSQUEDA**********************************************
     public Linea exhaustivo(String nombreFichero) {
+        //Declaración de variables
         double mejorCamino = 90000;
         Linea mejorLinea = new Linea();
+        tiempoEjecucion = 0;
+        
+        //Leemos el fichero
         leerPuntos(buscarRuta(nombreFichero));
+        
+        //Empezamos la busqueda
         long startTime = System.nanoTime();
         for (int i = 0; i < this.puntos.size(); i++) {
             for (int j = i + 1; j < this.puntos.size(); j++) {
@@ -126,47 +138,59 @@ public class AlgoritmosController extends HttpServlet {
             }
         }
         long endTime = System.nanoTime();
-        long tiempoEjecucion = endTime - startTime;
+        tiempoEjecucion = endTime - startTime;
+        tiempoEjecucion /= 1000;
 
         System.out.println("Tiempo de ejecución: " + tiempoEjecucion + " nanosegundos");
         return mejorLinea;
     }
-    
-    public Linea poda(String nombreFichero){
+
+    public Linea exhaustivoPoda(String nombreFichero) {
+        //Declaración de variables
         Linea mejorLinea;
         Linea actualLinea;
         Double distanciaMin;
-        
+        tiempoEjecucion = 0;
+
+        //Leemos fichero y ordenamos los puntos por su coordenada x
         leerPuntos(buscarRuta(nombreFichero));
-        quicksort(this.puntos, 0, this.puntos.size()-1);
+        quicksort(this.puntos, 0, this.puntos.size() - 1);
+
+        //Asignamos los puntos que vamos a seleccionar en la primera iteración, definimos la linea que une a esos puntos y calculamos la distancia minima
         Punto punto1 = this.puntos.get(0);
         Punto punto2 = this.puntos.get(1);
-        Linea l = new Linea(punto1, punto2);
-        distanciaMin = l.distancia();
+        actualLinea = new Linea(punto1, punto2);
+        distanciaMin = actualLinea.distancia();
+
         long startTime = System.nanoTime();
-        for (int i = 0; i < this.puntos.size()-1; i++) {
+        for (int i = 0; i < this.puntos.size() - 1; i++) {
             Punto puntoBase = this.puntos.get(i);
-            for (int j = i+1; j < this.puntos.size(); j++) {
+            for (int j = i + 1; j < this.puntos.size(); j++) {
                 Punto puntoActual = this.puntos.get(j);
-                actualLinea  = new Linea(puntoBase, puntoActual);
-                Double d = actualLinea.distancia();
-                if (d < distanciaMin) {
-                    distanciaMin = d;
+                actualLinea = new Linea(puntoBase, puntoActual);
+
+                //Comprobamos si la distancia minima tiene que ser actualizada
+                if (actualLinea.distancia() < distanciaMin) {
+                    distanciaMin = actualLinea.distancia();
                     punto1 = puntoBase;
                     punto2 = puntoActual;
                 }
-                if (Math.abs(puntoBase.getX() - puntoActual.getX())>= distanciaMin ) {
+
+                //Poda
+                if (Math.abs(puntoBase.getX() - puntoActual.getX()) >= distanciaMin) {
                     break;
                 }
             }
         }
-        mejorLinea  = new Linea(punto1, punto2);
+        mejorLinea = new Linea(punto1, punto2);
         long endTime = System.nanoTime();
-        long tiempoEjecucion = endTime - startTime;
+        tiempoEjecucion = endTime - startTime;
+        tiempoEjecucion /= 1000;
 
-        System.out.println("Tiempo de ejecución: " + tiempoEjecucion + " milisegundos");
+        System.out.println("Tiempo de ejecución: " + tiempoEjecucion + " nanosegundos");
         return mejorLinea;
     }
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -187,26 +211,27 @@ public class AlgoritmosController extends HttpServlet {
 
         switch (accion) {
             case "/show": {
-                
-                String nombreFichero = request.getParameter("opcion");  
+
+                String nombreFichero = request.getParameter("opcion");
                 Gson gson = new Gson();
                 Linea mejorLinea;
                 //mejorLinea = exhaustivo(nombreFichero);
-                mejorLinea = poda(nombreFichero);
-                    
+                mejorLinea = exhaustivoPoda(nombreFichero);
+
                 System.out.println("Numero de puntos dentro " + puntos.size());
 
                 //Convertimos las variables que vamos a tratar en JS a tipo JSON
                 String puntosJSON = gson.toJson(puntos);
                 String lineaJSON = gson.toJson(mejorLinea);
-                
-                //Mandamos la linea sin convertir para que el h1 del jsp muestre los datos
+
+                //Mandamos los datos sin convertir para que el h1 del jsp muestre los datos
                 request.setAttribute("linea", mejorLinea);
+                request.setAttribute("tiempoEjecucion", tiempoEjecucion);
                 
-                //System.out.println("Los puntos mas cercanos son: " + mejorLinea.getP1().getX() + " y " + mejorLinea.getP2().getY());
+                //Mandamos los datos convertidas en JSON para que sean tratadas en el JS
                 request.setAttribute("lineaJSON", lineaJSON);
                 request.setAttribute("puntosJSON", puntosJSON);
-                
+
                 //Indicamos a que vista queremos que nos mande luego de ejecutar todo el codigo anterior
                 vista = "/index.jsp";
             }

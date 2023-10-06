@@ -115,7 +115,7 @@ public class AlgoritmosController extends HttpServlet {
         double mejorCamino = 90000;
         Linea mejorLinea = new Linea();
         leerPuntos(buscarRuta(nombreFichero));
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
         for (int i = 0; i < this.puntos.size(); i++) {
             for (int j = i + 1; j < this.puntos.size(); j++) {
                 Linea l = new Linea(puntos.get(i), puntos.get(j));
@@ -125,17 +125,46 @@ public class AlgoritmosController extends HttpServlet {
                 }
             }
         }
-        long endTime = System.currentTimeMillis();
+        long endTime = System.nanoTime();
         long tiempoEjecucion = endTime - startTime;
 
-        System.out.println("Tiempo de ejecución: " + tiempoEjecucion + " milisegundos");
+        System.out.println("Tiempo de ejecución: " + tiempoEjecucion + " nanosegundos");
         return mejorLinea;
     }
     
     public Linea poda(String nombreFichero){
-        buscarRuta(nombreFichero);
+        Linea mejorLinea;
+        Linea actualLinea;
+        Double distanciaMin;
         
-        Linea mejorLinea = new Linea();
+        leerPuntos(buscarRuta(nombreFichero));
+        quicksort(this.puntos, 0, this.puntos.size()-1);
+        Punto punto1 = this.puntos.get(0);
+        Punto punto2 = this.puntos.get(1);
+        Linea l = new Linea(punto1, punto2);
+        distanciaMin = l.distancia();
+        long startTime = System.nanoTime();
+        for (int i = 0; i < this.puntos.size()-1; i++) {
+            Punto puntoBase = this.puntos.get(i);
+            for (int j = i+1; j < this.puntos.size(); j++) {
+                Punto puntoActual = this.puntos.get(j);
+                actualLinea  = new Linea(puntoBase, puntoActual);
+                Double d = actualLinea.distancia();
+                if (d < distanciaMin) {
+                    distanciaMin = d;
+                    punto1 = puntoBase;
+                    punto2 = puntoActual;
+                }
+                if (Math.abs(puntoBase.getX() - puntoActual.getX())>= distanciaMin ) {
+                    break;
+                }
+            }
+        }
+        mejorLinea  = new Linea(punto1, punto2);
+        long endTime = System.nanoTime();
+        long tiempoEjecucion = endTime - startTime;
+
+        System.out.println("Tiempo de ejecución: " + tiempoEjecucion + " milisegundos");
         return mejorLinea;
     }
     /**
@@ -162,9 +191,9 @@ public class AlgoritmosController extends HttpServlet {
                 String nombreFichero = request.getParameter("opcion");  
                 Gson gson = new Gson();
                 Linea mejorLinea;
-                mejorLinea = exhaustivo(nombreFichero);
-                
-                
+                //mejorLinea = exhaustivo(nombreFichero);
+                mejorLinea = poda(nombreFichero);
+                    
                 System.out.println("Numero de puntos dentro " + puntos.size());
 
                 //Convertimos las variables que vamos a tratar en JS a tipo JSON

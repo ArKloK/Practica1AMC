@@ -19,14 +19,19 @@
                 <option value="d493.tsp">D493</option>
                 <option value="d657.tsp">D657</option>
             </select>
+            <select id="algoritmos" name="algoritmos" title="algoritmos">
+                <option value="exhaustivo">Exhaustivo</option>
+                <option value="exhaustivopoda">Exhaustivo con poda</option>
+            </select>
             <button type="button" onclick="redirigirServlet()">Aceptar</button>
         </c:if>
         <c:if test="${!empty requestScope.puntosJSON && !empty requestScope.lineaJSON}">
             <h1>Los puntos mas cercanos son: ${requestScope.linea.p1.id} y ${requestScope.linea.p2.id}</h1>
-            <!-- <button type="button" onclick="cargarGrafica()">Cargar</button> -->
             <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
             
             <h2>Tiempo de ejecución del algoritmo (en µs): ${requestScope.tiempoEjecucion}</h2>
+            
+            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
             
             <script>
                 var puntosJSON = <%= request.getAttribute("puntosJSON")%>;

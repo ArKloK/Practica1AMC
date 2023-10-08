@@ -122,10 +122,10 @@ public class AlgoritmosController extends HttpServlet {
         double mejorCamino = 90000;
         Linea mejorLinea = new Linea();
         tiempoEjecucion = 0;
-        
+
         //Leemos el fichero
         leerPuntos(buscarRuta(nombreFichero));
-        
+
         //Empezamos la busqueda
         long startTime = System.nanoTime();
         for (int i = 0; i < this.puntos.size(); i++) {
@@ -212,11 +212,19 @@ public class AlgoritmosController extends HttpServlet {
         switch (accion) {
             case "/show": {
 
-                String nombreFichero = request.getParameter("opcion");
+                //Recoge las variables enviadas por la URL
+                String fichero = request.getParameter("opcionFichero");
+                String algoritmo = request.getParameter("opcionAlgoritmo");
+
                 Gson gson = new Gson();
-                Linea mejorLinea;
-                //mejorLinea = exhaustivo(nombreFichero);
-                mejorLinea = exhaustivoPoda(nombreFichero);
+                Linea mejorLinea = null;
+
+                //Comprobar que algoritmo vamos a utilizar
+                if ("exhaustivo".equals(algoritmo)) {
+                    mejorLinea = exhaustivo(fichero);
+                } else if ("exhaustivopoda".equals(algoritmo)) {
+                    mejorLinea = exhaustivoPoda(fichero);
+                }
 
                 System.out.println("Numero de puntos dentro " + puntos.size());
 
@@ -227,12 +235,21 @@ public class AlgoritmosController extends HttpServlet {
                 //Mandamos los datos sin convertir para que el h1 del jsp muestre los datos
                 request.setAttribute("linea", mejorLinea);
                 request.setAttribute("tiempoEjecucion", tiempoEjecucion);
-                
+
                 //Mandamos los datos convertidas en JSON para que sean tratadas en el JS
                 request.setAttribute("lineaJSON", lineaJSON);
                 request.setAttribute("puntosJSON", puntosJSON);
 
                 //Indicamos a que vista queremos que nos mande luego de ejecutar todo el codigo anterior
+                vista = "/index.jsp";
+            }
+            break;
+
+            case "/volver": {
+                
+                request.setAttribute("lineaJSON", null);
+                request.setAttribute("puntosJSON", null);
+                
                 vista = "/index.jsp";
             }
             break;

@@ -85,21 +85,47 @@ public class AlgoritmosController extends HttpServlet {
     }
 
     //****************************************ALGORITMOS DE ORDENACIÓN**********************************************
-    public void quicksort(ArrayList<Punto> puntosaux, int primero, int ultimo) {
+    public void quicksortX(ArrayList<Punto> puntosaux, int primero, int ultimo) {
         if (primero < ultimo) {
             Punto pivote = puntosaux.get(ultimo);
-            int posicion = partition(puntosaux, primero, ultimo, pivote);
-            quicksort(puntosaux, primero, posicion - 1);
-            quicksort(puntosaux, posicion + 1, ultimo);
+            int posicion = partitionX(puntosaux, primero, ultimo, pivote);
+            quicksortX(puntosaux, primero, posicion - 1);
+            quicksortX(puntosaux, posicion + 1, ultimo);
         }
     }
 
-    public int partition(ArrayList<Punto> puntosaux, int primero, int ultimo, Punto pivote) {
+    public int partitionX(ArrayList<Punto> puntosaux, int primero, int ultimo, Punto pivote) {
         int i = primero;
         int j = primero;
 
         while (i <= ultimo) {
             if (puntosaux.get(i).getX() > pivote.getX()) {
+                i++;
+            } else {
+                intercambiar(puntosaux, i, j);
+                i++;
+                j++;
+            }
+        }
+
+        return j - 1;
+    }
+
+    public void quicksortY(ArrayList<Punto> puntosaux, int primero, int ultimo) {
+        if (primero < ultimo) {
+            Punto pivote = puntosaux.get(ultimo);
+            int posicion = partitionY(puntosaux, primero, ultimo, pivote);
+            quicksortY(puntosaux, primero, posicion - 1);
+            quicksortY(puntosaux, posicion + 1, ultimo);
+        }
+    }
+
+    public int partitionY(ArrayList<Punto> puntosaux, int primero, int ultimo, Punto pivote) {
+        int i = primero;
+        int j = primero;
+
+        while (i <= ultimo) {
+            if (puntosaux.get(i).getY() > pivote.getY()) {
                 i++;
             } else {
                 intercambiar(puntosaux, i, j);
@@ -155,7 +181,7 @@ public class AlgoritmosController extends HttpServlet {
 
         //Leemos fichero y ordenamos los puntos por su coordenada x
         leerPuntos(buscarRuta(nombreFichero));
-        quicksort(this.puntos, 0, this.puntos.size() - 1);
+        quicksortX(this.puntos, 0, this.puntos.size() - 1);
 
         //Asignamos los puntos que vamos a seleccionar en la primera iteración, definimos la linea que une a esos puntos y calculamos la distancia minima
         Punto punto1 = this.puntos.get(0);
@@ -191,44 +217,57 @@ public class AlgoritmosController extends HttpServlet {
         System.out.println("Tiempo de ejecución: " + tiempoEjecucion + " nanosegundos");
         return mejorLinea;
     }
-    public Linea divideyvenceras(ArrayList<Punto> puntos, int izquierda, int derecha){
+
+    public Linea divideyvenceras(ArrayList<Punto> puntos, int izquierda, int derecha) {
         Linea mejorLinea = null;
         double distanciaMin = Double.MAX_VALUE;
-        quicksort(puntos, 0, this.puntos.size()-1);
+
         if (derecha - izquierda <= 2) {
-            Linea actualLinea;
+            // Caso base: pocos puntos, calcular por fuerza bruta
             for (int i = izquierda; i <= derecha; i++) {
-                for (int j = i+1; j <= derecha; j++) {
-                    actualLinea = new Linea(puntos.get(i), puntos.get(j));
+                for (int j = i + 1; j <= derecha; j++) {
+                    Linea actualLinea = new Linea(puntos.get(i), puntos.get(j));
                     double distancia = actualLinea.distancia();
-                    if (actualLinea.distancia()< distanciaMin) {
-                        distanciaMin = actualLinea.distancia();
+                    if (distancia < distanciaMin) {
+                        distanciaMin = distancia;
                         mejorLinea = actualLinea;
                     }
                 }
             }
             return mejorLinea;
         }
+
         int medio = (izquierda + derecha) / 2;
         Punto puntoMedio = puntos.get(medio);
+
+        // Recursión en las mitades izquierda y derecha
         Linea lineaIzquierda = divideyvenceras(puntos, izquierda, medio);
-        Linea lineaDerecha = divideyvenceras(puntos, medio +1, derecha);
-        if (lineaIzquierda.distancia()< lineaDerecha.distancia()) {
-                        distanciaMin = lineaIzquierda.distancia();
-                        mejorLinea = lineaIzquierda;
-                    }
+        Linea lineaDerecha = divideyvenceras(puntos, medio + 1, derecha);
+
+        // Elegir la línea más corta de las dos
+        if (lineaIzquierda.distancia() < lineaDerecha.distancia()) {
+            distanciaMin = lineaIzquierda.distancia();
+            mejorLinea = lineaIzquierda;
+        } else {
+            distanciaMin = lineaDerecha.distancia();
+            mejorLinea = lineaDerecha;
+        }
+
+        // Crear una lista de puntos en la banda de distanciaMin
         ArrayList<Punto> puntosEnRango = new ArrayList<>();
         for (int i = izquierda; i <= derecha; i++) {
-            if (Math.abs(puntos.get(i).getX() - puntoMedio.getX())< distanciaMin) {
+            if (Math.abs(puntos.get(i).getX() - puntoMedio.getX()) < distanciaMin) {
                 puntosEnRango.add(puntos.get(i));
             }
         }
-        
-        puntosEnRango.sort(Comparator.comparingDouble(p -> p.getY()));
-        
+
+        // Ordenar la lista de puntos en la banda por coordenada Y
+        quicksortY(puntosEnRango, 0, puntosEnRango.size() - 1);
+
+        // Búsqueda en la banda de distanciaMin
         for (int i = 0; i < puntosEnRango.size(); i++) {
-            for (int j = i+1; j < puntosEnRango.size() && (puntosEnRango.get(j).getY() - puntosEnRango.get(i).getY()) > 2 ; j++) {
-                Linea l = new Linea(puntos.get(i), puntos.get(j));
+            for (int j = i + 1; j < puntosEnRango.size() && (puntosEnRango.get(j).getY() - puntosEnRango.get(i).getY()) < distanciaMin; j++) {
+                Linea l = new Linea(puntosEnRango.get(i), puntosEnRango.get(j));
                 if (l.distancia() < distanciaMin) {
                     distanciaMin = l.distancia();
                     mejorLinea = l;
@@ -237,7 +276,7 @@ public class AlgoritmosController extends HttpServlet {
         }
         return mejorLinea;
     }
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -271,10 +310,10 @@ public class AlgoritmosController extends HttpServlet {
                     mejorLinea = exhaustivo(fichero);
                 } else if ("exhaustivopoda".equals(algoritmo)) {
                     mejorLinea = exhaustivoPoda(fichero);
-                } else if ("divideyvenceras".equals(algoritmo)){
+                } else if ("divideyvenceras".equals(algoritmo)) {
                     leerPuntos(buscarRuta(fichero));
-                    quicksort(puntos, 0, puntos.size()-1);
-                    mejorLinea = divideyvenceras(puntos, 0, puntos.size()-1);
+                    quicksortX(puntos, 0, puntos.size() - 1);
+                    mejorLinea = divideyvenceras(puntos, 0, puntos.size() - 1);
                 }
 
                 System.out.println("Numero de puntos dentro " + puntos.size());
@@ -297,10 +336,10 @@ public class AlgoritmosController extends HttpServlet {
             break;
 
             case "/volver": {
-                
+
                 request.setAttribute("lineaJSON", null);
                 request.setAttribute("puntosJSON", null);
-                
+
                 vista = "/index.jsp";
             }
             break;

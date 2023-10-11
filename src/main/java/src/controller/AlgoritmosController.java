@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -190,7 +191,53 @@ public class AlgoritmosController extends HttpServlet {
         System.out.println("Tiempo de ejecución: " + tiempoEjecucion + " nanosegundos");
         return mejorLinea;
     }
-
+    public Linea divideyvenceras(ArrayList<Punto> puntos, int izquierda, int derecha){
+        Linea mejorLinea = null;
+        double distanciaMin = Double.MAX_VALUE;
+        quicksort(puntos, 0, this.puntos.size()-1);
+        if (derecha - izquierda <= 2) {
+            Linea actualLinea;
+            for (int i = izquierda; i <= derecha; i++) {
+                for (int j = i+1; j <= derecha; j++) {
+                    actualLinea = new Linea(puntos.get(i), puntos.get(j));
+                    double distancia = actualLinea.distancia();
+                    if (actualLinea.distancia()< distanciaMin) {
+                        distanciaMin = actualLinea.distancia();
+                        mejorLinea = actualLinea;
+                    }
+                }
+            }
+            return mejorLinea;
+        }
+        int medio = (izquierda + derecha) / 2;
+        Punto puntoMedio = puntos.get(medio);
+        Linea lineaIzquierda = divideyvenceras(puntos, izquierda, medio);
+        Linea lineaDerecha = divideyvenceras(puntos, medio +1, derecha);
+        if (lineaIzquierda.distancia()< lineaDerecha.distancia()) {
+                        distanciaMin = lineaIzquierda.distancia();
+                        mejorLinea = lineaIzquierda;
+                    }
+        ArrayList<Punto> puntosEnRango = new ArrayList<>();
+        for (int i = izquierda; i <= derecha; i++) {
+            if (Math.abs(puntos.get(i).getX() - puntoMedio.getX())< distanciaMin) {
+                puntosEnRango.add(puntos.get(i));
+            }
+        }
+        
+        puntosEnRango.sort(Comparator.comparingDouble(p -> p.getY()));
+        
+        for (int i = 0; i < puntosEnRango.size(); i++) {
+            for (int j = i+1; j < puntosEnRango.size() && (puntosEnRango.get(j).getY() - puntosEnRango.get(i).getY()) > 2 ; j++) {
+                Linea l = new Linea(puntos.get(i), puntos.get(j));
+                if (l.distancia() < distanciaMin) {
+                    distanciaMin = l.distancia();
+                    mejorLinea = l;
+                }
+            }
+        }
+        return mejorLinea;
+    }
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -224,6 +271,10 @@ public class AlgoritmosController extends HttpServlet {
                     mejorLinea = exhaustivo(fichero);
                 } else if ("exhaustivopoda".equals(algoritmo)) {
                     mejorLinea = exhaustivoPoda(fichero);
+                } else if ("divideyvenceras".equals(algoritmo)){
+                    leerPuntos(buscarRuta(fichero));
+                    quicksort(puntos, 0, puntos.size()-1);
+                    mejorLinea = divideyvenceras(puntos, 0, puntos.size()-1);
                 }
 
                 System.out.println("Numero de puntos dentro " + puntos.size());

@@ -22,6 +22,7 @@
             <select id="algoritmos" name="algoritmos" title="algoritmos">
                 <option value="exhaustivo">Exhaustivo</option>
                 <option value="exhaustivopoda">Exhaustivo con poda</option>
+                <option value="divideyvenceras">Divide y venceras</option>
             </select>
             <button type="button" onclick="redirigirServlet()">Aceptar</button>
         </c:if>

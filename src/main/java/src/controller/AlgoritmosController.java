@@ -72,6 +72,9 @@ public class AlgoritmosController extends HttpServlet {
         }
 
     }
+    public void crearFicheroAleatorio(int size){
+        
+    }
 
     public File buscarRuta(String nombreFichero) {
         this.file = new File(this.rutaDelProyecto);

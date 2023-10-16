@@ -6,12 +6,16 @@ package src.controller;
 
 import com.google.gson.Gson;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Random;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -72,8 +76,46 @@ public class AlgoritmosController extends HttpServlet {
         }
 
     }
-    public void crearFicheroAleatorio(int size){
-        
+
+    public void crearFicheroAleatorio(int size) {
+        //puntos = new ArrayList<>();
+
+        String fileName = "dataset" + size+".tsp";
+        this.file = new File(this.rutaDelProyecto);
+        for (int i = 0; i < 2; i++) {
+            file = file.getParentFile();
+        }
+        file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + fileName);
+        String filePath = file.toString();
+        System.out.println(filePath);
+        Random r = new Random();
+        r.setSeed(System.nanoTime());
+        DecimalFormat decimalFormat = new DecimalFormat("#.##########");
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            writer.write("NAME: " + fileName);
+            writer.newLine();
+            writer.write("TYPE: TSP\n");
+            writer.newLine();
+            writer.write("COMMENT: " + size + " locations");
+            writer.newLine();
+            writer.write("DIMENSION: " + size);
+            writer.newLine();
+            writer.write("EDGE_WEIGHT_TYPE: EUC_2D");
+            writer.newLine();
+            writer.write("NODE_COORD_SECTION");
+            writer.newLine();
+            for (int i = 0; i < size; i++) {
+                writer.write(i+1+" "+decimalFormat.format(r.nextDouble())+" "+decimalFormat.format(r.nextDouble()));
+                writer.newLine();
+                System.out.println(i+1+" "+decimalFormat.format(r.nextDouble())+" "+decimalFormat.format(r.nextDouble()));
+            }
+            //Forzar escritura en el archivo
+             writer.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public File buscarRuta(String nombreFichero) {
@@ -170,7 +212,6 @@ public class AlgoritmosController extends HttpServlet {
         long endTime = System.nanoTime();
         tiempoEjecucion = endTime - startTime;
         tiempoEjecucion /= 1000;
-
         System.out.println("Tiempo de ejecución: " + tiempoEjecucion + " nanosegundos");
         return mejorLinea;
     }
@@ -223,16 +264,15 @@ public class AlgoritmosController extends HttpServlet {
 
     public Linea divideyvenceras(ArrayList<Punto> puntos, int izquierda, int derecha) {
         Linea mejorLinea = null;
-        double distanciaMin = Double.MAX_VALUE;
-
-        if (derecha - izquierda <= 2) {
+        if (derecha - izquierda <= 3) {
+            double minDistancia = Double.MAX_VALUE;
             // Caso base: pocos puntos, calcular por fuerza bruta
             for (int i = izquierda; i <= derecha; i++) {
                 for (int j = i + 1; j <= derecha; j++) {
                     Linea actualLinea = new Linea(puntos.get(i), puntos.get(j));
                     double distancia = actualLinea.distancia();
-                    if (distancia < distanciaMin) {
-                        distanciaMin = distancia;
+                    if (distancia < minDistancia) {
+                        minDistancia = distancia;
                         mejorLinea = actualLinea;
                     }
                 }
@@ -245,10 +285,10 @@ public class AlgoritmosController extends HttpServlet {
 
         // Recursión en las mitades izquierda y derecha
         Linea lineaIzquierda = divideyvenceras(puntos, izquierda, medio);
-        Linea lineaDerecha = divideyvenceras(puntos, medio + 1, derecha);
-
+        Linea lineaDerecha = divideyvenceras(puntos, medio, derecha);
+        double distanciaMin;
         // Elegir la línea más corta de las dos
-        if (lineaIzquierda.distancia() < lineaDerecha.distancia()) {
+        if (lineaIzquierda.distancia() <= lineaDerecha.distancia()) {
             distanciaMin = lineaIzquierda.distancia();
             mejorLinea = lineaIzquierda;
         } else {
@@ -265,8 +305,8 @@ public class AlgoritmosController extends HttpServlet {
         }
 
         // Ordenar la lista de puntos en la banda por coordenada Y
-        quicksortY(puntosEnRango, 0, puntosEnRango.size() - 1);
-
+        //quicksortY(puntosEnRango, 0, puntosEnRango.size() - 1);
+        puntosEnRango.sort(Comparator.comparingDouble(p -> p.getY()));
         // Búsqueda en la banda de distanciaMin
         for (int i = 0; i < puntosEnRango.size(); i++) {
             for (int j = i + 1; j < puntosEnRango.size() && (puntosEnRango.get(j).getY() - puntosEnRango.get(i).getY()) < distanciaMin; j++) {
@@ -311,6 +351,7 @@ public class AlgoritmosController extends HttpServlet {
                 //Comprobar que algoritmo vamos a utilizar
                 if ("exhaustivo".equals(algoritmo)) {
                     mejorLinea = exhaustivo(fichero);
+                    crearFicheroAleatorio(100);
                 } else if ("exhaustivopoda".equals(algoritmo)) {
                     mejorLinea = exhaustivoPoda(fichero);
                 } else if ("divideyvenceras".equals(algoritmo)) {

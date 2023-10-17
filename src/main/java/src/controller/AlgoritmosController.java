@@ -13,8 +13,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.Random;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -36,7 +38,6 @@ public class AlgoritmosController extends HttpServlet {
     private ArrayList<Punto> puntos;
     private String rutaDelProyecto;
     private File file;
-    private double tiempoEjecucion;
 
     public AlgoritmosController() {
         puntos = new ArrayList<>();
@@ -77,47 +78,6 @@ public class AlgoritmosController extends HttpServlet {
 
     }
 
-    public void crearFicheroAleatorio(int size) {
-        //puntos = new ArrayList<>();
-
-        String fileName = "dataset" + size+".tsp";
-        this.file = new File(this.rutaDelProyecto);
-        for (int i = 0; i < 2; i++) {
-            file = file.getParentFile();
-        }
-        file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + fileName);
-        String filePath = file.toString();
-        System.out.println(filePath);
-        Random r = new Random();
-        r.setSeed(System.nanoTime());
-        DecimalFormat decimalFormat = new DecimalFormat("#.##########");
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-            writer.write("NAME: " + fileName);
-            writer.newLine();
-            writer.write("TYPE: TSP\n");
-            writer.newLine();
-            writer.write("COMMENT: " + size + " locations");
-            writer.newLine();
-            writer.write("DIMENSION: " + size);
-            writer.newLine();
-            writer.write("EDGE_WEIGHT_TYPE: EUC_2D");
-            writer.newLine();
-            writer.write("NODE_COORD_SECTION");
-            writer.newLine();
-            for (int i = 0; i < size; i++) {
-                writer.write(i+1+" "+decimalFormat.format(r.nextDouble())+" "+decimalFormat.format(r.nextDouble()));
-                writer.newLine();
-                System.out.println(i+1+" "+decimalFormat.format(r.nextDouble())+" "+decimalFormat.format(r.nextDouble()));
-            }
-            //Forzar escritura en el archivo
-             writer.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
     public File buscarRuta(String nombreFichero) {
         this.file = new File(this.rutaDelProyecto);
 
@@ -128,7 +88,34 @@ public class AlgoritmosController extends HttpServlet {
         file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + nombreFichero);
         return file;
     }
-
+    
+    public static ArrayList<Punto> GenerarPuntosAleatoriosPeor(int n){
+        Random rand = new Random();
+        ArrayList<Punto> p = new ArrayList<Punto>();
+        for (int i = 0; i < n; i++) {
+            double aux1 = rand.nextInt(1000)+7;
+            double y = aux1 / ((double)(i+1)+i*0.100);
+            int num = rand.nextInt(3);
+            y += ((i % 500) - num * (rand.nextInt(100)));
+            double x = 1;
+            Punto punto = new Punto(i+1, x, y);
+            p.add(punto);
+        }
+        return p;
+    }
+    public static ArrayList<Punto> GenerarPuntosAleatorios(int n){
+        Random rand = new Random();
+        ArrayList<Punto> p = new ArrayList<Punto>();
+        for (int i = 0; i < n; i++) {
+            int num = rand.nextInt(4000)+1;
+            int den = rand.nextInt(11)+7;
+            double x = num / ((double) den + 0.37);
+            double y = (rand.nextInt(4000)+1) / ((double)(rand.nextInt(11)+7)+0.37);
+            Punto punto = new Punto(i+1, x, y);
+            p.add(punto);
+        }
+        return p;
+    }
     //****************************************ALGORITMOS DE ORDENACIÓN**********************************************
     public void quicksortX(ArrayList<Punto> puntosaux, int primero, int ultimo) {
         if (primero < ultimo) {
@@ -189,15 +176,10 @@ public class AlgoritmosController extends HttpServlet {
     }
 
     //****************************************ALGORITMOS DE BUSQUEDA**********************************************
-    public Linea exhaustivo(String nombreFichero) {
+    public Linea exhaustivo(String nombreFichero, ArrayList<Punto> puntos) {
         //Declaración de variables
-        double mejorCamino = 90000;
+        double mejorCamino = Double.MAX_VALUE;
         Linea mejorLinea = new Linea();
-        tiempoEjecucion = 0;
-
-        //Leemos el fichero
-        leerPuntos(buscarRuta(nombreFichero));
-
         //Empezamos la busqueda
         long startTime = System.nanoTime();
         for (int i = 0; i < this.puntos.size(); i++) {
@@ -209,31 +191,21 @@ public class AlgoritmosController extends HttpServlet {
                 }
             }
         }
-        long endTime = System.nanoTime();
-        tiempoEjecucion = endTime - startTime;
-        tiempoEjecucion /= 1000;
-        System.out.println("Tiempo de ejecución: " + tiempoEjecucion + " nanosegundos");
+        estudiarUnaEstrategia();
         return mejorLinea;
     }
 
-    public Linea exhaustivoPoda(String nombreFichero) {
+    public Linea exhaustivoPoda(String nombreFichero, ArrayList<Punto> puntos) {
         //Declaración de variables
         Linea mejorLinea;
         Linea actualLinea;
         Double distanciaMin;
-        tiempoEjecucion = 0;
-
-        //Leemos fichero y ordenamos los puntos por su coordenada x
-        leerPuntos(buscarRuta(nombreFichero));
-        quicksortX(this.puntos, 0, this.puntos.size() - 1);
-
         //Asignamos los puntos que vamos a seleccionar en la primera iteración, definimos la linea que une a esos puntos y calculamos la distancia minima
         Punto punto1 = this.puntos.get(0);
         Punto punto2 = this.puntos.get(1);
         actualLinea = new Linea(punto1, punto2);
         distanciaMin = actualLinea.distancia();
 
-        long startTime = System.nanoTime();
         for (int i = 0; i < this.puntos.size() - 1; i++) {
             Punto puntoBase = this.puntos.get(i);
             for (int j = i + 1; j < this.puntos.size(); j++) {
@@ -254,11 +226,6 @@ public class AlgoritmosController extends HttpServlet {
             }
         }
         mejorLinea = new Linea(punto1, punto2);
-        long endTime = System.nanoTime();
-        tiempoEjecucion = endTime - startTime;
-        tiempoEjecucion /= 1000;
-
-        System.out.println("Tiempo de ejecución: " + tiempoEjecucion + " nanosegundos");
         return mejorLinea;
     }
 
@@ -279,7 +246,6 @@ public class AlgoritmosController extends HttpServlet {
             }
             return mejorLinea;
         }
-
         int medio = (izquierda + derecha) / 2;
         Punto puntoMedio = puntos.get(medio);
 
@@ -305,8 +271,7 @@ public class AlgoritmosController extends HttpServlet {
         }
 
         // Ordenar la lista de puntos en la banda por coordenada Y
-        //quicksortY(puntosEnRango, 0, puntosEnRango.size() - 1);
-        puntosEnRango.sort(Comparator.comparingDouble(p -> p.getY()));
+        quicksortY(puntosEnRango, 0, puntosEnRango.size() - 1);
         // Búsqueda en la banda de distanciaMin
         for (int i = 0; i < puntosEnRango.size(); i++) {
             for (int j = i + 1; j < puntosEnRango.size() && (puntosEnRango.get(j).getY() - puntosEnRango.get(i).getY()) < distanciaMin; j++) {
@@ -318,6 +283,63 @@ public class AlgoritmosController extends HttpServlet {
             }
         }
         return mejorLinea;
+    }
+
+    //****************************************ACCIONES MENU PRINCIPAL*********************************************
+    public void crearFicheroAleatorio(int size) {
+        //puntos = new ArrayList<>();
+
+        String fileName = "dataset" + size + ".tsp";
+        this.file = new File(this.rutaDelProyecto);
+        for (int i = 0; i < 2; i++) {
+            file = file.getParentFile();
+        }
+        file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + fileName);
+        String filePath = file.toString();
+        System.out.println(filePath);
+        Random r = new Random();
+        r.setSeed(System.nanoTime());
+
+        //PARA DARLE FORMATO DE 10 DECIMALES Y PARA QUE NO SALGA , EN VEZ DE .
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("0.0000000000", symbols);
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            writer.write("NAME: " + fileName);
+            writer.newLine();
+            writer.write("TYPE: TSP\n");
+            writer.newLine();
+            writer.write("COMMENT: " + size + " locations");
+            writer.newLine();
+            writer.write("DIMENSION: " + size);
+            writer.newLine();
+            writer.write("EDGE_WEIGHT_TYPE: EUC_2D");
+            writer.newLine();
+            writer.write("NODE_COORD_SECTION");
+            writer.newLine();
+            for (int i = 0; i < size; i++) {
+                double coordPrimer = r.nextInt(1000) + r.nextDouble();
+                double coordSegun = r.nextInt(1000) + r.nextDouble();
+                writer.write((i + 1) + " " + df.format(coordPrimer) + " " + df.format(coordSegun));
+                writer.newLine();
+            }
+            //Forzar escritura en el archivo
+            writer.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void estudiarUnaEstrategia() {
+        int talla = 500;
+        ArrayList<Punto> puntosNuevo = new ArrayList<Punto>();
+        Random r = new Random();
+        r.setSeed(System.nanoTime());
+        for (int i = 500; i <= 5000; i += 500) {
+                puntosNuevo = GenerarPuntosAleatorios(i);
+        }
     }
 
     /**
@@ -340,24 +362,38 @@ public class AlgoritmosController extends HttpServlet {
 
         switch (accion) {
             case "/show": {
-
                 //Recoge las variables enviadas por la URL
                 String fichero = request.getParameter("opcionFichero");
                 String algoritmo = request.getParameter("opcionAlgoritmo");
 
                 Gson gson = new Gson();
                 Linea mejorLinea = null;
-
+                double tiempoEjecucion = 0;
+                leerPuntos(buscarRuta(fichero));
                 //Comprobar que algoritmo vamos a utilizar
                 if ("exhaustivo".equals(algoritmo)) {
-                    mejorLinea = exhaustivo(fichero);
-                    crearFicheroAleatorio(100);
+                    long startTime = System.nanoTime();
+                    mejorLinea = exhaustivo(fichero, puntos);
+                    long endTime = System.nanoTime();
+                    tiempoEjecucion = endTime - startTime;
+                    tiempoEjecucion /= 1000;
+                    mejorLinea.setTiempoEjecucion(tiempoEjecucion);
                 } else if ("exhaustivopoda".equals(algoritmo)) {
-                    mejorLinea = exhaustivoPoda(fichero);
+                    quicksortX(puntos, 0, this.puntos.size() - 1);
+                    long startTime = System.nanoTime();
+                    mejorLinea = exhaustivoPoda(fichero, puntos);
+                    long endTime = System.nanoTime();
+                    tiempoEjecucion = endTime - startTime;
+                    tiempoEjecucion /= 1000;
+                    mejorLinea.setTiempoEjecucion(tiempoEjecucion);
                 } else if ("divideyvenceras".equals(algoritmo)) {
-                    leerPuntos(buscarRuta(fichero));
                     quicksortX(puntos, 0, puntos.size() - 1);
+                    long startTime = System.nanoTime();
                     mejorLinea = divideyvenceras(puntos, 0, puntos.size() - 1);
+                    long endTime = System.nanoTime();
+                    tiempoEjecucion = endTime - startTime;
+                    tiempoEjecucion /= 1000;
+                    mejorLinea.setTiempoEjecucion(tiempoEjecucion);
                 }
 
                 System.out.println("Numero de puntos dentro " + puntos.size());
@@ -368,7 +404,7 @@ public class AlgoritmosController extends HttpServlet {
 
                 //Mandamos los datos sin convertir para que el h1 del jsp muestre los datos
                 request.setAttribute("linea", mejorLinea);
-                request.setAttribute("tiempoEjecucion", tiempoEjecucion);
+                request.setAttribute("tiempoEjecucion", mejorLinea.getTiempoEjecucion());
 
                 //Mandamos los datos convertidas en JSON para que sean tratadas en el JS
                 request.setAttribute("lineaJSON", lineaJSON);

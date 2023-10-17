@@ -12,7 +12,9 @@ public class Linea {
 
     private Punto p1;
     private Punto p2;
-    
+    private double tiempoEjecucion;
+    private double distanciaEntrePuntos;
+    private int puntosCalculados;
     public Linea(){
         super();
     }
@@ -52,6 +54,29 @@ public class Linea {
         this.p2 = p2;
     }
     
+    public double getTiempoEjecucion() {
+        return tiempoEjecucion;
+    }
+
+    public void setTiempoEjecucion(double tiempoEjecucion) {
+        this.tiempoEjecucion = tiempoEjecucion;
+    }
+
+    public double getDistanciaEntrePuntos() {
+        return distanciaEntrePuntos;
+    }
+
+    public void setDistanciaEntrePuntos(double distanciaEntrePuntos) {
+        this.distanciaEntrePuntos = distanciaEntrePuntos;
+    }
+
+    public int getPuntosCalculados() {
+        return puntosCalculados;
+    }
+
+    public void setPuntosCalculados(int puntosCalculados) {
+        this.puntosCalculados = puntosCalculados;
+    }
     public double distancia(){
         double distanciaX = this.p2.getX() - this.p1.getX();
         double distanciaY = this.p2.getY() - this.p1.getY();

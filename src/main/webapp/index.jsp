@@ -23,6 +23,7 @@
                 <option value="exhaustivo">Exhaustivo</option>
                 <option value="exhaustivopoda">Exhaustivo con poda</option>
                 <option value="divideyvenceras">Divide y venceras</option>
+                <option value="dyvmejorado">Divide y venceras Mejorado</option>
             </select>
             <button type="button" onclick="redirigirServlet()">Aceptar</button>
         </c:if>

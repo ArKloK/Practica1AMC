@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -245,7 +246,7 @@ public class AlgoritmosController extends HttpServlet {
         Linea lineaDerecha = divideyvenceras(puntos, medio + 1, derecha);
 
         // Elegir la línea más corta de las dos
-        if (lineaIzquierda.distancia() < lineaDerecha.distancia()) {
+        if (lineaIzquierda.distancia() <= lineaDerecha.distancia()) {
             distanciaMin = lineaIzquierda.distancia();
             mejorLinea = lineaIzquierda;
         } else {
@@ -277,6 +278,79 @@ public class AlgoritmosController extends HttpServlet {
         return mejorLinea;
     }
 
+    public Linea dyvMejorado(List<Punto> puntosOrdenadosX, List<Punto> puntosOrdenadosY) {
+        int n = puntosOrdenadosX.size();
+
+        if (n <= 3) {
+            double distanciaMin = Double.POSITIVE_INFINITY;
+            Linea mejorLinea = null;
+            // Caso base: Fuerza bruta para un número pequeño de puntos
+            for (int i = 0; i <= n - 1; i++) {
+                for (int j = i + 1; j <= n; j++) {
+                    Linea actualLinea = new Linea(puntos.get(i), puntos.get(j));
+                    double distancia = actualLinea.distancia();
+                    if (distancia < distanciaMin) {
+                        distanciaMin = distancia;
+                        mejorLinea = actualLinea;
+                    }
+                }
+            }
+            return mejorLinea;
+        }
+
+        // Divide los puntos en dos mitades
+        int mitad = n / 2;
+        Punto puntoMedio = puntosOrdenadosX.get(mitad);
+
+        List<Punto> puntosIzquierdaX = puntosOrdenadosX.subList(0, mitad);
+        List<Punto> puntosDerechaX = puntosOrdenadosX.subList(mitad, n);
+
+        ArrayList<Punto> puntosIzquierdaY = new ArrayList<>();
+        ArrayList<Punto> puntosDerechaY = new ArrayList<>();
+
+        double distanciaMinima = Double.POSITIVE_INFINITY;
+        Linea mejorLinea = null;
+
+        for (Punto punto : puntosOrdenadosY) {
+            if (punto.getX() <= puntoMedio.getX()) {
+                puntosIzquierdaY.add(punto);
+            } else {
+                puntosDerechaY.add(punto);
+            }
+        }
+
+        Linea lineaIzquierda = dyvMejorado(puntosIzquierdaX, puntosIzquierdaY);
+        Linea lineaDerecha = dyvMejorado(puntosDerechaX, puntosDerechaY);
+
+        if (lineaIzquierda.distancia() < lineaDerecha.distancia()) {
+            distanciaMinima = lineaIzquierda.distancia();
+            mejorLinea = lineaIzquierda;
+        } else {
+            distanciaMinima = lineaDerecha.distancia();
+            mejorLinea = lineaDerecha;
+        }
+
+        List<Punto> puntosEnRango = new ArrayList<>();
+        for (Punto punto : puntosOrdenadosY) {
+            if (Math.abs(punto.getX() - puntoMedio.getX()) < distanciaMinima) {
+                puntosEnRango.add(punto);
+            }
+        }
+
+        for (int i = 0; i < puntosEnRango.size() - 1; i++) {
+            for (int j = i + 1; j < puntosEnRango.size() && (puntosEnRango.get(j).getY() - puntosEnRango.get(i).getY()) < distanciaMinima; j++) {
+                Linea linea = new Linea(puntosEnRango.get(i), puntosEnRango.get(j));
+                double distancia = linea.distancia();
+                if (distancia < distanciaMinima) {
+                    distanciaMinima = distancia;
+                    mejorLinea = new Linea(puntosEnRango.get(i), puntosEnRango.get(j));
+                }
+            }
+        }
+
+        return mejorLinea;
+    }
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -305,15 +379,32 @@ public class AlgoritmosController extends HttpServlet {
                 Gson gson = new Gson();
                 Linea mejorLinea = null;
 
-                //Comprobar que algoritmo vamos a utilizar
-                if ("exhaustivo".equals(algoritmo)) {
-                    mejorLinea = exhaustivo(fichero);
-                } else if ("exhaustivopoda".equals(algoritmo)) {
-                    mejorLinea = exhaustivoPoda(fichero);
-                } else if ("divideyvenceras".equals(algoritmo)) {
-                    leerPuntos(buscarRuta(fichero));
-                    quicksortX(puntos, 0, puntos.size() - 1);
-                    mejorLinea = divideyvenceras(puntos, 0, puntos.size() - 1);
+                if (null != algoritmo)
+                {
+                    //Comprobar que algoritmo vamos a utilizar
+                    switch (algoritmo) {
+                        case "exhaustivo":
+                            mejorLinea = exhaustivo(fichero);
+                            break;
+                        case "exhaustivopoda":
+                            mejorLinea = exhaustivoPoda(fichero);
+                            break;
+                        case "divideyvenceras":
+                            leerPuntos(buscarRuta(fichero));
+                            quicksortX(puntos, 0, puntos.size() - 1);
+                            mejorLinea = divideyvenceras(puntos, 0, puntos.size() - 1);
+                            break;
+                        case "dyvmejorado":
+                            leerPuntos(buscarRuta(fichero));
+                            quicksortX(puntos, 0, puntos.size() - 1);
+                            List<Punto> puntosOrdenadosX = puntos.subList(0, puntos.size());
+                            quicksortY(puntos, 0, puntos.size() - 1);
+                            List<Punto> puntosOrdenadosY = puntos.subList(0, puntos.size());
+                            mejorLinea = dyvMejorado(puntosOrdenadosX, puntosOrdenadosY);
+                            break;
+                        default:
+                            break;
+                    }
                 }
 
                 System.out.println("Numero de puntos dentro " + puntos.size());

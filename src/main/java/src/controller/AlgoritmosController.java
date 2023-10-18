@@ -363,7 +363,7 @@ public class AlgoritmosController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String accion, vista = "";
+        String accion, vista = "", opcionMenu;
         accion = request.getPathInfo();
 
         ServletContext context = getServletContext();
@@ -421,11 +421,79 @@ public class AlgoritmosController extends HttpServlet {
                 request.setAttribute("lineaJSON", lineaJSON);
                 request.setAttribute("puntosJSON", puntosJSON);
 
+                request.setAttribute("opcionMenu", "verPuntosGrafica");
+                
                 //Indicamos a que vista queremos que nos mande luego de ejecutar todo el codigo anterior
-                vista = "/index.jsp";
+                vista = "/result_view.jsp";
             }
             break;
 
+            case "/comprobarDatasets":{
+                
+                request.setAttribute("opcionMenu", "comprobarDatasets");
+                
+                vista = "/result_view.jsp";
+            }break;
+            case "/comprobarEstrategias":{
+                
+                request.setAttribute("opcionMenu", "comprobarEstrategias");
+                
+                vista = "/intermediate_view.jsp";
+                
+            }break;
+            
+            case "/comprobarEstrategias_result":{
+                
+                request.setAttribute("opcionMenu", "comprobarEstrategias_result");
+                
+                vista = "/result_view.jsp";
+                
+            }break;
+            
+            case "/estudiarUnaEstrategia":{
+                
+                request.setAttribute("opcionMenu", "estudiarUnaEstrategia");
+                
+                vista = "/intermediate_view.jsp";
+            }break;
+            case "/estudiarDosEstrategias":{
+                
+                request.setAttribute("opcionMenu", "estudiarDosEstrategias");
+                
+                vista = "/intermediate_view.jsp";
+            }break;
+            case "/compararEstrategias":{
+                
+                request.setAttribute("opcionMenu", "compararEstrategias");
+                
+                vista = "/result_view.jsp";
+            }break;
+            case "/peorCaso":{
+                
+                request.setAttribute("opcionMenu", "peorCaso");
+                
+                vista = "/result_view.jsp";
+            }break;
+            case "/ficheroAleatorio":{
+                
+                request.setAttribute("opcionMenu", "ficheroAleatorio");
+                
+                vista = "/intermediate_view.jsp";
+            }break;
+            case "/compararEstrategiasAleatorio":{
+                
+                request.setAttribute("opcionMenu", "compararEstrategiasAleatorio");
+                
+                vista = "/intermediate_view.jsp";
+            }break;
+            
+            case "/verPuntosGrafica":{
+                
+                request.setAttribute("opcionMenu", "verPuntosGrafica");
+                
+                vista = "/intermediate_view.jsp";
+            }break;
+            
             case "/volver": {
 
                 request.setAttribute("lineaJSON", null);

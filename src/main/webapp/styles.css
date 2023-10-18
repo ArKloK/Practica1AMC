@@ -1,0 +1,25 @@
+li {
+    margin: 20px 0; /* Espacio entre elementos de lista */
+}
+
+li a {
+    text-decoration: none; /* Oculta el subrayado de los enlaces */
+    color: #333; /* Color del texto no visitado */
+    font-size: 18px; /* Tamaño de fuente más grande */
+}
+
+li a:hover {
+    color: #007bff; /* Color del texto al pasar el ratón */
+}
+
+.centered-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh; /* Esto centrará verticalmente en la ventana completa */
+    margin-top: 5%;
+}
+
+.centered-list li {
+    text-align: center; /* Para centrar el texto horizontalmente en cada elemento de la lista */
+}

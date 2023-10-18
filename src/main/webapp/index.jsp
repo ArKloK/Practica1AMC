@@ -5,44 +5,22 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>JSP Page</title>
+        <title>Menú Principal</title>
+        <link href="/Practica1AMC/styles.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-
-        <c:if test="${empty requestScope.puntosJSON && empty requestScope.lineaJSON}">
-            <h1>Fichero: </h1>
-            <select id="ficheros" name="ficheros" title="ficheros">
-                <option value="berlin52.tsp">Berlin52</option>
-                <option value="ch130.tsp">Ch130</option>
-                <option value="ch150.tsp">Ch150</option>
-                <option value="d493.tsp">D493</option>
-                <option value="d657.tsp">D657</option>
-            </select>
-            <select id="algoritmos" name="algoritmos" title="algoritmos">
-                <option value="exhaustivo">Exhaustivo</option>
-                <option value="exhaustivopoda">Exhaustivo con poda</option>
-                <option value="divideyvenceras">Divide y venceras</option>
-                <option value="dyvmejorado">Divide y venceras Mejorado</option>
-            </select>
-            <button type="button" onclick="redirigirServlet()">Aceptar</button>
-        </c:if>
-        <c:if test="${!empty requestScope.puntosJSON && !empty requestScope.lineaJSON}">
-            <h1>Los puntos mas cercanos son: ${requestScope.linea.p1.id} y ${requestScope.linea.p2.id}</h1>
-            <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
-            
-            <h2>Tiempo de ejecución del algoritmo (en µs): ${requestScope.tiempoEjecucion}</h2>
-            
-            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
-            
-            <script>
-                var puntosJSON = <%= request.getAttribute("puntosJSON")%>;
-                var lineaJSON = <%= request.getAttribute("lineaJSON")%>;
-            </script>
-        </c:if>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-        <script src="/Practica1AMC/main.js"></script>
-
+        <h1 style="text-align: center">Practica 1 AMC *Antonio Toro y Carlos Camacho*</h1>
+        <h2 style="text-align: center">Menú Principal</h2>
+        <ol class="centered-list">
+            <li><a href="/Practica1AMC/AlgoritmosController/comprobarDatasets">COMPROBAR TODOS LOS DATASET (FICHEROS)</a></li>
+            <li><a href="/Practica1AMC/AlgoritmosController/comprobarEstrategias">COMPROBAR TODAS LAS ESTRATEGIAS</a></li>
+            <li><a href="/Practica1AMC/AlgoritmosController/estudiarUnaEstrategia">ESTUDIAR 1 ESTRATEGIA</a></li>
+            <li><a href="/Practica1AMC/AlgoritmosController/estudiarDosEstrategias">ESTUDIAR 2 ESTRATEGIAS</a></li>
+            <li><a href="/Practica1AMC/AlgoritmosController/compararEstrategias">COMPARAR TODAS LAS ESTRATEGIAS</a></li>
+            <li><a href="/Practica1AMC/AlgoritmosController/peorCaso">ACTIVAR/DESACTIVAR PEOR CASO</a></li>
+            <li><a href="/Practica1AMC/AlgoritmosController/ficheroAleatorio">CREAR FICHERO TSP ALEATORIO</a></li>
+            <li><a href="/Practica1AMC/AlgoritmosController/compararEstrategiasAleatorio">COMPARAR TODAS LAS ESTRATEGIAS DE UN FICHERO TSP CONCRETO</a></li>
+            <li><a href="/Practica1AMC/AlgoritmosController/verPuntosGrafica">VER PUNTOS EN LA GRÁFICA</a></li>
+        </ol>
     </body>
 </html>

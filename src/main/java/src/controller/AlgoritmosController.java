@@ -176,7 +176,7 @@ public class AlgoritmosController extends HttpServlet {
     }
 
     //****************************************ALGORITMOS DE BUSQUEDA**********************************************
-    public Linea exhaustivo(String nombreFichero, ArrayList<Punto> puntos) {
+    public Linea exhaustivo(ArrayList<Punto> puntos) {
         //Declaración de variables
         double mejorCamino = Double.MAX_VALUE;
         Linea mejorLinea = new Linea();
@@ -195,7 +195,7 @@ public class AlgoritmosController extends HttpServlet {
         return mejorLinea;
     }
 
-    public Linea exhaustivoPoda(String nombreFichero, ArrayList<Punto> puntos) {
+    public Linea exhaustivoPoda(ArrayList<Punto> puntos) {
         //Declaración de variables
         Linea mejorLinea;
         Linea actualLinea;
@@ -333,13 +333,12 @@ public class AlgoritmosController extends HttpServlet {
     }
 
     public void estudiarUnaEstrategia() {
-        int talla = 500;
         ArrayList<Punto> puntosNuevo = new ArrayList<Punto>();
-        Random r = new Random();
-        r.setSeed(System.nanoTime());
+        Linea algoritmo = new Linea();
         for (int i = 500; i <= 5000; i += 500) {
                 puntosNuevo = GenerarPuntosAleatorios(i);
-        }
+                algoritmo = exhaustivo(puntosNuevo);
+        }     
     }
 
     /**
@@ -373,7 +372,7 @@ public class AlgoritmosController extends HttpServlet {
                 //Comprobar que algoritmo vamos a utilizar
                 if ("exhaustivo".equals(algoritmo)) {
                     long startTime = System.nanoTime();
-                    mejorLinea = exhaustivo(fichero, puntos);
+                    mejorLinea = exhaustivo(puntos);
                     long endTime = System.nanoTime();
                     tiempoEjecucion = endTime - startTime;
                     tiempoEjecucion /= 1000;
@@ -381,7 +380,7 @@ public class AlgoritmosController extends HttpServlet {
                 } else if ("exhaustivopoda".equals(algoritmo)) {
                     quicksortX(puntos, 0, this.puntos.size() - 1);
                     long startTime = System.nanoTime();
-                    mejorLinea = exhaustivoPoda(fichero, puntos);
+                    mejorLinea = exhaustivoPoda(puntos);
                     long endTime = System.nanoTime();
                     tiempoEjecucion = endTime - startTime;
                     tiempoEjecucion /= 1000;

@@ -89,44 +89,48 @@ public class AlgoritmosController extends HttpServlet {
         file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + nombreFichero);
         return file;
     }
-    
-    public ArrayList<Punto> GenerarPuntosAleatoriosPeor(int n){
+
+    public ArrayList<Punto> GenerarPuntosAleatoriosPeor(int n) {
         Random rand = new Random();
         rand.setSeed(System.nanoTime());
         ArrayList<Punto> p = new ArrayList<Punto>();
         for (int i = 0; i < n; i++) {
-            double aux1 = rand.nextInt(1000)+7;
-            double y = aux1 / ((double)i+1+i*0.100);
+            double aux1 = rand.nextInt(1000) + 7;
+            double y = aux1 / ((double) i + 1 + i * 0.100);
             int num = rand.nextInt(3);
             y += ((i % 500) - num * (rand.nextInt(100)));
             double x = 1;
-            Punto punto = new Punto(i+1, x, y);
+            Punto punto = new Punto(i + 1, x, y);
             p.add(punto);
         }
         return p;
     }
-    public ArrayList<Punto> GenerarPuntosAleatorios(int n){
+
+    public ArrayList<Punto> GenerarPuntosAleatorios(int n) {
         Random rand = new Random();
         rand.setSeed(System.nanoTime());
         ArrayList<Punto> p = new ArrayList<Punto>();
         for (int i = 0; i < n; i++) {
-            int num = rand.nextInt(4000)+1;
-            int den = rand.nextInt(11)+7;
+            int num = rand.nextInt(4000) + 1;
+            int den = rand.nextInt(11) + 7;
             double x = num / ((double) den + 0.37);
-            double y = (rand.nextInt(4000)+1) / ((double)(rand.nextInt(11)+7)+0.37);
-            Punto punto = new Punto(i+1, x, y);
+            double y = (rand.nextInt(4000) + 1) / ((double) (rand.nextInt(11) + 7) + 0.37);
+            Punto punto = new Punto(i + 1, x, y);
             p.add(punto);
         }
         return p;
     }
+
     //****************************************ALGORITMOS DE ORDENACIÓN**********************************************
-    public void quicksortX(ArrayList<Punto> puntosaux, int primero, int ultimo) {
+    public ArrayList<Punto> quicksortX(ArrayList<Punto> puntosaux, int primero, int ultimo) {
         if (primero < ultimo) {
             Punto pivote = puntosaux.get(ultimo);
             int posicion = partitionX(puntosaux, primero, ultimo, pivote);
             quicksortX(puntosaux, primero, posicion - 1);
             quicksortX(puntosaux, posicion + 1, ultimo);
         }
+
+        return puntosaux;
     }
 
     public int partitionX(ArrayList<Punto> puntosaux, int primero, int ultimo, Punto pivote) {
@@ -146,13 +150,15 @@ public class AlgoritmosController extends HttpServlet {
         return j - 1;
     }
 
-    public void quicksortY(ArrayList<Punto> puntosaux, int primero, int ultimo) {
+    public ArrayList<Punto> quicksortY(ArrayList<Punto> puntosaux, int primero, int ultimo) {
         if (primero < ultimo) {
             Punto pivote = puntosaux.get(ultimo);
             int posicion = partitionY(puntosaux, primero, ultimo, pivote);
             quicksortY(puntosaux, primero, posicion - 1);
             quicksortY(puntosaux, posicion + 1, ultimo);
         }
+        
+        return puntosaux;
     }
 
     public int partitionY(ArrayList<Punto> puntosaux, int primero, int ultimo, Punto pivote) {
@@ -365,13 +371,13 @@ public class AlgoritmosController extends HttpServlet {
         ArrayList<Punto> puntosNuevo = new ArrayList<Punto>();
         Linea mejorLinea = new Linea();
         for (int i = 500; i <= 5000; i += 500) {
-                puntosNuevo = GenerarPuntosAleatorios(i);
-                System.out.println("NUMERO DE PUNTOS ALEATORIOS " + puntosNuevo);
-                mejorLinea = exhaustivo(puntosNuevo);
-                System.out.println("MEJOR LINEA " + mejorLinea);
-        }     
+            puntosNuevo = GenerarPuntosAleatorios(i);
+            System.out.println("NUMERO DE PUNTOS ALEATORIOS " + puntosNuevo);
+            mejorLinea = exhaustivo(puntosNuevo);
+            System.out.println("MEJOR LINEA " + mejorLinea);
+        }
     }
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -424,6 +430,15 @@ public class AlgoritmosController extends HttpServlet {
                     tiempoEjecucion = endTime - startTime;
                     tiempoEjecucion /= 1000;
                     mejorLinea.setTiempoEjecucion(tiempoEjecucion);
+                } else if ("dyvmejorado".equals(algoritmo)) {
+                    ArrayList<Punto> puntosOrdenadosX = quicksortX(puntos, 0, puntos.size() - 1);
+                    ArrayList<Punto> puntosOrdenadosY = quicksortY(puntos, 0, puntos.size() - 1);
+                    long startTime = System.nanoTime();
+                    mejorLinea = dyvMejorado(puntosOrdenadosX, puntosOrdenadosY);
+                    long endTime = System.nanoTime();
+                    tiempoEjecucion = endTime - startTime;
+                    tiempoEjecucion /= 1000;
+                    mejorLinea.setTiempoEjecucion(tiempoEjecucion);
                 }
 
                 System.out.println("Numero de puntos dentro " + puntos.size());
@@ -441,80 +456,90 @@ public class AlgoritmosController extends HttpServlet {
                 request.setAttribute("puntosJSON", puntosJSON);
 
                 request.setAttribute("opcionMenu", "verPuntosGrafica");
-                
+
                 //Indicamos a que vista queremos que nos mande luego de ejecutar todo el codigo anterior
                 vista = "/result_view.jsp";
             }
             break;
 
-            case "/comprobarDatasets":{
-                
+            case "/comprobarDatasets": {
+
                 request.setAttribute("opcionMenu", "comprobarDatasets");
-                
+
                 estudiarUnaEstrategia();
-                
+
                 vista = "/result_view.jsp";
-            }break;
-            case "/comprobarEstrategias":{
-                
+            }
+            break;
+            case "/comprobarEstrategias": {
+
                 request.setAttribute("opcionMenu", "comprobarEstrategias");
-                
+
                 vista = "/intermediate_view.jsp";
-                
-            }break;
-            
-            case "/comprobarEstrategias_result":{
-                
+
+            }
+            break;
+
+            case "/comprobarEstrategias_result": {
+
                 request.setAttribute("opcionMenu", "comprobarEstrategias_result");
-                
+
                 vista = "/result_view.jsp";
-                
-            }break;
-            
-            case "/estudiarUnaEstrategia":{
-                
+
+            }
+            break;
+
+            case "/estudiarUnaEstrategia": {
+
                 request.setAttribute("opcionMenu", "estudiarUnaEstrategia");
-                
+
                 vista = "/intermediate_view.jsp";
-            }break;
-            case "/estudiarDosEstrategias":{
-                
+            }
+            break;
+            case "/estudiarDosEstrategias": {
+
                 request.setAttribute("opcionMenu", "estudiarDosEstrategias");
-                
+
                 vista = "/intermediate_view.jsp";
-            }break;
-            case "/compararEstrategias":{
-                
+            }
+            break;
+            case "/compararEstrategias": {
+
                 request.setAttribute("opcionMenu", "compararEstrategias");
-                
+
                 vista = "/result_view.jsp";
-            }break;
-            case "/peorCaso":{
-                
+            }
+            break;
+            case "/peorCaso": {
+
                 request.setAttribute("opcionMenu", "peorCaso");
-                
+
                 vista = "/result_view.jsp";
-            }break;
-            case "/ficheroAleatorio":{
-                
+            }
+            break;
+            case "/ficheroAleatorio": {
+
                 request.setAttribute("opcionMenu", "ficheroAleatorio");
-                
+
                 vista = "/intermediate_view.jsp";
-            }break;
-            case "/compararEstrategiasAleatorio":{
-                
+            }
+            break;
+            case "/compararEstrategiasAleatorio": {
+
                 request.setAttribute("opcionMenu", "compararEstrategiasAleatorio");
-                
+
                 vista = "/intermediate_view.jsp";
-            }break;
-            
-            case "/verPuntosGrafica":{
-                
+            }
+            break;
+
+            case "/verPuntosGrafica": {
+
                 request.setAttribute("opcionMenu", "verPuntosGrafica");
-                
+
                 vista = "/intermediate_view.jsp";
-            }break;
-            
+            }
+            break;
+
             case "/volver": {
 
                 request.setAttribute("lineaJSON", null);

@@ -12,8 +12,11 @@ public class Linea {
 
     private Punto p1;
     private Punto p2;
-    
-    public Linea(){
+    private double tiempoEjecucion;
+    private double distanciaEntrePuntos;
+    private int puntosCalculados;
+
+    public Linea() {
         super();
     }
 
@@ -22,8 +25,7 @@ public class Linea {
         this.p1 = p1;
         this.p2 = p2;
     }
-    
-    
+
     /**
      * @return the p1
      */
@@ -51,11 +53,36 @@ public class Linea {
     public void setP2(Punto p2) {
         this.p2 = p2;
     }
-    
-    public double distancia(){
+
+    public double getTiempoEjecucion() {
+        return tiempoEjecucion;
+    }
+
+    public void setTiempoEjecucion(double tiempoEjecucion) {
+        this.tiempoEjecucion = tiempoEjecucion;
+    }
+
+    public double getDistanciaEntrePuntos() {
+        return distanciaEntrePuntos;
+    }
+
+    public void setDistanciaEntrePuntos(double distanciaEntrePuntos) {
+        this.distanciaEntrePuntos = distanciaEntrePuntos;
+    }
+
+    public int getPuntosCalculados() {
+        return puntosCalculados;
+    }
+
+    public void setPuntosCalculados(int puntosCalculados) {
+        this.puntosCalculados = puntosCalculados;
+    }
+
+    public double distancia() {
         double distanciaX = this.p2.getX() - this.p1.getX();
         double distanciaY = this.p2.getY() - this.p1.getY();
-        return Math.sqrt(Math.pow(distanciaX, 2) + Math.pow(distanciaY, 2));
+        distanciaEntrePuntos = Math.sqrt(Math.pow(distanciaX, 2) + Math.pow(distanciaY, 2));
+        return distanciaEntrePuntos;
     }
 
     @Override

@@ -14,13 +14,14 @@
         </c:if>
         <c:if test="${requestScope.opcionMenu eq 'comprobarEstrategias_result'}">
             <h1>Comprobar Estrategias </h1>
+            <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
         </c:if>
         <c:if test="${requestScope.opcionMenu eq 'peorCaso'}">
             <h1>Peor Caso</h1>
         </c:if>
         <c:if test="${requestScope.opcionMenu eq 'verPuntosGrafica'}">
             <h1>Los puntos mas cercanos son: ${requestScope.linea.p1.id} y ${requestScope.linea.p2.id}</h1>
-            <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
+            <canvas id="graficaPuntos" style="width:100%;max-width:1400px"></canvas>
             
             <h2>Tiempo de ejecución del algoritmo (en µs): ${requestScope.tiempoEjecucion}</h2>
             

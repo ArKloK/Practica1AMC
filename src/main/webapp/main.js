@@ -1,11 +1,13 @@
 var xyValues = [];
 var lineaJSON;
 var puntosJSON;
+const algoritmos = ["Exhaustivo", "Exhaustivo poda", "Divide y Vencerás", "Divide y Vencerás mejorado"];
+const tamaños = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
 
 window.addEventListener('load', function () {
     if (puntosJSON && lineaJSON) {
         // Llamar a lafunction cuando los datos de la grafica esten disponibles
-        cargarGrafica();
+        cargarGraficaPuntos();
     }
 });
 
@@ -24,7 +26,7 @@ function redirigirServlet() {
     window.location.href = urlDelServlet;
 }
 
-function cargarGrafica() {
+function cargarGraficaPuntos() {
     var Linea = [
         {x: lineaJSON.p1.x, y: lineaJSON.p1.y},
         {x: lineaJSON.p2.x, y: lineaJSON.p2.y}
@@ -78,9 +80,36 @@ function cargarGrafica() {
     };
 
 // Crea el gráfico de dispersión
-    var scatterChart = new Chart("grafica", {
+    var scatterChart = new Chart("graficaPuntos", {
         type: 'scatter',
         data: scatterData,
         options: scatterOptions
     });
 }
+
+function cargarGraficaComparar() {
+    var tiempos = [];
+    var barData = {
+        datasets: [{
+                labels: algoritmos,
+                datasets: tiempos,
+                borderColor: "rgba(75, 192, 192, 1)",
+                backgroundColor: "rgba(75, 192, 192, 0.5)"
+            }]
+    };
+    
+    var barOptions = {
+        scales: {
+            y: {
+                begginAtZero: true
+            }
+        }
+    };
+    
+    var barChart = new Chart("grafica", {
+        type: 'bar',
+        data: barData,
+        options: barOptions
+    });
+}
+

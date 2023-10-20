@@ -157,7 +157,7 @@ public class AlgoritmosController extends HttpServlet {
             quicksortY(puntosaux, primero, posicion - 1);
             quicksortY(puntosaux, posicion + 1, ultimo);
         }
-        
+
         return puntosaux;
     }
 
@@ -185,6 +185,14 @@ public class AlgoritmosController extends HttpServlet {
     }
 
     //****************************************ALGORITMOS DE BUSQUEDA**********************************************
+    public void calcularTiempo(double tiempoInicio, Linea l) {
+        double tiempoEjecucion;
+        long endTime = System.nanoTime();
+        tiempoEjecucion = endTime - tiempoInicio;
+        tiempoEjecucion /= 1000;
+        l.setTiempoEjecucion(tiempoEjecucion);
+    }
+
     public Linea exhaustivo(ArrayList<Punto> puntos) {
         //Declaración de variables
         double mejorCamino = Double.MAX_VALUE;
@@ -280,7 +288,7 @@ public class AlgoritmosController extends HttpServlet {
         }
 
         // Ordenar la lista de puntos en la banda por coordenada Y
-        quicksortY(puntosEnRango, 0, puntosEnRango.size() - 1);
+        puntosEnRango = quicksortY(puntosEnRango, 0, puntosEnRango.size() - 1);
         // Búsqueda en la banda de distanciaMin
         for (int i = 0; i < puntosEnRango.size(); i++) {
             for (int j = i + 1; j < puntosEnRango.size() && (puntosEnRango.get(j).getY() - puntosEnRango.get(i).getY()) < distanciaMin; j++) {
@@ -303,7 +311,7 @@ public class AlgoritmosController extends HttpServlet {
             // Caso base: Fuerza bruta para un número pequeño de puntos
             for (int i = 0; i <= n - 1; i++) {
                 for (int j = i + 1; j <= n; j++) {
-                    Linea actualLinea = new Linea(puntos.get(i), puntos.get(j));
+                    Linea actualLinea = new Linea(puntosOrdenadosX.get(i), puntosOrdenadosX.get(j));
                     double distancia = actualLinea.distancia();
                     if (distancia < distanciaMin) {
                         distanciaMin = distancia;
@@ -367,15 +375,42 @@ public class AlgoritmosController extends HttpServlet {
         return mejorLinea;
     }
 
-    public void estudiarUnaEstrategia() {
-        ArrayList<Punto> puntosNuevo = new ArrayList<Punto>();
-        Linea mejorLinea = new Linea();
+    public ArrayList<Linea> estudiarUnaEstrategia(String algoritmoSeleccionado) {
+        ArrayList<Punto> puntosNuevo;
+        ArrayList<Linea> lineas = new ArrayList<Linea>();
+        int pos = 0;
         for (int i = 500; i <= 5000; i += 500) {
             puntosNuevo = GenerarPuntosAleatorios(i);
-            System.out.println("NUMERO DE PUNTOS ALEATORIOS " + puntosNuevo);
-            mejorLinea = exhaustivo(puntosNuevo);
-            System.out.println("MEJOR LINEA " + mejorLinea);
+            long startTime = 0;
+            ArrayList<Punto> puntosOrdenadosX = quicksortX(puntosNuevo, 0, puntosNuevo.size() - 1);
+            switch (algoritmoSeleccionado) {
+                case "exhaustivo":
+                    startTime = System.nanoTime();
+                    lineas.add(exhaustivo(puntosNuevo));
+                    calcularTiempo(startTime, lineas.get(pos));
+                    break;
+                case "exhaustivoPoda":
+                    startTime = System.nanoTime();
+                    lineas.add(exhaustivoPoda(puntosOrdenadosX));
+                    calcularTiempo(startTime, lineas.get(pos));
+                    break;
+                case "dyv":
+                    startTime = System.nanoTime();
+                    lineas.add(divideyvenceras(puntosOrdenadosX, 0, puntosOrdenadosX.size() - 1));
+                    calcularTiempo(startTime, lineas.get(pos));
+                    System.out.println(lineas.get(pos).getTiempoEjecucion());
+                    break;
+//                case "dyvMejorado":
+//                    ArrayList<Punto> puntosOrdenadosY = quicksortY(puntosNuevo, 0, puntosNuevo.size() - 1);
+//                    startTime = System.nanoTime();
+//                    lineas.add(dyvMejorado(puntosOrdenadosX, puntosOrdenadosY));
+//                    calcularTiempo(startTime, lineas.get(3));
+//                    break;
+
+            }
+            pos++;
         }
+        return lineas;
     }
 
     /**
@@ -410,35 +445,21 @@ public class AlgoritmosController extends HttpServlet {
                 if ("exhaustivo".equals(algoritmo)) {
                     long startTime = System.nanoTime();
                     mejorLinea = exhaustivo(puntos);
-                    long endTime = System.nanoTime();
-                    tiempoEjecucion = endTime - startTime;
-                    tiempoEjecucion /= 1000;
-                    mejorLinea.setTiempoEjecucion(tiempoEjecucion);
+                    calcularTiempo(startTime, mejorLinea);
                 } else if ("exhaustivopoda".equals(algoritmo)) {
-                    quicksortX(puntos, 0, this.puntos.size() - 1);
                     long startTime = System.nanoTime();
-                    mejorLinea = exhaustivoPoda(puntos);
-                    long endTime = System.nanoTime();
-                    tiempoEjecucion = endTime - startTime;
-                    tiempoEjecucion /= 1000;
-                    mejorLinea.setTiempoEjecucion(tiempoEjecucion);
+                    mejorLinea = exhaustivoPoda(quicksortX(puntos, 0, this.puntos.size() - 1));
+                    calcularTiempo(startTime, mejorLinea);
                 } else if ("divideyvenceras".equals(algoritmo)) {
-                    quicksortX(puntos, 0, puntos.size() - 1);
                     long startTime = System.nanoTime();
-                    mejorLinea = divideyvenceras(puntos, 0, puntos.size() - 1);
-                    long endTime = System.nanoTime();
-                    tiempoEjecucion = endTime - startTime;
-                    tiempoEjecucion /= 1000;
-                    mejorLinea.setTiempoEjecucion(tiempoEjecucion);
+                    mejorLinea = divideyvenceras(quicksortX(puntos, 0, puntos.size() - 1), 0, puntos.size() - 1);
+                    calcularTiempo(startTime, mejorLinea);
                 } else if ("dyvmejorado".equals(algoritmo)) {
                     ArrayList<Punto> puntosOrdenadosX = quicksortX(puntos, 0, puntos.size() - 1);
                     ArrayList<Punto> puntosOrdenadosY = quicksortY(puntos, 0, puntos.size() - 1);
                     long startTime = System.nanoTime();
                     mejorLinea = dyvMejorado(puntosOrdenadosX, puntosOrdenadosY);
-                    long endTime = System.nanoTime();
-                    tiempoEjecucion = endTime - startTime;
-                    tiempoEjecucion /= 1000;
-                    mejorLinea.setTiempoEjecucion(tiempoEjecucion);
+                    calcularTiempo(startTime, mejorLinea);
                 }
 
                 System.out.println("Numero de puntos dentro " + puntos.size());
@@ -466,8 +487,6 @@ public class AlgoritmosController extends HttpServlet {
 
                 request.setAttribute("opcionMenu", "comprobarDatasets");
 
-                estudiarUnaEstrategia();
-
                 vista = "/result_view.jsp";
             }
             break;
@@ -492,7 +511,7 @@ public class AlgoritmosController extends HttpServlet {
             case "/estudiarUnaEstrategia": {
 
                 request.setAttribute("opcionMenu", "estudiarUnaEstrategia");
-
+                estudiarUnaEstrategia("exhaustivo");
                 vista = "/intermediate_view.jsp";
             }
             break;

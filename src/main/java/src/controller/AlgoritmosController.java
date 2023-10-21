@@ -318,6 +318,7 @@ public class AlgoritmosController extends HttpServlet {
                     }
                 }
             }
+            
             return mejorLinea;
         }
 
@@ -462,10 +463,10 @@ public class AlgoritmosController extends HttpServlet {
                     calcularTiempo(startTime, mejorLinea);
                     System.out.println(mejorLinea.distancia());
                 } else if ("dyvmejorado".equals(algoritmo)) {
+                    System.out.println("DYV");
                     ArrayList<Punto> puntosOrdenadosX = quicksortX(puntos, 0, puntos.size() - 1);
-                    ArrayList<Punto> puntosOrdenadosY = quicksortY(puntos, 0, puntos.size() - 1);
                     long startTime = System.nanoTime();
-                    mejorLinea = dyvMejorado(puntosOrdenadosY, 0, puntosOrdenadosY.size() - 1);
+                    mejorLinea = dyvMejorado(puntosOrdenadosX, 0, puntosOrdenadosX.size());
                     calcularTiempo(startTime, mejorLinea);
                     System.out.println(mejorLinea.distancia());
                 }

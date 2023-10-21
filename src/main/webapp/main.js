@@ -2,7 +2,7 @@ var xyValues = [];
 var lineaJSON;
 var puntosJSON;
 const algoritmos = ["Exhaustivo", "Exhaustivo poda", "Divide y Vencerás", "Divide y Vencerás mejorado"];
-const tamaños = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
+const tam = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
 
 window.addEventListener('load', function () {
     if (puntosJSON && lineaJSON) {

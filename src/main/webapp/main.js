@@ -11,7 +11,7 @@ window.addEventListener('load', function () {
     }
 });
 
-function redirigirServlet() {
+function redirigirShow() {
     lineaJSON = null;
     puntosJSON = null;
     xyValues = [];

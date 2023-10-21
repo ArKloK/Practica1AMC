@@ -5,18 +5,31 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Intermediate view</title>
     </head>
     <body>
 
         <c:if test="${requestScope.opcionMenu eq 'comprobarEstrategias'}">
 
             <form action="/Practica1AMC/AlgoritmosController/comprobarEstrategias_result">
+                <label for="talla">Introduce una talla: </label>
+                <input type="number" id="talla" name="talla"/>
+                <br><br>
                 <input type="submit" value="Aceptar">
             </form>
 
         </c:if>
         <c:if test="${requestScope.opcionMenu eq 'estudiarUnaEstrategia'}">
+
+            <form action="/Practica1AMC/AlgoritmosController/estudiarUnaEstrategia_result">
+                <select id="algoritmos" name="algoritmos" title="algoritmos">
+                    <option value="exhaustivo">Exhaustivo</option>
+                    <option value="exhaustivopoda">Exhaustivo con poda</option>
+                    <option value="divideyvenceras">Divide y venceras</option>
+                    <option value="dyvmejorado">Divide y venceras Mejorado</option>
+                </select>
+                <input type="submit" value="Aceptar">
+            </form>
 
         </c:if>
         <c:if test="${requestScope.opcionMenu eq 'estudiarDosEstrategias'}">
@@ -43,7 +56,7 @@
                 <option value="divideyvenceras">Divide y venceras</option>
                 <option value="dyvmejorado">Divide y venceras Mejorado</option>
             </select>
-            <button type="button" onclick="redirigirServlet()">Aceptar</button>
+            <button type="button" onclick="redirigirShow()">Aceptar</button>
         </c:if>
 
         <script src="/Practica1AMC/main.js"></script>

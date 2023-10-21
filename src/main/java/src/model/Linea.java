@@ -81,7 +81,7 @@ public class Linea {
     public double distancia() {
         double distanciaX = this.p2.getX() - this.p1.getX();
         double distanciaY = this.p2.getY() - this.p1.getY();
-        distanciaEntrePuntos = Math.sqrt(Math.pow(distanciaX, 2) + Math.pow(distanciaY, 2));
+        distanciaEntrePuntos = Math.abs(Math.sqrt(Math.pow(distanciaX, 2) + Math.pow(distanciaY, 2)));
         return distanciaEntrePuntos;
     }
 

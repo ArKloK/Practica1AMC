@@ -198,24 +198,28 @@ public class AlgoritmosController extends HttpServlet {
         //Declaración de variables
         double mejorCamino = Double.MAX_VALUE;
         Linea mejorLinea = new Linea();
+        int puntosCalculados = 0;
         //Empezamos la busqueda
         for (int i = 0; i < puntos.size(); i++) {
             for (int j = i + 1; j < puntos.size(); j++) {
                 Linea l = new Linea(puntos.get(i), puntos.get(j));
+                puntosCalculados++;
                 if (l.distancia() < mejorCamino) {
                     mejorCamino = l.distancia();
                     mejorLinea = l;
                 }
             }
         }
+        mejorLinea.setPuntosCalculados(puntosCalculados);
         return mejorLinea;
     }
 
     public Linea exhaustivoPoda(ArrayList<Punto> puntos) {
         //Declaración de variables
-        Linea mejorLinea;
+        Linea mejorLinea = new Linea();
         Linea actualLinea;
         Double distanciaMin;
+        int puntosCalculados = 0;
 
         //Asignamos los puntos que vamos a seleccionar en la primera iteración, definimos la linea que une a esos puntos y calculamos la distancia minima
         Punto punto1 = puntos.get(0);
@@ -228,12 +232,14 @@ public class AlgoritmosController extends HttpServlet {
             for (int j = i + 1; j < puntos.size(); j++) {
                 Punto puntoActual = puntos.get(j);
                 actualLinea = new Linea(puntoBase, puntoActual);
+                puntosCalculados++;
 
                 //Comprobamos si la distancia minima tiene que ser actualizada
                 if (actualLinea.distancia() < distanciaMin) {
                     distanciaMin = actualLinea.distancia();
-                    punto1 = puntoBase;
-                    punto2 = puntoActual;
+                    mejorLinea = actualLinea;
+                    //punto1 = puntoBase;
+                    //punto2 = puntoActual;
                 }
 
                 //Poda
@@ -242,7 +248,8 @@ public class AlgoritmosController extends HttpServlet {
                 }
             }
         }
-        mejorLinea = new Linea(punto1, punto2);
+        
+        mejorLinea.setPuntosCalculados(puntosCalculados);
         return mejorLinea;
     }
 
@@ -318,7 +325,7 @@ public class AlgoritmosController extends HttpServlet {
                     }
                 }
             }
-            
+
             return mejorLinea;
         }
 
@@ -393,7 +400,7 @@ public class AlgoritmosController extends HttpServlet {
                 case "dyvMejorado":
                     ArrayList<Punto> puntosOrdenadosY = quicksortY(puntosNuevo, 0, puntosNuevo.size() - 1);
                     startTime = System.nanoTime();
-                    lineas.add(dyvMejorado(puntosOrdenadosY, 0, puntosOrdenadosY.size()-1));
+                    lineas.add(dyvMejorado(puntosOrdenadosY, 0, puntosOrdenadosY.size() - 1));
                     calcularTiempo(startTime, lineas.get(3));
                     break;
 
@@ -406,12 +413,13 @@ public class AlgoritmosController extends HttpServlet {
         return lineas;
     }
 
-    public void cargarAlgoritmos() {
-        ArrayList<Punto> puntos = GenerarPuntosAleatorios(2000);
-        exhaustivo(puntos);
-        exhaustivoPoda(puntos);
-        divideyvenceras(puntos, 0, puntos.size() - 1);
-        dyvMejorado(puntos, 0, puntos.size()-1);     
+    public ArrayList<Linea> ejecutarAlgoritmos(ArrayList<Punto> puntos) {
+        ArrayList<Linea> mejoresLineas = new ArrayList<>();
+        mejoresLineas.add(exhaustivo(puntos));
+        mejoresLineas.add(exhaustivoPoda(puntos));
+        mejoresLineas.add(divideyvenceras(puntos, 0, puntos.size() - 1));
+        mejoresLineas.add(dyvMejorado(puntos, 0, puntos.size() - 1));
+        return mejoresLineas;
     }
 
     /**
@@ -426,18 +434,14 @@ public class AlgoritmosController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String accion, vista = "", opcionMenu;
+        String accion, vista = "";
         accion = request.getPathInfo();
 
         ServletContext context = getServletContext();
         rutaDelProyecto = context.getRealPath("/");
 
         switch (accion) {
-            case "/main": {
-                cargarAlgoritmos();
-                vista = "/index.jsp";
-            }
-            break;
+
             case "/show": {
                 //Recoge las variables enviadas por la URL
                 String fichero = request.getParameter("opcionFichero");
@@ -485,7 +489,7 @@ public class AlgoritmosController extends HttpServlet {
                 request.setAttribute("lineaJSON", lineaJSON);
                 request.setAttribute("puntosJSON", puntosJSON);
 
-                request.setAttribute("opcionMenu", "verPuntosGrafica");
+                request.setAttribute("opcionMenuResult", "verPuntosGrafica");
 
                 //Indicamos a que vista queremos que nos mande luego de ejecutar todo el codigo anterior
                 vista = "/result_view.jsp";
@@ -493,8 +497,23 @@ public class AlgoritmosController extends HttpServlet {
             break;
 
             case "/comprobarDatasets": {
+                leerPuntos(buscarRuta("berlin52.tsp"));
+                ArrayList<Linea> mejorBerlin52 = AlgoritmosController.this.ejecutarAlgoritmos(puntos);
+                leerPuntos(buscarRuta("ch130.tsp"));
+                ArrayList<Linea> mejorCh130 = AlgoritmosController.this.ejecutarAlgoritmos(puntos);
+                leerPuntos(buscarRuta("ch150.tsp"));
+                ArrayList<Linea> mejorCh150 = AlgoritmosController.this.ejecutarAlgoritmos(puntos);
+                leerPuntos(buscarRuta("d493.tsp"));
+                ArrayList<Linea> mejorD493 = AlgoritmosController.this.ejecutarAlgoritmos(puntos);
+                leerPuntos(buscarRuta("d657.tsp"));
+                ArrayList<Linea> mejorD657 = AlgoritmosController.this.ejecutarAlgoritmos(puntos);
 
-                request.setAttribute("opcionMenu", "comprobarDatasets");
+                request.setAttribute("mejorBerlin52", mejorBerlin52);
+                request.setAttribute("mejorCh130", mejorCh130);
+                request.setAttribute("mejorCh150", mejorCh150);
+                request.setAttribute("mejorD493", mejorD493);
+                request.setAttribute("mejorD657", mejorD657);
+                request.setAttribute("opcionMenuResult", "comprobarDatasets");
 
                 vista = "/result_view.jsp";
             }
@@ -509,8 +528,14 @@ public class AlgoritmosController extends HttpServlet {
             break;
 
             case "/comprobarEstrategias_result": {
-
-                request.setAttribute("opcionMenu", "comprobarEstrategias_result");
+                
+                int talla = Integer.parseInt(request.getParameter("talla"));
+                
+                ArrayList<Punto> puntos = GenerarPuntosAleatorios(talla);
+                ArrayList<Linea> mejoresLineas = ejecutarAlgoritmos(puntos);
+                
+                request.setAttribute("mejoresLineas", mejoresLineas);
+                request.setAttribute("opcionMenuResult", "comprobarEstrategias_result");
 
                 vista = "/result_view.jsp";
 
@@ -519,10 +544,23 @@ public class AlgoritmosController extends HttpServlet {
 
             case "/estudiarUnaEstrategia": {
                 request.setAttribute("opcionMenu", "estudiarUnaEstrategia");
-                estudiarUnaEstrategia("exhaustivo");
                 vista = "/intermediate_view.jsp";
             }
             break;
+            
+            case "/estudiarUnaEstrategia_result": {
+                
+                String algoritmo = request.getParameter("algoritmos");
+                System.out.println("ALGORITMO: " + algoritmo);
+                
+                ArrayList<Linea> mejorLineas = estudiarUnaEstrategia(algoritmo);
+                
+                request.setAttribute("mejorLineas", mejorLineas);
+                request.setAttribute("opcionMenuResult", "estudiarUnaEstrategia_result");
+                vista = "/result_view.jsp";
+            }
+            break;
+            
             case "/estudiarDosEstrategias": {
 
                 request.setAttribute("opcionMenu", "estudiarDosEstrategias");
@@ -532,14 +570,14 @@ public class AlgoritmosController extends HttpServlet {
             break;
             case "/compararEstrategias": {
 
-                request.setAttribute("opcionMenu", "compararEstrategias");
+                request.setAttribute("opcionMenuResult", "compararEstrategias");
 
                 vista = "/result_view.jsp";
             }
             break;
             case "/peorCaso": {
 
-                request.setAttribute("opcionMenu", "peorCaso");
+                request.setAttribute("opcionMenuResult", "peorCaso");
 
                 vista = "/result_view.jsp";
             }
@@ -564,6 +602,13 @@ public class AlgoritmosController extends HttpServlet {
                 request.setAttribute("opcionMenu", "verPuntosGrafica");
 
                 vista = "/intermediate_view.jsp";
+            }
+            break;
+
+            case "/index": {
+                
+                ejecutarAlgoritmos(GenerarPuntosAleatorios(1000));
+                vista = "/index.jsp";
             }
             break;
 

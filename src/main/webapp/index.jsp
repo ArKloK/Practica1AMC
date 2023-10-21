@@ -11,6 +11,7 @@
     <body>
         <h1 style="text-align: center">Practica 1 AMC *Antonio Toro y Carlos Camacho*</h1>
         <h2 style="text-align: center">Menú Principal</h2>
+        <h2 style="text-align: right; padding-right: 10%">Peor Caso:</h2>
         <ol class="centered-list">
             <li><a href="/Practica1AMC/AlgoritmosController/comprobarDatasets">COMPROBAR TODOS LOS DATASET (FICHEROS)</a></li>
             <li><a href="/Practica1AMC/AlgoritmosController/comprobarEstrategias">COMPROBAR TODAS LAS ESTRATEGIAS</a></li>

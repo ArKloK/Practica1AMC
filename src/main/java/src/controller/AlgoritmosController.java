@@ -186,14 +186,43 @@ public class AlgoritmosController extends HttpServlet {
     }
 
     //****************************************ALGORITMOS DE BUSQUEDA**********************************************
-    public void calcularTiempo(double tiempoInicio, Linea l) {
-        double tiempoEjecucion;
-        double endTime = System.nanoTime();
-        tiempoEjecucion = endTime - tiempoInicio;
-        tiempoEjecucion /= 1000000;
-        l.setTiempoEjecucion(tiempoEjecucion);
+    public Linea calcularYCrearAlgoritmo(String algoritmoACalcular, ArrayList<Punto> puntos){
+        double tiempoEjecucion = 0;
+        double endTime = 0;
+        Linea l = null;
+        double startTime = System.nanoTime();
+        switch (algoritmoACalcular) {
+            case "exhaustivo":
+                l = exhaustivo(puntos);
+                endTime = System.nanoTime();
+                tiempoEjecucion = endTime - startTime;
+                tiempoEjecucion /= 1000000;
+                l.setTiempoEjecucion(tiempoEjecucion);
+                break;
+            case "exhaustivopoda":
+                l = exhaustivoPoda(puntos);
+                endTime = System.nanoTime();
+                tiempoEjecucion = endTime - startTime;
+                tiempoEjecucion /= 1000000;
+                l.setTiempoEjecucion(tiempoEjecucion);
+                break;
+            case "divideyvenceras":
+                l = divideyvenceras(puntos, 0, puntos.size()-1);
+                endTime = System.nanoTime();
+                tiempoEjecucion = endTime - startTime;
+                tiempoEjecucion /= 1000000;
+                l.setTiempoEjecucion(tiempoEjecucion);
+                break;
+            case "dyvmejorado":
+                l = dyvMejorado(puntos, 0, puntos.size()-1);
+                endTime = System.nanoTime();
+                tiempoEjecucion = endTime - startTime;
+                tiempoEjecucion /= 1000000;
+                l.setTiempoEjecucion(tiempoEjecucion);
+                break;
+        }
+        return l;
     }
-
     public Linea exhaustivo(ArrayList<Punto> puntos) {
         //Declaración de variables
         double mejorCamino = Double.MAX_VALUE;
@@ -378,32 +407,20 @@ public class AlgoritmosController extends HttpServlet {
         int pos = 0;
         for (int i = 500; i <= 5000; i += 500) {
             puntosNuevo = GenerarPuntosAleatorios(i);
-            double startTime = 0;
             ArrayList<Punto> puntosOrdenadosX = quicksortX(puntosNuevo, 0, puntosNuevo.size() - 1);
             switch (algoritmoSeleccionado) {
                 case "exhaustivo":
-                    startTime = System.nanoTime();
-                    lineas.add(exhaustivo(puntosNuevo));
-                    calcularTiempo(startTime, lineas.get(pos));
+                    lineas.add(calcularYCrearAlgoritmo(algoritmoSeleccionado, puntosNuevo));
                     break;
                 case "exhaustivoPoda":
-                    startTime = System.nanoTime();
-                    lineas.add(exhaustivoPoda(puntosOrdenadosX));
-                    calcularTiempo(startTime, lineas.get(pos));
+                    lineas.add(calcularYCrearAlgoritmo(algoritmoSeleccionado, puntosOrdenadosX));
                     break;
                 case "dyv":
-                    startTime = System.nanoTime();
-                    lineas.add(divideyvenceras(puntosOrdenadosX, 0, puntosOrdenadosX.size() - 1));
-                    calcularTiempo(startTime, lineas.get(pos));
-                    System.out.println(lineas.get(pos).getTiempoEjecucion());
+                    lineas.add(calcularYCrearAlgoritmo(algoritmoSeleccionado, puntosOrdenadosX));
                     break;
                 case "dyvMejorado":
-                    ArrayList<Punto> puntosOrdenadosY = quicksortY(puntosNuevo, 0, puntosNuevo.size() - 1);
-                    startTime = System.nanoTime();
-                    lineas.add(dyvMejorado(puntosOrdenadosY, 0, puntosOrdenadosY.size() - 1));
-                    calcularTiempo(startTime, lineas.get(3));
+                    lineas.add(calcularYCrearAlgoritmo(algoritmoSeleccionado, puntosOrdenadosX));
                     break;
-
             }
             pos++;
         }
@@ -415,10 +432,11 @@ public class AlgoritmosController extends HttpServlet {
 
     public ArrayList<Linea> ejecutarAlgoritmos(ArrayList<Punto> puntos) {
         ArrayList<Linea> mejoresLineas = new ArrayList<>();
-        mejoresLineas.add(exhaustivo(puntos));
-        mejoresLineas.add(exhaustivoPoda(puntos));
-        mejoresLineas.add(divideyvenceras(puntos, 0, puntos.size() - 1));
-        mejoresLineas.add(dyvMejorado(puntos, 0, puntos.size() - 1));
+        ArrayList<Punto> puntosOrdenadosX = quicksortX(puntos, 0, puntos.size() - 1);
+        mejoresLineas.add(calcularYCrearAlgoritmo("exhaustivo", puntos));
+        mejoresLineas.add(calcularYCrearAlgoritmo("exhaustivopoda", puntosOrdenadosX));
+        mejoresLineas.add(calcularYCrearAlgoritmo("divideyvenceras", puntosOrdenadosX));
+        mejoresLineas.add(calcularYCrearAlgoritmo("dyvmejorado", puntosOrdenadosX));
         return mejoresLineas;
     }
 
@@ -449,30 +467,17 @@ public class AlgoritmosController extends HttpServlet {
 
                 Gson gson = new Gson();
                 Linea mejorLinea = null;
-                double tiempoEjecucion = 0;
                 leerPuntos(buscarRuta(fichero));
 
                 //Comprobar que algoritmo vamos a utilizar
-                if ("exhaustivo".equals(algoritmo)) {
-                    long startTime = System.nanoTime();
-                    mejorLinea = exhaustivo(puntos);
-                    calcularTiempo(startTime, mejorLinea);
+                if ("exhaustivo".equals(algoritmo)) {         
+                    mejorLinea = calcularYCrearAlgoritmo(algoritmo, puntos);
                 } else if ("exhaustivopoda".equals(algoritmo)) {
-                    long startTime = System.nanoTime();
-                    mejorLinea = exhaustivoPoda(quicksortX(puntos, 0, this.puntos.size() - 1));
-                    calcularTiempo(startTime, mejorLinea);
+                    mejorLinea = calcularYCrearAlgoritmo(algoritmo, quicksortX(puntos, 0, this.puntos.size() - 1));
                 } else if ("divideyvenceras".equals(algoritmo)) {
-                    long startTime = System.nanoTime();
-                    mejorLinea = divideyvenceras(quicksortX(puntos, 0, puntos.size() - 1), 0, puntos.size() - 1);
-                    calcularTiempo(startTime, mejorLinea);
-                    System.out.println(mejorLinea.distancia());
+                    mejorLinea = calcularYCrearAlgoritmo(algoritmo, quicksortX(puntos, 0, this.puntos.size() - 1));
                 } else if ("dyvmejorado".equals(algoritmo)) {
-                    System.out.println("DYV");
-                    ArrayList<Punto> puntosOrdenadosX = quicksortX(puntos, 0, puntos.size() - 1);
-                    long startTime = System.nanoTime();
-                    mejorLinea = dyvMejorado(puntosOrdenadosX, 0, puntosOrdenadosX.size());
-                    calcularTiempo(startTime, mejorLinea);
-                    System.out.println(mejorLinea.distancia());
+                    mejorLinea = calcularYCrearAlgoritmo(algoritmo, quicksortX(puntos, 0, this.puntos.size() - 1));
                 }
 
                 System.out.println("Numero de puntos dentro " + puntos.size());
@@ -497,6 +502,7 @@ public class AlgoritmosController extends HttpServlet {
             break;
 
             case "/comprobarDatasets": {
+                Gson gson = new Gson();
                 leerPuntos(buscarRuta("berlin52.tsp"));
                 ArrayList<Linea> mejorBerlin52 = AlgoritmosController.this.ejecutarAlgoritmos(puntos);
                 leerPuntos(buscarRuta("ch130.tsp"));
@@ -507,12 +513,18 @@ public class AlgoritmosController extends HttpServlet {
                 ArrayList<Linea> mejorD493 = AlgoritmosController.this.ejecutarAlgoritmos(puntos);
                 leerPuntos(buscarRuta("d657.tsp"));
                 ArrayList<Linea> mejorD657 = AlgoritmosController.this.ejecutarAlgoritmos(puntos);
-
-                request.setAttribute("mejorBerlin52", mejorBerlin52);
-                request.setAttribute("mejorCh130", mejorCh130);
-                request.setAttribute("mejorCh150", mejorCh150);
-                request.setAttribute("mejorD493", mejorD493);
-                request.setAttribute("mejorD657", mejorD657);
+                
+                String mejorBerlin52JSON = gson.toJson(mejorBerlin52);
+                String mejorCh130JSON = gson.toJson(mejorCh130);
+                String mejorCh150JSON = gson.toJson(mejorCh150);
+                String mejorD493JSON = gson.toJson(mejorD493);
+                String mejorD657JSON = gson.toJson(mejorD657);
+                
+                request.setAttribute("mejorBerlin52JSON", mejorBerlin52JSON);
+                request.setAttribute("mejorCh130JSON", mejorCh130JSON);
+                request.setAttribute("mejorCh150JSON", mejorCh150JSON);
+                request.setAttribute("mejorD493JSON", mejorD493JSON);
+                request.setAttribute("mejorD657JSON", mejorD657JSON);
                 request.setAttribute("opcionMenuResult", "comprobarDatasets");
 
                 vista = "/result_view.jsp";

@@ -514,6 +514,12 @@ public class AlgoritmosController extends HttpServlet {
                 leerPuntos(buscarRuta("d657.tsp"));
                 ArrayList<Linea> mejorD657 = AlgoritmosController.this.ejecutarAlgoritmos(puntos);
                 
+                request.setAttribute("mejorBerlin52", mejorBerlin52);
+                request.setAttribute("mejorCh130", mejorCh130);
+                request.setAttribute("mejorCh150", mejorCh150);
+                request.setAttribute("mejorD493", mejorD493);
+                request.setAttribute("mejorD657", mejorD657);
+                
                 String mejorBerlin52JSON = gson.toJson(mejorBerlin52);
                 String mejorCh130JSON = gson.toJson(mejorCh130);
                 String mejorCh150JSON = gson.toJson(mejorCh150);

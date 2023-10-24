@@ -13,64 +13,69 @@
         <c:if test="${requestScope.opcionMenuResult eq 'comprobarDatasets'}">
             <h1>Comprobar Datasets </h1>
             <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
-            <%
-//                //Obtener la variable de sesión
-//                ArrayList<Linea> mejorBerlin52 = (ArrayList<Linea>) request.getAttribute("mejorBerlin52");
-//                ArrayList<Linea> mejorCh130 = (ArrayList<Linea>) request.getAttribute("mejorCh130");
-//                ArrayList<Linea> mejorCh150 = (ArrayList<Linea>) request.getAttribute("mejorCh150");
-//                ArrayList<Linea> mejorD493 = (ArrayList<Linea>) request.getAttribute("mejorD493");
-//                ArrayList<Linea> mejorD657 = (ArrayList<Linea>) request.getAttribute("mejorD657");
-//
-//                // Recorremos la lista y mostramos sus elementos
-//                out.println("<h2>Berlin52</h2>");
-//                out.println("<ul>");
-//                for (Linea elemento : mejorBerlin52) {
-//                    out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
-//                }
-//                out.println("</ul>");
-//
-//                out.println("<h2>CH130</h2>");
-//                out.println("<ul>");
-//                for (Linea elemento : mejorCh130) {
-//                    out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
-//                }
-//                out.println("</ul>");
-//
-//                out.println("<h2>CH150</h2>");
-//                out.println("<ul>");
-//                for (Linea elemento : mejorCh150) {
-//                    out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
-//                }
-//                out.println("</ul>");
-//
-//                out.println("<h2>D493</h2>");
-//                out.println("<ul>");
-//                for (Linea elemento : mejorD493) {
-//                    out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
-//                }
-//                out.println("</ul>");
-//
-//                out.println("<h2>D657</h2>");
-//                out.println("<ul>");
-//                for (Linea elemento : mejorD657) {
-//                    out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
-//                }
-//                out.println("</ul>");
-            %> 
+                <%
+                    //Obtener la variable de sesión
+                    ArrayList<Linea> mejorBerlin52 = (ArrayList<Linea>) request.getAttribute("mejorBerlin52");
+                    ArrayList<Linea> mejorCh130 = (ArrayList<Linea>) request.getAttribute("mejorCh130");
+                    ArrayList<Linea> mejorCh150 = (ArrayList<Linea>) request.getAttribute("mejorCh150");
+                    ArrayList<Linea> mejorD493 = (ArrayList<Linea>) request.getAttribute("mejorD493");
+                    ArrayList<Linea> mejorD657 = (ArrayList<Linea>) request.getAttribute("mejorD657");
+
+                    // Recorremos la lista y mostramos sus elementos
+                    out.println("<h2>Berlin52</h2>");
+                    out.println("<ul>");
+                    for (Linea elemento : mejorBerlin52) {
+                        out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
+                    }
+                    out.println("</ul>");
+
+                    out.println("<h2>CH130</h2>");
+                    out.println("<ul>");
+                    for (Linea elemento : mejorCh130) {
+                        out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
+                    }
+                    out.println("</ul>");
+
+                    out.println("<h2>CH150</h2>");
+                    out.println("<ul>");
+                    for (Linea elemento : mejorCh150) {
+                        out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
+                    }
+                    out.println("</ul>");
+
+                    out.println("<h2>D493</h2>");
+                    out.println("<ul>");
+                    for (Linea elemento : mejorD493) {
+                        out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
+                    }
+                    out.println("</ul>");
+
+                    out.println("<h2>D657</h2>");
+                    out.println("<ul>");
+                    for (Linea elemento : mejorD657) {
+                        out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
+                    }
+                    out.println("</ul>");
+                %> 
             <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
             <script>
-                var mejorBerlin52JSON = <%= request.getAttribute("mejorBerlin52JSON")%>;
-                var mejorCh130JSON = <%= request.getAttribute("mejorCh130JSON")%>;
-                var mejorCh150JSON = <%= request.getAttribute("mejorCh150JSON")%>;
-                var mejorD493JSON = <%= request.getAttribute("mejorD493JSON")%>;
-                var mejorD657JSON = <%= request.getAttribute("mejorD657JSON")%>;
+
+                var mejoresAlgoritmosJSON = [];
+
+                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejorBerlin52JSON")%>');
+                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejorCh130JSON")%>');
+                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejorCh150JSON")%>');
+                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejorD493JSON")%>');
+                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejorD657JSON")%>');
+
+                // Muestra el contenido del array en la consola (para fines de depuración)
             </script>
         </c:if>
 
         <c:if test="${requestScope.opcionMenuResult eq 'comprobarEstrategias_result'}">
             <h1>Comprobar Estrategias </h1>
             <!-- <canvas id="grafica" style="width:100%;max-width:1400px"></canvas> -->
-            
+
             <%
                 ArrayList<Linea> mejoresLineasComprobarEstrategias = (ArrayList<Linea>) request.getAttribute("mejoresLineas");
 
@@ -82,7 +87,7 @@
                 }
                 out.println("</ul>");
             %>
-            
+
             <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
         </c:if>
 

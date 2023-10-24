@@ -2,6 +2,8 @@ var xyValues = [];
 var lineaJSON;
 var puntosJSON;
 var mejorBerlin52JSON, mejorCh130JSON, mejorCh150JSON, mejorD493JSON, mejorD657JSON;
+var mejoresAlgoritmosJSON;
+var mejoresAlgoritmos = [];
 const algoritmos = ["Exhaustivo", "Exhaustivo poda", "Divide y Venceras", "Divide y Venceras mejorado"];
 const tam = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
 const nomArchivos = ["berlin52", "ch130", "ch150", "d493", "d657"];
@@ -9,12 +11,7 @@ window.addEventListener('load', function () {
     if (puntosJSON && lineaJSON) {
         // Llamar a la function cuando los datos de la grafica esten disponibles
         cargarGraficaPuntos();
-    } else if (mejorBerlin52JSON && mejorCh130JSON && mejorCh150JSON && mejorD493JSON && mejorD657JSON) {
-        console.log(mejorBerlin52JSON);
-        console.log(mejorCh130JSON);
-        console.log(mejorCh150JSON);
-        console.log(mejorD493JSON);
-        console.log(mejorD657JSON);
+    } else if (mejoresAlgoritmosJSON) {
         cargarGraficaComparar();
     }
 });
@@ -94,43 +91,62 @@ function cargarGraficaPuntos() {
     });
 }
 
+//Es necesario rehacer la conversion a JSON para poder acceder a los atributos de cada elemento
+function parseJSON(jsonStr) {
+    try {
+        return JSON.parse(jsonStr);
+    } catch (e) {
+        console.error("Error al analizar JSON:", e);
+        return null;
+    }
+}
+
+//Rehace la conversion a JSON y guarda el objeto en otro array que será con el que trabajaremos
+function rehacerJSON() {
+    for (var i = 0; i < mejoresAlgoritmosJSON.length; i++) {
+        mejoresAlgoritmos.push(parseJSON(mejoresAlgoritmosJSON[i]));
+        if (mejoresAlgoritmos[i]) {
+            for (var j = 0; j < mejoresAlgoritmos[i].length; j++) {
+                var tiempoEjecucion = mejoresAlgoritmos[i][j].tiempoEjecucion;
+                console.log("Tiempo de Ejecucion:", tiempoEjecucion);
+            }
+        }
+    }
+}
+
 function cargarGraficaComparar() {
-    const ficherosJuntos = [
-        mejorBerlin52JSON,
-        mejorCh130JSON,
-        mejorCh150JSON,
-        mejorD493JSON,
-        mejorD657JSON
-    ];
+
+    rehacerJSON();
+
     var barData = {
         //Nombre del archivo / talla
         labels: nomArchivos,
         datasets: [{
                 //Nombre del algoritmo
                 label: algoritmos[0],
-                data: [ficherosJuntos[0][0].tiempoEjecucion, ficherosJuntos[1][0].tiempoEjecucion, ficherosJuntos[2][0].tiempoEjecucion, ficherosJuntos[3][0].tiempoEjecucion, ficherosJuntos[4][0].tiempoEjecucion],
+                data: [mejoresAlgoritmos[0][0].tiempoEjecucion, mejoresAlgoritmos[1][0].tiempoEjecucion, mejoresAlgoritmos[2][0].tiempoEjecucion, mejoresAlgoritmos[3][0].tiempoEjecucion, mejoresAlgoritmos[4][0].tiempoEjecucion],
                 borderColor: "rgba(75, 192, 192, 1)",
                 backgroundColor: "rgba(75, 192, 192, 0.5)"
             },
             {
                 label: algoritmos[1],
-                data: [ficherosJuntos[0][1].tiempoEjecucion, ficherosJuntos[1][1].tiempoEjecucion, ficherosJuntos[2][1].tiempoEjecucion, ficherosJuntos[3][1].tiempoEjecucion, ficherosJuntos[4][1].tiempoEjecucion],
+                data: [mejoresAlgoritmos[0][1].tiempoEjecucion, mejoresAlgoritmos[1][1].tiempoEjecucion, mejoresAlgoritmos[2][1].tiempoEjecucion, mejoresAlgoritmos[3][1].tiempoEjecucion, mejoresAlgoritmos[4][1].tiempoEjecucion],
                 borderColor: "rgba(255, 0, 0, 0.6);)",
                 backgroundColor: "rgba(255, 0, 0, 0.8);"
             },
             {
                 label: algoritmos[2],
-                data: [ficherosJuntos[0][2].tiempoEjecucion, ficherosJuntos[1][2].tiempoEjecucion, ficherosJuntos[2][2].tiempoEjecucion, ficherosJuntos[3][2].tiempoEjecucion, ficherosJuntos[4][2].tiempoEjecucion],
+                data: [mejoresAlgoritmos[0][2].tiempoEjecucion, mejoresAlgoritmos[1][2].tiempoEjecucion, mejoresAlgoritmos[2][2].tiempoEjecucion, mejoresAlgoritmos[3][2].tiempoEjecucion, mejoresAlgoritmos[4][2].tiempoEjecucion],
                 borderColor: "rgba(255, 53, 157, 0.8)",
                 backgroundColor: "rgba(255, 124, 192, 0.8)"
             },
             {
                 label: algoritmos[3],
-                data: [ficherosJuntos[0][3].tiempoEjecucion, ficherosJuntos[1][3].tiempoEjecucion, ficherosJuntos[2][3].tiempoEjecucion, ficherosJuntos[3][3].tiempoEjecucion, ficherosJuntos[4][3].tiempoEjecucion],
+                data: [mejoresAlgoritmos[0][3].tiempoEjecucion, mejoresAlgoritmos[1][3].tiempoEjecucion, mejoresAlgoritmos[2][3].tiempoEjecucion, mejoresAlgoritmos[3][3].tiempoEjecucion, mejoresAlgoritmos[4][3].tiempoEjecucion],
                 borderColor: "rgba(93, 53, 255, 0.8)",
                 backgroundColor: "rgba(163, 140, 255, 0.8)"
             }]
-    }
+    };
     var barOptions = {
         scales: {
             y: {

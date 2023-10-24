@@ -1,3 +1,4 @@
+<%@page import="java.util.Arrays"%>
 <%@page import="java.util.ArrayList"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="java.util.List"%>
@@ -14,61 +15,34 @@
             <h1>Comprobar Datasets </h1>
             <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
                 <%
-                    //Obtener la variable de sesión
-                    ArrayList<Linea> mejorBerlin52 = (ArrayList<Linea>) request.getAttribute("mejorBerlin52");
-                    ArrayList<Linea> mejorCh130 = (ArrayList<Linea>) request.getAttribute("mejorCh130");
-                    ArrayList<Linea> mejorCh150 = (ArrayList<Linea>) request.getAttribute("mejorCh150");
-                    ArrayList<Linea> mejorD493 = (ArrayList<Linea>) request.getAttribute("mejorD493");
-                    ArrayList<Linea> mejorD657 = (ArrayList<Linea>) request.getAttribute("mejorD657");
+                    ArrayList<Linea> mejoresLineasCD = (ArrayList<Linea>) request.getAttribute("mejoresLineas");
+                    int contadorCD = 0, contadorFichero = 0; //Esta variable nos servirá para saber cuando cerrar los <ul>
+                    String[] ficherosCD = {"Berlin52", "Ch130", "Ch150", "D493", "D657"};
 
                     // Recorremos la lista y mostramos sus elementos
-                    out.println("<h2>Berlin52</h2>");
-                    out.println("<ul>");
-                    for (Linea elemento : mejorBerlin52) {
-                        out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
-                    }
-                    out.println("</ul>");
+                    for (int i = 0; i < mejoresLineasCD.size(); i++) {
+                        if (i % 4 == 0 || i == 0) {
+                            out.println("<h2>" + ficherosCD[contadorFichero] + "</h2>");
+                            out.println("<ul>");
+                            contadorCD = 0;
+                            contadorFichero++;
+                        }
 
-                    out.println("<h2>CH130</h2>");
-                    out.println("<ul>");
-                    for (Linea elemento : mejorCh130) {
-                        out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
-                    }
-                    out.println("</ul>");
+                        out.println("<li> Distancia: " + mejoresLineasCD.get(i).getDistanciaEntrePuntos() + "   Puntos calculados: " + mejoresLineasCD.get(i).getPuntosCalculados() + "   Tiempo: " + mejoresLineasCD.get(i).getTiempoEjecucion() + "</li>");
+                        contadorCD++;
 
-                    out.println("<h2>CH150</h2>");
-                    out.println("<ul>");
-                    for (Linea elemento : mejorCh150) {
-                        out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
+                        if (contadorCD == 4) {
+                            out.println("</ul>");
+                        }
                     }
-                    out.println("</ul>");
-
-                    out.println("<h2>D493</h2>");
-                    out.println("<ul>");
-                    for (Linea elemento : mejorD493) {
-                        out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
-                    }
-                    out.println("</ul>");
-
-                    out.println("<h2>D657</h2>");
-                    out.println("<ul>");
-                    for (Linea elemento : mejorD657) {
-                        out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
-                    }
-                    out.println("</ul>");
                 %> 
             <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
             <script>
-
+                //Declaramos las variables que serán utilizadas para rellenar la gráfica en el js
+                const nomArchivos = ["berlin52", "ch130", "ch150", "d493", "d657"];
+                const algoritmos = ["Exhaustivo", "Exhaustivo poda", "Divide y Venceras", "Divide y Venceras mejorado"];
                 var mejoresAlgoritmosJSON = [];
-
-                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejorBerlin52JSON")%>');
-                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejorCh130JSON")%>');
-                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejorCh150JSON")%>');
-                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejorD493JSON")%>');
-                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejorD657JSON")%>');
-
-                // Muestra el contenido del array en la consola (para fines de depuración)
+                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejoresLineasJSON")%>');
             </script>
         </c:if>
 
@@ -108,6 +82,41 @@
 
         <c:if test="${requestScope.opcionMenuResult eq 'peorCaso'}">
             <h1>Peor Caso</h1>
+            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
+        </c:if>
+
+        <c:if test="${requestScope.opcionMenuResult eq 'compararEstrategias'}">
+            <h1>Comparar Estrategias</h1>
+            <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
+
+            <%
+                ArrayList<Linea> mejoresLineasCE = (ArrayList<Linea>) request.getAttribute("mejoresLineas");
+                int contadorCE = 0; //Esta variable nos servirá para saber cuando cerrar los <ul>
+
+                // Recorremos la lista y mostramos sus elementos
+                for (int i = 0; i < mejoresLineasCE.size(); i++) {
+                    if (i % 4 == 0 || i == 0) {
+                        out.println("<h2>Talla " + (i * 125 + 500) + "</h2>");
+                        out.println("<ul>");
+                        contadorCE = 0;
+                    }
+
+                    out.println("<li> Tiempo: " + mejoresLineasCE.get(i).getTiempoEjecucion() + "</li>");
+                    contadorCE++;
+
+                    if (contadorCE == 4) {
+                        out.println("</ul>");
+                    }
+                }
+            %>
+
+            <script>
+                const nomArchivos = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
+                const algoritmos = ["Exhaustivo", "Exhaustivo poda", "Divide y Venceras", "Divide y Venceras mejorado"];
+                var mejoresAlgoritmosJSON = [];
+                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejoresLineasJSON")%>');
+            </script>
+
             <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
         </c:if>
 

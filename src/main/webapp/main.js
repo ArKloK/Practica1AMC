@@ -4,9 +4,7 @@ var puntosJSON;
 var mejorBerlin52JSON, mejorCh130JSON, mejorCh150JSON, mejorD493JSON, mejorD657JSON;
 var mejoresAlgoritmosJSON;
 var mejoresAlgoritmos = [];
-const algoritmos = ["Exhaustivo", "Exhaustivo poda", "Divide y Venceras", "Divide y Venceras mejorado"];
-const tam = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
-const nomArchivos = ["berlin52", "ch130", "ch150", "d493", "d657"];
+//const tam = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"]; Este dato será cargado en el jsp correspondiente
 window.addEventListener('load', function () {
     if (puntosJSON && lineaJSON) {
         // Llamar a la function cuando los datos de la grafica esten disponibles
@@ -101,16 +99,12 @@ function parseJSON(jsonStr) {
     }
 }
 
+var tiempoEjecucion = [];
+
 //Rehace la conversion a JSON y guarda el objeto en otro array que será con el que trabajaremos
 function rehacerJSON() {
     for (var i = 0; i < mejoresAlgoritmosJSON.length; i++) {
         mejoresAlgoritmos.push(parseJSON(mejoresAlgoritmosJSON[i]));
-        if (mejoresAlgoritmos[i]) {
-            for (var j = 0; j < mejoresAlgoritmos[i].length; j++) {
-                var tiempoEjecucion = mejoresAlgoritmos[i][j].tiempoEjecucion;
-                console.log("Tiempo de Ejecucion:", tiempoEjecucion);
-            }
-        }
     }
 }
 
@@ -118,34 +112,57 @@ function cargarGraficaComparar() {
 
     rehacerJSON();
 
+    var datos = [], pos = algoritmos.length; // Aquí almacenaremos los objetos de datos
+
+    for (var i = 0; i < algoritmos.length; i++) {
+        var dato = {
+            label: algoritmos[i],
+            data: [],
+            borderColor: "",
+            backgroundColor: ""
+        };
+
+        //La operación [j*pos+k] funciona de la siguiente manera:
+        //  j va a representar el número de ficheros que tenemos que recorrer, es decir, si hemos generado 10 fichero aleatorios, la j irá hasta 10.
+        //  pos es el número de algoritmos que vamos a comprobar, es decir, si queremos estudiar todos, sería un total de 4.
+        //  i se incrementa en el bucle anterior y nos ayudará a que cada vez que entremos en el segundo bucle no nos recoja los mismos j*pos valores.
+
+        for (var j = 0; j < nomArchivos.length; j++) {
+            if (mejoresAlgoritmos[0][j * pos + i] && mejoresAlgoritmos[0][j * pos + i].tiempoEjecucion !== undefined) {
+                dato.data.push(mejoresAlgoritmos[0][j * pos + i].tiempoEjecucion);
+                console.log("DATOS QUE VA INTRODUCIENDO EN " + i + " " + (j * pos + 1) + ": " + mejoresAlgoritmos[0][j * pos + i].tiempoEjecucion);
+            }
+        }
+
+        // Asigna colores de borde y fondo según corresponda
+        switch (i) {
+            case 0:
+                dato.borderColor = "rgba(75, 192, 192, 1)";
+                dato.backgroundColor = "rgba(75, 192, 192, 0.5)";
+                break;
+            case 1:
+                dato.borderColor = "rgba(255, 0, 0, 0.6)";
+                dato.backgroundColor = "rgba(255, 0, 0, 0.8)";
+                break;
+            case 2:
+                dato.borderColor = "rgba(255, 53, 157, 0.8)";
+                dato.backgroundColor = "rgba(255, 124, 192, 0.8)";
+                break;
+            case 3:
+                dato.borderColor = "rgba(93, 53, 255, 0.8)";
+                dato.backgroundColor = "rgba(163, 140, 255, 0.8)";
+                break;
+                // Agrega más casos según sea necesario
+        }
+
+        datos.push(dato);
+    }
+
+
     var barData = {
         //Nombre del archivo / talla
         labels: nomArchivos,
-        datasets: [{
-                //Nombre del algoritmo
-                label: algoritmos[0],
-                data: [mejoresAlgoritmos[0][0].tiempoEjecucion, mejoresAlgoritmos[1][0].tiempoEjecucion, mejoresAlgoritmos[2][0].tiempoEjecucion, mejoresAlgoritmos[3][0].tiempoEjecucion, mejoresAlgoritmos[4][0].tiempoEjecucion],
-                borderColor: "rgba(75, 192, 192, 1)",
-                backgroundColor: "rgba(75, 192, 192, 0.5)"
-            },
-            {
-                label: algoritmos[1],
-                data: [mejoresAlgoritmos[0][1].tiempoEjecucion, mejoresAlgoritmos[1][1].tiempoEjecucion, mejoresAlgoritmos[2][1].tiempoEjecucion, mejoresAlgoritmos[3][1].tiempoEjecucion, mejoresAlgoritmos[4][1].tiempoEjecucion],
-                borderColor: "rgba(255, 0, 0, 0.6);)",
-                backgroundColor: "rgba(255, 0, 0, 0.8);"
-            },
-            {
-                label: algoritmos[2],
-                data: [mejoresAlgoritmos[0][2].tiempoEjecucion, mejoresAlgoritmos[1][2].tiempoEjecucion, mejoresAlgoritmos[2][2].tiempoEjecucion, mejoresAlgoritmos[3][2].tiempoEjecucion, mejoresAlgoritmos[4][2].tiempoEjecucion],
-                borderColor: "rgba(255, 53, 157, 0.8)",
-                backgroundColor: "rgba(255, 124, 192, 0.8)"
-            },
-            {
-                label: algoritmos[3],
-                data: [mejoresAlgoritmos[0][3].tiempoEjecucion, mejoresAlgoritmos[1][3].tiempoEjecucion, mejoresAlgoritmos[2][3].tiempoEjecucion, mejoresAlgoritmos[3][3].tiempoEjecucion, mejoresAlgoritmos[4][3].tiempoEjecucion],
-                borderColor: "rgba(93, 53, 255, 0.8)",
-                backgroundColor: "rgba(163, 140, 255, 0.8)"
-            }]
+        datasets: datos
     };
     var barOptions = {
         scales: {

@@ -91,6 +91,7 @@ public class AlgoritmosController extends HttpServlet {
         return file;
     }
 
+    //****************************************GENERACIÓN DE PUNTOS**********************************************
     public ArrayList<Punto> GenerarPuntosAleatoriosPeor(int n) {
         Random rand = new Random();
         rand.setSeed(System.nanoTime());
@@ -186,43 +187,6 @@ public class AlgoritmosController extends HttpServlet {
     }
 
     //****************************************ALGORITMOS DE BUSQUEDA**********************************************
-    public Linea calcularYCrearAlgoritmo(String algoritmoACalcular, ArrayList<Punto> puntos){
-        double tiempoEjecucion = 0;
-        double endTime = 0;
-        Linea l = null;
-        double startTime = System.nanoTime();
-        switch (algoritmoACalcular) {
-            case "exhaustivo":
-                l = exhaustivo(puntos);
-                endTime = System.nanoTime();
-                tiempoEjecucion = endTime - startTime;
-                tiempoEjecucion /= 1000000;
-                l.setTiempoEjecucion(tiempoEjecucion);
-                break;
-            case "exhaustivopoda":
-                l = exhaustivoPoda(puntos);
-                endTime = System.nanoTime();
-                tiempoEjecucion = endTime - startTime;
-                tiempoEjecucion /= 1000000;
-                l.setTiempoEjecucion(tiempoEjecucion);
-                break;
-            case "divideyvenceras":
-                l = divideyvenceras(puntos, 0, puntos.size()-1);
-                endTime = System.nanoTime();
-                tiempoEjecucion = endTime - startTime;
-                tiempoEjecucion /= 1000000;
-                l.setTiempoEjecucion(tiempoEjecucion);
-                break;
-            case "dyvmejorado":
-                l = dyvMejorado(puntos, 0, puntos.size()-1);
-                endTime = System.nanoTime();
-                tiempoEjecucion = endTime - startTime;
-                tiempoEjecucion /= 1000000;
-                l.setTiempoEjecucion(tiempoEjecucion);
-                break;
-        }
-        return l;
-    }
     public Linea exhaustivo(ArrayList<Punto> puntos) {
         //Declaración de variables
         double mejorCamino = Double.MAX_VALUE;
@@ -277,7 +241,7 @@ public class AlgoritmosController extends HttpServlet {
                 }
             }
         }
-        
+
         mejorLinea.setPuntosCalculados(puntosCalculados);
         return mejorLinea;
     }
@@ -401,6 +365,45 @@ public class AlgoritmosController extends HttpServlet {
         return mejorLinea;
     }
 
+    //****************************************METODOS AUXILIARES PARA LAS DIFERENTES OPCIONES*********************
+    public Linea calcularYCrearAlgoritmo(String algoritmoACalcular, ArrayList<Punto> puntos) {
+        double tiempoEjecucion = 0;
+        double endTime = 0;
+        Linea l = null;
+        double startTime = System.nanoTime();
+        switch (algoritmoACalcular) {
+            case "exhaustivo":
+                l = exhaustivo(puntos);
+                endTime = System.nanoTime();
+                tiempoEjecucion = endTime - startTime;
+                tiempoEjecucion /= 1000000;
+                l.setTiempoEjecucion(tiempoEjecucion);
+                break;
+            case "exhaustivopoda":
+                l = exhaustivoPoda(puntos);
+                endTime = System.nanoTime();
+                tiempoEjecucion = endTime - startTime;
+                tiempoEjecucion /= 1000000;
+                l.setTiempoEjecucion(tiempoEjecucion);
+                break;
+            case "divideyvenceras":
+                l = divideyvenceras(puntos, 0, puntos.size() - 1);
+                endTime = System.nanoTime();
+                tiempoEjecucion = endTime - startTime;
+                tiempoEjecucion /= 1000000;
+                l.setTiempoEjecucion(tiempoEjecucion);
+                break;
+            case "dyvmejorado":
+                l = dyvMejorado(puntos, 0, puntos.size() - 1);
+                endTime = System.nanoTime();
+                tiempoEjecucion = endTime - startTime;
+                tiempoEjecucion /= 1000000;
+                l.setTiempoEjecucion(tiempoEjecucion);
+                break;
+        }
+        return l;
+    }
+
     public ArrayList<Linea> estudiarUnaEstrategia(String algoritmoSeleccionado) {
         ArrayList<Punto> puntosNuevo;
         ArrayList<Linea> lineas = new ArrayList<Linea>();
@@ -470,7 +473,7 @@ public class AlgoritmosController extends HttpServlet {
                 leerPuntos(buscarRuta(fichero));
 
                 //Comprobar que algoritmo vamos a utilizar
-                if ("exhaustivo".equals(algoritmo)) {         
+                if ("exhaustivo".equals(algoritmo)) {
                     mejorLinea = calcularYCrearAlgoritmo(algoritmo, puntos);
                 } else if ("exhaustivopoda".equals(algoritmo)) {
                     mejorLinea = calcularYCrearAlgoritmo(algoritmo, quicksortX(puntos, 0, this.puntos.size() - 1));
@@ -503,34 +506,28 @@ public class AlgoritmosController extends HttpServlet {
 
             case "/comprobarDatasets": {
                 Gson gson = new Gson();
+                ArrayList<Linea> mejoresLineas = new ArrayList<>();
+                
                 leerPuntos(buscarRuta("berlin52.tsp"));
-                ArrayList<Linea> mejorBerlin52 = AlgoritmosController.this.ejecutarAlgoritmos(puntos);
+                mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
+                
                 leerPuntos(buscarRuta("ch130.tsp"));
-                ArrayList<Linea> mejorCh130 = AlgoritmosController.this.ejecutarAlgoritmos(puntos);
+                mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
+                
                 leerPuntos(buscarRuta("ch150.tsp"));
-                ArrayList<Linea> mejorCh150 = AlgoritmosController.this.ejecutarAlgoritmos(puntos);
+                mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
+                
                 leerPuntos(buscarRuta("d493.tsp"));
-                ArrayList<Linea> mejorD493 = AlgoritmosController.this.ejecutarAlgoritmos(puntos);
+                mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
+                
                 leerPuntos(buscarRuta("d657.tsp"));
-                ArrayList<Linea> mejorD657 = AlgoritmosController.this.ejecutarAlgoritmos(puntos);
-                
-                request.setAttribute("mejorBerlin52", mejorBerlin52);
-                request.setAttribute("mejorCh130", mejorCh130);
-                request.setAttribute("mejorCh150", mejorCh150);
-                request.setAttribute("mejorD493", mejorD493);
-                request.setAttribute("mejorD657", mejorD657);
-                
-                String mejorBerlin52JSON = gson.toJson(mejorBerlin52);
-                String mejorCh130JSON = gson.toJson(mejorCh130);
-                String mejorCh150JSON = gson.toJson(mejorCh150);
-                String mejorD493JSON = gson.toJson(mejorD493);
-                String mejorD657JSON = gson.toJson(mejorD657);
-                
-                request.setAttribute("mejorBerlin52JSON", mejorBerlin52JSON);
-                request.setAttribute("mejorCh130JSON", mejorCh130JSON);
-                request.setAttribute("mejorCh150JSON", mejorCh150JSON);
-                request.setAttribute("mejorD493JSON", mejorD493JSON);
-                request.setAttribute("mejorD657JSON", mejorD657JSON);
+                mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
+
+                request.setAttribute("mejoresLineas", mejoresLineas);
+
+                String mejoresLineasJSON = gson.toJson(mejoresLineas);
+
+                request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
                 request.setAttribute("opcionMenuResult", "comprobarDatasets");
 
                 vista = "/result_view.jsp";
@@ -546,12 +543,12 @@ public class AlgoritmosController extends HttpServlet {
             break;
 
             case "/comprobarEstrategias_result": {
-                
+
                 int talla = Integer.parseInt(request.getParameter("talla"));
-                
-                ArrayList<Punto> puntos = GenerarPuntosAleatorios(talla);
-                ArrayList<Linea> mejoresLineas = ejecutarAlgoritmos(puntos);
-                
+
+                //ArrayList<Punto> puntos = GenerarPuntosAleatorios(talla);
+                ArrayList<Linea> mejoresLineas = ejecutarAlgoritmos(GenerarPuntosAleatorios(talla));
+
                 request.setAttribute("mejoresLineas", mejoresLineas);
                 request.setAttribute("opcionMenuResult", "comprobarEstrategias_result");
 
@@ -565,20 +562,20 @@ public class AlgoritmosController extends HttpServlet {
                 vista = "/intermediate_view.jsp";
             }
             break;
-            
+
             case "/estudiarUnaEstrategia_result": {
-                
+
                 String algoritmo = request.getParameter("algoritmos");
                 System.out.println("ALGORITMO: " + algoritmo);
-                
+
                 ArrayList<Linea> mejorLineas = estudiarUnaEstrategia(algoritmo);
-                
+
                 request.setAttribute("mejorLineas", mejorLineas);
                 request.setAttribute("opcionMenuResult", "estudiarUnaEstrategia_result");
                 vista = "/result_view.jsp";
             }
             break;
-            
+
             case "/estudiarDosEstrategias": {
 
                 request.setAttribute("opcionMenu", "estudiarDosEstrategias");
@@ -587,6 +584,19 @@ public class AlgoritmosController extends HttpServlet {
             }
             break;
             case "/compararEstrategias": {
+
+                ArrayList<Linea> mejoresLineas = new ArrayList<>();
+                Gson gson = new Gson();
+
+                for (int i = 500; i <= 5000; i += 500) {
+                    mejoresLineas.addAll(ejecutarAlgoritmos(GenerarPuntosAleatorios(i)));
+                }
+
+                request.setAttribute("mejoresLineas", mejoresLineas);
+
+                String mejoresLineasJSON = gson.toJson(mejoresLineas);
+
+                request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
 
                 request.setAttribute("opcionMenuResult", "compararEstrategias");
 
@@ -624,7 +634,7 @@ public class AlgoritmosController extends HttpServlet {
             break;
 
             case "/index": {
-                
+
                 ejecutarAlgoritmos(GenerarPuntosAleatorios(1000));
                 vista = "/index.jsp";
             }

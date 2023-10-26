@@ -379,21 +379,21 @@ public class AlgoritmosController extends HttpServlet {
                 tiempoEjecucion /= 1000000;
                 l.setTiempoEjecucion(tiempoEjecucion);
                 break;
-            case "exhaustivopoda":
+            case "exhaustivoPoda":
                 l = exhaustivoPoda(puntos);
                 endTime = System.nanoTime();
                 tiempoEjecucion = endTime - startTime;
                 tiempoEjecucion /= 1000000;
                 l.setTiempoEjecucion(tiempoEjecucion);
                 break;
-            case "divideyvenceras":
+            case "dyv":
                 l = divideyvenceras(puntos, 0, puntos.size() - 1);
                 endTime = System.nanoTime();
                 tiempoEjecucion = endTime - startTime;
                 tiempoEjecucion /= 1000000;
                 l.setTiempoEjecucion(tiempoEjecucion);
                 break;
-            case "dyvmejorado":
+            case "dyvMejorado":
                 l = dyvMejorado(puntos, 0, puntos.size() - 1);
                 endTime = System.nanoTime();
                 tiempoEjecucion = endTime - startTime;
@@ -507,19 +507,19 @@ public class AlgoritmosController extends HttpServlet {
             case "/comprobarDatasets": {
                 Gson gson = new Gson();
                 ArrayList<Linea> mejoresLineas = new ArrayList<>();
-                
+
                 leerPuntos(buscarRuta("berlin52.tsp"));
                 mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
-                
+
                 leerPuntos(buscarRuta("ch130.tsp"));
                 mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
-                
+
                 leerPuntos(buscarRuta("ch150.tsp"));
                 mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
-                
+
                 leerPuntos(buscarRuta("d493.tsp"));
                 mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
-                
+
                 leerPuntos(buscarRuta("d657.tsp"));
                 mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
 
@@ -543,13 +543,20 @@ public class AlgoritmosController extends HttpServlet {
             break;
 
             case "/comprobarEstrategias_result": {
+                Gson gson = new Gson();
 
-                int talla = Integer.parseInt(request.getParameter("talla"));
-
-                //ArrayList<Punto> puntos = GenerarPuntosAleatorios(talla);
-                ArrayList<Linea> mejoresLineas = ejecutarAlgoritmos(GenerarPuntosAleatorios(talla));
-
+                String talla = request.getParameter("talla");
+                int tallaInt = Integer.parseInt(talla);
+                ArrayList<Linea> mejoresLineas = ejecutarAlgoritmos(GenerarPuntosAleatorios(tallaInt));
+                
                 request.setAttribute("mejoresLineas", mejoresLineas);
+
+                String tallaJSON = gson.toJson(talla);
+                String mejoresLineasJSON = gson.toJson(mejoresLineas);
+
+                request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
+                request.setAttribute("tallaJSON", tallaJSON);
+
                 request.setAttribute("opcionMenuResult", "comprobarEstrategias_result");
 
                 vista = "/result_view.jsp";
@@ -564,13 +571,20 @@ public class AlgoritmosController extends HttpServlet {
             break;
 
             case "/estudiarUnaEstrategia_result": {
-
-                String algoritmo = request.getParameter("algoritmos");
+                Gson gson = new Gson();
+                
+                String algoritmo = request.getParameter("algoritmo");
                 System.out.println("ALGORITMO: " + algoritmo);
 
-                ArrayList<Linea> mejorLineas = estudiarUnaEstrategia(algoritmo);
+                ArrayList<Linea> mejoresLineas = estudiarUnaEstrategia(algoritmo);
 
-                request.setAttribute("mejorLineas", mejorLineas);
+                request.setAttribute("mejoresLineas", mejoresLineas);
+                
+                String mejoresLineasJSON = gson.toJson(mejoresLineas);
+                
+                request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
+                request.setAttribute("algoritmo", algoritmo);
+                
                 request.setAttribute("opcionMenuResult", "estudiarUnaEstrategia_result");
                 vista = "/result_view.jsp";
             }

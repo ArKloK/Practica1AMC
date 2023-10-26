@@ -4,7 +4,8 @@ var puntosJSON;
 var mejorBerlin52JSON, mejorCh130JSON, mejorCh150JSON, mejorD493JSON, mejorD657JSON;
 var mejoresAlgoritmosJSON;
 var mejoresAlgoritmos = [];
-//const tam = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"]; Este dato será cargado en el jsp correspondiente
+let talla;
+
 window.addEventListener('load', function () {
     if (puntosJSON && lineaJSON) {
         // Llamar a la function cuando los datos de la grafica esten disponibles
@@ -13,6 +14,34 @@ window.addEventListener('load', function () {
         cargarGraficaComparar();
     }
 });
+
+function redirigirComprobarEstrategia(event) {
+
+    event.preventDefault();
+
+    talla = document.getElementById("talla").value;
+
+    localStorage.setItem('talla', talla);
+
+    var urlDelServlet = "/Practica1AMC/AlgoritmosController/comprobarEstrategias_result?talla=" + talla;
+
+    // Redirige a la URL del servlet
+    window.location.href = urlDelServlet;
+}
+
+function redirigirEstudiarUnaEstrategia(event){
+    
+    event.preventDefault();
+
+    talla = document.getElementById("algoritmos").value;
+
+    localStorage.setItem('talla', talla);
+
+    var urlDelServlet = "/Practica1AMC/AlgoritmosController/estudiarUnaEstrategia_result?algoritmo=" + talla;
+
+    // Redirige a la URL del servlet
+    window.location.href = urlDelServlet;
+}
 
 function redirigirShow() {
     lineaJSON = null;
@@ -111,6 +140,13 @@ function rehacerJSON() {
 function cargarGraficaComparar() {
 
     rehacerJSON();
+    talla = localStorage.getItem('talla');
+
+    if (talla !== 'null') {
+        algoritmos.push(talla);
+        console.log("Talla dentro del js " + talla);
+        localStorage.setItem('talla', 'null');
+    }
 
     var datos = [], pos = algoritmos.length; // Aquí almacenaremos los objetos de datos
 
@@ -130,7 +166,6 @@ function cargarGraficaComparar() {
         for (var j = 0; j < nomArchivos.length; j++) {
             if (mejoresAlgoritmos[0][j * pos + i] && mejoresAlgoritmos[0][j * pos + i].tiempoEjecucion !== undefined) {
                 dato.data.push(mejoresAlgoritmos[0][j * pos + i].tiempoEjecucion);
-                console.log("DATOS QUE VA INTRODUCIENDO EN " + i + " " + (j * pos + 1) + ": " + mejoresAlgoritmos[0][j * pos + i].tiempoEjecucion);
             }
         }
 

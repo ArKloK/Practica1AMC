@@ -437,9 +437,9 @@ public class AlgoritmosController extends HttpServlet {
         ArrayList<Linea> mejoresLineas = new ArrayList<>();
         ArrayList<Punto> puntosOrdenadosX = quicksortX(puntos, 0, puntos.size() - 1);
         mejoresLineas.add(calcularYCrearAlgoritmo("exhaustivo", puntos));
-        mejoresLineas.add(calcularYCrearAlgoritmo("exhaustivopoda", puntosOrdenadosX));
-        mejoresLineas.add(calcularYCrearAlgoritmo("divideyvenceras", puntosOrdenadosX));
-        mejoresLineas.add(calcularYCrearAlgoritmo("dyvmejorado", puntosOrdenadosX));
+        mejoresLineas.add(calcularYCrearAlgoritmo("exhaustivoPoda", puntosOrdenadosX));
+        mejoresLineas.add(calcularYCrearAlgoritmo("dyv", puntosOrdenadosX));
+        mejoresLineas.add(calcularYCrearAlgoritmo("dyvMejorado", puntosOrdenadosX));
         return mejoresLineas;
     }
 

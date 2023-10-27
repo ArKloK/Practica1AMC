@@ -544,7 +544,6 @@ public class AlgoritmosController extends HttpServlet {
 
             case "/comprobarEstrategias_result": {
                 Gson gson = new Gson();
-
                 String talla = request.getParameter("talla");
                 int tallaInt = Integer.parseInt(talla);
                 ArrayList<Linea> mejoresLineas = ejecutarAlgoritmos(GenerarPuntosAleatorios(tallaInt));

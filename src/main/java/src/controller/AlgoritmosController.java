@@ -667,7 +667,10 @@ public class AlgoritmosController extends HttpServlet {
         try {
             if (!"".equals(vista)) {
                 RequestDispatcher rd = request.getRequestDispatcher(vista);
-                rd.forward(request, response);
+                if (rd != null) {
+                    rd.forward(request, response);
+                }
+                
             }
         } catch (Exception e) {
             e.getMessage();

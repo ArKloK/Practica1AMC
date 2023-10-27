@@ -547,7 +547,7 @@ public class AlgoritmosController extends HttpServlet {
                 String talla = request.getParameter("talla");
                 int tallaInt = Integer.parseInt(talla);
                 ArrayList<Linea> mejoresLineas = ejecutarAlgoritmos(GenerarPuntosAleatorios(tallaInt));
-                
+
                 request.setAttribute("mejoresLineas", mejoresLineas);
 
                 String tallaJSON = gson.toJson(talla);
@@ -570,7 +570,22 @@ public class AlgoritmosController extends HttpServlet {
             break;
 
             case "/estudiarUnaEstrategia_result": {
-               
+                Gson gson = new Gson();
+
+                String algoritmo = request.getParameter("algoritmo");
+                System.out.println("ALGORITMO: " + algoritmo);
+
+                ArrayList<Linea> mejoresLineas = estudiarUnaEstrategia(algoritmo);
+
+                request.setAttribute("mejoresLineas", mejoresLineas);
+
+                String mejoresLineasJSON = gson.toJson(mejoresLineas);
+
+                request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
+                request.setAttribute("algoritmo", algoritmo);
+
+                request.setAttribute("opcionMenuResult", "estudiarUnaEstrategia_result");
+                vista = "/result_view.jsp";
             }
             break;
 
@@ -654,7 +669,7 @@ public class AlgoritmosController extends HttpServlet {
                 if (rd != null) {
                     rd.forward(request, response);
                 }
-                
+
             }
         } catch (Exception e) {
             e.getMessage();

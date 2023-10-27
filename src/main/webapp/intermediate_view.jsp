@@ -21,12 +21,12 @@
         </c:if>
         <c:if test="${requestScope.opcionMenu eq 'estudiarUnaEstrategia'}">
 
-            <form action="/Practica1AMC/AlgoritmosController/estudiarUnaEstrategia_result">
+            <form onsubmit="redirigirEstudiarUnaEstrategia(event);">
                 <select id="algoritmos" name="algoritmos" title="algoritmos">
                     <option value="exhaustivo">Exhaustivo</option>
-                    <option value="exhaustivopoda">Exhaustivo con poda</option>
-                    <option value="divideyvenceras">Divide y venceras</option>
-                    <option value="dyvmejorado">Divide y venceras Mejorado</option>
+                    <option value="exhaustivoPoda">Exhaustivo con poda</option>
+                    <option value="dyv">Divide y venceras</option>
+                    <option value="dyvMejorado">Divide y venceras Mejorado</option>
                 </select>
                 <input type="submit" value="Aceptar">
             </form>

@@ -44,6 +44,20 @@ function redirigirShow() {
     window.location.href = urlDelServlet;
 }
 
+function redirigirEstudiarUnaEstrategia(event){
+
+    event.preventDefault();
+
+    talla = document.getElementById("algoritmos").value;
+
+    localStorage.setItem('talla', talla);
+
+    var urlDelServlet = "/Practica1AMC/AlgoritmosController/estudiarUnaEstrategia_result?algoritmo=" + talla;
+
+    // Redirige a la URL del servlet
+    window.location.href = urlDelServlet;
+}
+
 function cargarGraficaPuntos() {
     var Linea = [
         {x: lineaJSON.p1.x, y: lineaJSON.p1.y},

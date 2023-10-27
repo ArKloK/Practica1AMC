@@ -4,7 +4,7 @@ var puntosJSON;
 var mejorBerlin52JSON, mejorCh130JSON, mejorCh150JSON, mejorD493JSON, mejorD657JSON;
 var mejoresAlgoritmosJSON;
 var mejoresAlgoritmos = [];
-let talla;
+var talla;
 
 window.addEventListener('load', function () {
     if (puntosJSON && lineaJSON) {
@@ -24,20 +24,6 @@ function redirigirComprobarEstrategia(event) {
     localStorage.setItem('talla', talla);
 
     var urlDelServlet = "/Practica1AMC/AlgoritmosController/comprobarEstrategias_result?talla=" + talla;
-
-    // Redirige a la URL del servlet
-    window.location.href = urlDelServlet;
-}
-
-function redirigirEstudiarUnaEstrategia(event){
-    
-    event.preventDefault();
-
-    talla = document.getElementById("algoritmos").value;
-
-    localStorage.setItem('talla', talla);
-
-    var urlDelServlet = "/Practica1AMC/AlgoritmosController/estudiarUnaEstrategia_result?algoritmo=" + talla;
 
     // Redirige a la URL del servlet
     window.location.href = urlDelServlet;
@@ -140,6 +126,14 @@ function rehacerJSON() {
 function cargarGraficaComparar() {
 
     rehacerJSON();
+    talla = localStorage.getItem('talla');
+
+    if (talla !== 'null') {
+        algoritmos.push(talla);
+        console.log("Talla dentro del js " + talla);
+        localStorage.setItem('talla', 'null');
+    }
+
     talla = localStorage.getItem('talla');
 
     if (talla !== 'null') {

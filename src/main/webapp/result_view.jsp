@@ -75,14 +75,9 @@
 
         <c:if test="${requestScope.opcionMenuResult eq 'estudiarUnaEstrategia_result'}">
             <h1>Estudiar una estrategia</h1>
-
-            <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
-
             <%
-                ArrayList<Linea> mejoresLineas = (ArrayList<Linea>) request.getAttribute("mejoresLineas");
+                ArrayList<Linea> mejoresLineas = (ArrayList<Linea>) request.getAttribute("mejorLineas");
                 int talla = 500;
-                
-                out.println("<h2>" + request.getAttribute("algoritmo") + "</h2>");
                 out.println("<ul>");
                 for (Linea linea : mejoresLineas) {
                     out.println("<li>Talla: " + talla + "   Tiempo: " + linea.getTiempoEjecucion() + "</li>");
@@ -91,15 +86,6 @@
                 out.println("</ul>");
             %>
             <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
-
-            <script>
-                //Declaramos las variables que serán utilizadas para rellenar la gráfica en el js
-                const nomArchivos = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
-                const algoritmos = [];
-                var mejoresAlgoritmosJSON = [];
-                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejoresLineasJSON")%>');
-            </script>
-
         </c:if>  
 
         <c:if test="${requestScope.opcionMenuResult eq 'peorCaso'}">

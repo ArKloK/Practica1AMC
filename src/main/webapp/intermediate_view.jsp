@@ -33,10 +33,32 @@
 
         </c:if>
         <c:if test="${requestScope.opcionMenu eq 'estudiarDosEstrategias'}">
+            <form>
+                <select id="algoritmoPri" name="algoritmos" title="algoritmos">
+                    <option value="exhaustivo">Exhaustivo</option>
+                    <option value="exhaustivoPoda">Exhaustivo con poda</option>
+                    <option value="dyv">Divide y venceras</option>
+                    <option value="dyvMejorado">Divide y venceras Mejorado</option>
+                </select>
+            </form>
+            <form onsubmit="redirigirEstudiarDosEstrategias(event);">
+                <select id="algoritmoSeg" name="algoritmos" title="algoritmos">
+                    <option value="exhaustivo">Exhaustivo</option>
+                    <option value="exhaustivoPoda">Exhaustivo con poda</option>
+                    <option value="dyv">Divide y venceras</option>
+                    <option value="dyvMejorado">Divide y venceras Mejorado</option>
+                </select>
+                <input type="submit" value="Aceptar">
+            </form>
 
         </c:if>
         <c:if test="${requestScope.opcionMenu eq 'ficheroAleatorio'}">
-
+            <form onsubmit="redirigirCrearArchivo(event);">
+                <label for="talla">Introduce una talla: </label>
+                <input type="number" id="talla" name="talla"/>
+                <br><br>
+                <input type="submit" value="Aceptar">
+            </form>
         </c:if>
         <c:if test="${requestScope.opcionMenu eq 'compararEstrategiasAleatorio'}">
 

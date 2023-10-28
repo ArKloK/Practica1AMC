@@ -5,7 +5,7 @@ var mejorBerlin52JSON, mejorCh130JSON, mejorCh150JSON, mejorD493JSON, mejorD657J
 var mejoresAlgoritmosJSON;
 var mejoresAlgoritmos = [];
 var talla;
-
+var algoritmoPri, algoritmoSeg;
 window.addEventListener('load', function () {
     if (puntosJSON && lineaJSON) {
         // Llamar a la function cuando los datos de la grafica esten disponibles
@@ -53,6 +53,37 @@ function redirigirEstudiarUnaEstrategia(event){
     localStorage.setItem('talla', talla);
 
     var urlDelServlet = "/Practica1AMC/AlgoritmosController/estudiarUnaEstrategia_result?algoritmo=" + talla;
+
+    // Redirige a la URL del servlet
+    window.location.href = urlDelServlet;
+}
+
+function redirigirEstudiarDosEstrategias(event){
+
+    event.preventDefault();
+
+    algoritmoPri = document.getElementById("algoritmoPri").value;
+    algoritmoSeg = document.getElementById("algoritmoSeg").value;
+    
+    var algoritmos = [algoritmoPri, algoritmoSeg];
+     
+    localStorage.setItem('algoritmoPri', algoritmoPri);
+    localStorage.setItem('algoritmoSeg', algoritmoSeg);
+
+    var urlDelServlet = "/Practica1AMC/AlgoritmosController/estudiarDosEstrategias_result?algoritmo=" + algoritmoPri + "&algoritmodos="+algoritmoSeg;
+
+    // Redirige a la URL del servlet
+    window.location.href = urlDelServlet;
+}
+
+function redirigirCrearArchivo(event){
+    event.preventDefault();
+
+    talla = document.getElementById("talla").value;
+
+    localStorage.setItem('talla', talla);
+
+    var urlDelServlet = "/Practica1AMC/AlgoritmosController/ficheroAleatorio_result?talla=" + talla;
 
     // Redirige a la URL del servlet
     window.location.href = urlDelServlet;

@@ -46,10 +46,10 @@ public class AlgoritmosController extends HttpServlet {
     }
 
     //****************************************MANEJO DE FICHERO**********************************************
-    public void leerPuntos(File archivo) {
+    public ArrayList<Punto> leerPuntos(File archivo) {
+        ArrayList<Punto> puntos = new ArrayList<>();
         if (archivo.exists()) {
             try {
-                puntos = new ArrayList<>();
                 BufferedReader reader = new BufferedReader(new FileReader(archivo));
 
                 String line;
@@ -77,7 +77,7 @@ public class AlgoritmosController extends HttpServlet {
         } else {
             System.out.println("El archivo no existe.");
         }
-
+        return puntos;
     }
 
     public File buscarRuta(String nombreFichero) {
@@ -121,6 +121,47 @@ public class AlgoritmosController extends HttpServlet {
             p.add(punto);
         }
         return p;
+    }
+
+    public void crearFicheroAleatorio(int size) {
+        //puntos = new ArrayList<>();
+
+        String fileName = "dataset" + size + ".tsp";
+        this.file = new File(this.rutaDelProyecto);
+        for (int i = 0; i < 2; i++) {
+            file = file.getParentFile();
+        }
+        file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + fileName);
+        String filePath = file.toString();
+        System.out.println(filePath);
+        Random r = new Random();
+        r.setSeed(System.nanoTime());
+        DecimalFormat decimalFormat = new DecimalFormat("#.##########");
+        try {
+            ArrayList<Punto> puntos = GenerarPuntosAleatorios(size);
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            writer.write("NAME: " + fileName);
+            writer.newLine();
+            writer.write("TYPE: TSP");
+            writer.newLine();
+            writer.write("COMMENT: " + size + " locations");
+            writer.newLine();
+            writer.write("DIMENSION: " + size);
+            writer.newLine();
+            writer.write("EDGE_WEIGHT_TYPE: EUC_2D");
+            writer.newLine();
+            writer.write("NODE_COORD_SECTION");
+            writer.newLine();
+            for (int i = 0; i < size; i++) {
+                writer.write(i + 1 + " " + puntos.get(i).getX() + " " + puntos.get(i).getY());
+                writer.newLine();
+            }
+            //Forzar escritura en el archivo
+            writer.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     //****************************************ALGORITMOS DE ORDENACIÓN**********************************************
@@ -470,17 +511,17 @@ public class AlgoritmosController extends HttpServlet {
 
                 Gson gson = new Gson();
                 Linea mejorLinea = null;
-                leerPuntos(buscarRuta(fichero));
+                ArrayList<Punto> puntos = leerPuntos(buscarRuta(fichero));
 
                 //Comprobar que algoritmo vamos a utilizar
                 if ("exhaustivo".equals(algoritmo)) {
                     mejorLinea = calcularYCrearAlgoritmo(algoritmo, puntos);
                 } else if ("exhaustivopoda".equals(algoritmo)) {
-                    mejorLinea = calcularYCrearAlgoritmo(algoritmo, quicksortX(puntos, 0, this.puntos.size() - 1));
+                    mejorLinea = calcularYCrearAlgoritmo(algoritmo, quicksortX(puntos, 0, puntos.size() - 1));
                 } else if ("divideyvenceras".equals(algoritmo)) {
-                    mejorLinea = calcularYCrearAlgoritmo(algoritmo, quicksortX(puntos, 0, this.puntos.size() - 1));
+                    mejorLinea = calcularYCrearAlgoritmo(algoritmo, quicksortX(puntos, 0, puntos.size() - 1));
                 } else if ("dyvmejorado".equals(algoritmo)) {
-                    mejorLinea = calcularYCrearAlgoritmo(algoritmo, quicksortX(puntos, 0, this.puntos.size() - 1));
+                    mejorLinea = calcularYCrearAlgoritmo(algoritmo, quicksortX(puntos, 0, puntos.size() - 1));
                 }
 
                 System.out.println("Numero de puntos dentro " + puntos.size());
@@ -508,20 +549,15 @@ public class AlgoritmosController extends HttpServlet {
                 Gson gson = new Gson();
                 ArrayList<Linea> mejoresLineas = new ArrayList<>();
 
-                leerPuntos(buscarRuta("berlin52.tsp"));
-                mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
+                mejoresLineas.addAll(ejecutarAlgoritmos(leerPuntos(buscarRuta("berlin52.tsp"))));
 
-                leerPuntos(buscarRuta("ch130.tsp"));
-                mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
+                mejoresLineas.addAll(ejecutarAlgoritmos(leerPuntos(buscarRuta("ch130.tsp"))));
 
-                leerPuntos(buscarRuta("ch150.tsp"));
-                mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
+                mejoresLineas.addAll(ejecutarAlgoritmos(leerPuntos(buscarRuta("ch150.tsp"))));
 
-                leerPuntos(buscarRuta("d493.tsp"));
-                mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
+                mejoresLineas.addAll(ejecutarAlgoritmos(leerPuntos(buscarRuta("d493.tsp"))));
 
-                leerPuntos(buscarRuta("d657.tsp"));
-                mejoresLineas.addAll(ejecutarAlgoritmos(puntos));
+                mejoresLineas.addAll(ejecutarAlgoritmos(leerPuntos(buscarRuta("d657.tsp"))));
 
                 request.setAttribute("mejoresLineas", mejoresLineas);
 
@@ -596,6 +632,28 @@ public class AlgoritmosController extends HttpServlet {
                 vista = "/intermediate_view.jsp";
             }
             break;
+            case "/estudiarDosEstrategias_result": {
+                Gson gson = new Gson();
+                String algoritmoPri = request.getParameter("algoritmo");
+                String algoritmoSeg = request.getParameter("algoritmodos");
+
+                ArrayList<Linea> mejoresLineasPri = estudiarUnaEstrategia(algoritmoPri);
+                request.setAttribute("mejoresLineasPri", mejoresLineasPri);
+                String mejoresLineasPriJSON = gson.toJson(mejoresLineasPri);
+                request.setAttribute("mejoresLineasPriJSON", mejoresLineasPriJSON);
+                request.setAttribute("algoritmoPri", algoritmoPri);
+                //
+                ArrayList<Linea> mejoresLineasSeg = estudiarUnaEstrategia(algoritmoSeg);
+                request.setAttribute("mejoresLineasSeg", mejoresLineasSeg);
+                String mejoresLineasSegJSON = gson.toJson(mejoresLineasSeg);
+                request.setAttribute("mejoresLineasJSON", mejoresLineasSegJSON);
+                request.setAttribute("algoritmoSeg", algoritmoSeg);
+
+                request.setAttribute("opcionMenuResult", "estudiarDosEstrategias_result");
+
+                vista = "/result_view.jsp";
+            }
+            break;
             case "/compararEstrategias": {
 
                 ArrayList<Linea> mejoresLineas = new ArrayList<>();
@@ -628,6 +686,31 @@ public class AlgoritmosController extends HttpServlet {
                 request.setAttribute("opcionMenu", "ficheroAleatorio");
 
                 vista = "/intermediate_view.jsp";
+            }
+            break;
+            case "/ficheroAleatorio_result": {
+                Gson gson = new Gson();
+                String talla = request.getParameter("talla");
+                System.out.println("Talla: "+talla);
+                String nombreFichero = "dataset"+talla+".tsp";
+                System.out.println("Nombre fichero: "+nombreFichero);
+                int tallaInt = Integer.parseInt(talla);
+                crearFicheroAleatorio(tallaInt);
+                
+                //Mostrar grafica del fichero creado
+                ArrayList<Punto> puntosAleatorio = leerPuntos(buscarRuta(nombreFichero));
+                ArrayList<Linea> mejoresLineas = ejecutarAlgoritmos(puntosAleatorio);
+                
+                request.setAttribute("nombreFichero", nombreFichero);
+                request.setAttribute("mejoresLineas", mejoresLineas);
+                
+                String mejoresLineasJSON = gson.toJson(mejoresLineas);
+
+                request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
+                
+                request.setAttribute("opcionMenuResult", "ficheroAleatorio_result");
+                
+                vista = "/result_view.jsp";
             }
             break;
             case "/compararEstrategiasAleatorio": {

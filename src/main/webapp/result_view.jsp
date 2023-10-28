@@ -80,13 +80,13 @@
 
             <%
                 ArrayList<Linea> mejoresLineasEstudiarUnaEstrategia = (ArrayList<Linea>) request.getAttribute("mejoresLineas");
-                int talla = 500;
+                int tallaUnaEstrategia = 500;
 
                 out.println("<h2>" + request.getAttribute("algoritmo") + "</h2>");
                 out.println("<ul>");
                 for (Linea linea : mejoresLineasEstudiarUnaEstrategia) {
-                    out.println("<li>Talla: " + talla + "   Tiempo: " + linea.getTiempoEjecucion() + "</li>");
-                    talla += 500;
+                    out.println("<li>Talla: " + tallaUnaEstrategia + "   Tiempo: " + linea.getTiempoEjecucion() + "</li>");
+                    tallaUnaEstrategia += 500;
                 }
                 out.println("</ul>");
             %>
@@ -100,7 +100,53 @@
                 mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejoresLineasJSON")%>');
             </script>
         </c:if>  
+        <c:if test="${requestScope.opcionMenuResult eq 'estudiarDosEstrategias_result'}">
+            <h1>Estudiar dos estrategias</h1>
+            
+            <%
+                ArrayList<Linea> mejoresLineasDosEstrategias = (ArrayList<Linea>) request.getAttribute("mejoresLineasPri");
+                int tallaDosEstrategias = 500;
 
+                out.println("<h2>" + request.getAttribute("algoritmoPri") + "</h2>");
+                out.println("<ul>");
+                for (Linea linea : mejoresLineasDosEstrategias) {
+                    out.println("<li>Talla: " + tallaDosEstrategias + "   Tiempo: " + linea.getTiempoEjecucion() + "</li>");
+                    tallaDosEstrategias += 500;
+                }
+                out.println("</ul>");
+                
+                ArrayList<Linea> mejoresLineasDosEstrategiasSeg = (ArrayList<Linea>) request.getAttribute("mejoresLineasSeg");
+                tallaDosEstrategias = 500;
+
+                out.println("<h2>" + request.getAttribute("algoritmoSeg") + "</h2>");
+                out.println("<ul>");
+                for (Linea linea : mejoresLineasDosEstrategiasSeg) {
+                    out.println("<li>Talla: " + tallaDosEstrategias + "   Tiempo: " + linea.getTiempoEjecucion() + "</li>");
+                    tallaDosEstrategias += 500;
+                }
+                out.println("</ul>");
+            %>
+            
+            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
+        </c:if>
+        <c:if test="${requestScope.opcionMenuResult eq 'ficheroAleatorio_result'}">
+            <h1>Fichero aleatorio creado</h1>
+            
+            <%
+                ArrayList<Linea> mejoresLineasFicheroAleatorio = (ArrayList<Linea>) request.getAttribute("mejoresLineas");
+
+                // Recorremos la lista y mostramos sus elementos
+                out.println("<h2>Fichero con nombre " + request.getParameter("nombreFichero") + "</h2>");
+                out.println("<ul>");
+                for (Linea elemento : mejoresLineasFicheroAleatorio) {
+                    out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
+                }
+                out.println("</ul>");
+            %>
+            
+
+            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
+        </c:if>
         <c:if test="${requestScope.opcionMenuResult eq 'peorCaso'}">
             <h1>Peor Caso</h1>
             <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
@@ -110,8 +156,7 @@
             <h1>Comparar Estrategias</h1>
             <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
 
-            <%
-                ArrayList<Linea> mejoresLineasCE = (ArrayList<Linea>) request.getAttribute("mejoresLineas");
+            <%                ArrayList<Linea> mejoresLineasCE = (ArrayList<Linea>) request.getAttribute("mejoresLineas");
                 int contadorCE = 0; //Esta variable nos servirá para saber cuando cerrar los <ul>
 
                 // Recorremos la lista y mostramos sus elementos

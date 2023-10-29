@@ -4,7 +4,8 @@ var puntosJSON;
 var mejorBerlin52JSON, mejorCh130JSON, mejorCh150JSON, mejorD493JSON, mejorD657JSON;
 var mejoresAlgoritmosJSON;
 var mejoresAlgoritmos = [];
-var talla;
+var talla = [];
+var tallaJSON = [];
 var algoritmoPri, algoritmoSeg;
 window.addEventListener('load', function () {
     if (puntosJSON && lineaJSON) {
@@ -16,12 +17,12 @@ window.addEventListener('load', function () {
 });
 
 function redirigirComprobarEstrategia(event) {
-
     event.preventDefault();
 
-    talla = document.getElementById("talla").value;
+    talla.push(document.getElementById("talla").value);
+    tallaJSON = JSON.stringify(talla);
 
-    localStorage.setItem('talla', talla);
+    localStorage.setItem('tallaJSON', tallaJSON);
 
     var urlDelServlet = "/Practica1AMC/AlgoritmosController/comprobarEstrategias_result?talla=" + talla;
 
@@ -44,13 +45,14 @@ function redirigirShow() {
     window.location.href = urlDelServlet;
 }
 
-function redirigirEstudiarUnaEstrategia(event){
+function redirigirEstudiarUnaEstrategia(event) {
 
     event.preventDefault();
 
-    talla = document.getElementById("algoritmos").value;
+    talla.push(document.getElementById("algoritmos").value);
+    tallaJSON = JSON.stringify(talla);
 
-    localStorage.setItem('talla', talla);
+    localStorage.setItem('tallaJSON', tallaJSON);
 
     var urlDelServlet = "/Practica1AMC/AlgoritmosController/estudiarUnaEstrategia_result?algoritmo=" + talla;
 
@@ -58,25 +60,25 @@ function redirigirEstudiarUnaEstrategia(event){
     window.location.href = urlDelServlet;
 }
 
-function redirigirEstudiarDosEstrategias(event){
+function redirigirEstudiarDosEstrategias(event) {
 
     event.preventDefault();
 
     algoritmoPri = document.getElementById("algoritmoPri").value;
     algoritmoSeg = document.getElementById("algoritmoSeg").value;
-    
-    var algoritmos = [algoritmoPri, algoritmoSeg];
-     
-    localStorage.setItem('algoritmoPri', algoritmoPri);
-    localStorage.setItem('algoritmoSeg', algoritmoSeg);
 
-    var urlDelServlet = "/Practica1AMC/AlgoritmosController/estudiarDosEstrategias_result?algoritmo=" + algoritmoPri + "&algoritmodos="+algoritmoSeg;
+    talla = [algoritmoPri, algoritmoSeg];
+    tallaJSON = JSON.stringify(talla);
+
+    localStorage.setItem('tallaJSON', tallaJSON);
+
+    var urlDelServlet = "/Practica1AMC/AlgoritmosController/estudiarDosEstrategias_result?algoritmoPri=" + algoritmoPri + "&algoritmoSeg=" + algoritmoSeg;
 
     // Redirige a la URL del servlet
     window.location.href = urlDelServlet;
 }
 
-function redirigirCrearArchivo(event){
+function redirigirCrearArchivo(event) {
     event.preventDefault();
 
     talla = document.getElementById("talla").value;
@@ -172,17 +174,19 @@ function cargarGraficaComparar() {
 
     rehacerJSON();
     talla = localStorage.getItem('talla');
+    tallaJSON = localStorage.getItem('tallaJSON');
 
-    if (talla !== 'null') {
-        algoritmos.push(talla);
-        console.log("Talla dentro del js " + talla);
-        localStorage.setItem('talla', 'null');
+    if (tallaJSON !== 'null') {
+        console.log("ENTRA");
+        talla = JSON.parse(tallaJSON);
+        console.log("Tamano talla " + talla.length);
+        localStorage.setItem('tallaJSON', 'null');
     }
 
-    talla = localStorage.getItem('talla');
-
     if (talla !== 'null') {
-        algoritmos.push(talla);
+        for (var i = 0; i < talla.length; i++) {
+            algoritmos.push(talla[i]);
+        }
         console.log("Talla dentro del js " + talla);
         localStorage.setItem('talla', 'null');
     }

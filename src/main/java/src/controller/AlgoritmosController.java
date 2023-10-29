@@ -609,7 +609,6 @@ public class AlgoritmosController extends HttpServlet {
                 Gson gson = new Gson();
 
                 String algoritmo = request.getParameter("algoritmo");
-                System.out.println("ALGORITMO: " + algoritmo);
 
                 ArrayList<Linea> mejoresLineas = estudiarUnaEstrategia(algoritmo);
 
@@ -634,20 +633,18 @@ public class AlgoritmosController extends HttpServlet {
             break;
             case "/estudiarDosEstrategias_result": {
                 Gson gson = new Gson();
-                String algoritmoPri = request.getParameter("algoritmo");
-                String algoritmoSeg = request.getParameter("algoritmodos");
+                String algoritmoPri = request.getParameter("algoritmoPri");
+                String algoritmoSeg = request.getParameter("algoritmoSeg");
+                String[] algoritmos = {algoritmoPri, algoritmoSeg};
 
-                ArrayList<Linea> mejoresLineasPri = estudiarUnaEstrategia(algoritmoPri);
-                request.setAttribute("mejoresLineasPri", mejoresLineasPri);
-                String mejoresLineasPriJSON = gson.toJson(mejoresLineasPri);
-                request.setAttribute("mejoresLineasPriJSON", mejoresLineasPriJSON);
-                request.setAttribute("algoritmoPri", algoritmoPri);
-                //
-                ArrayList<Linea> mejoresLineasSeg = estudiarUnaEstrategia(algoritmoSeg);
-                request.setAttribute("mejoresLineasSeg", mejoresLineasSeg);
-                String mejoresLineasSegJSON = gson.toJson(mejoresLineasSeg);
-                request.setAttribute("mejoresLineasJSON", mejoresLineasSegJSON);
-                request.setAttribute("algoritmoSeg", algoritmoSeg);
+                ArrayList<Linea> mejoresLineas = estudiarUnaEstrategia(algoritmoPri);
+                mejoresLineas.addAll(estudiarUnaEstrategia(algoritmoSeg));
+                
+                request.setAttribute("mejoresLineas", mejoresLineas);
+                String mejoresLineasJSON = gson.toJson(mejoresLineas);
+                request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
+                
+                request.setAttribute("algoritmosEDE", algoritmos);
 
                 request.setAttribute("opcionMenuResult", "estudiarDosEstrategias_result");
 

@@ -102,36 +102,46 @@
         </c:if>  
         <c:if test="${requestScope.opcionMenuResult eq 'estudiarDosEstrategias_result'}">
             <h1>Estudiar dos estrategias</h1>
-            
+
+            <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
+
             <%
-                ArrayList<Linea> mejoresLineasDosEstrategias = (ArrayList<Linea>) request.getAttribute("mejoresLineasPri");
-                int tallaDosEstrategias = 500;
+                ArrayList<Linea> mejoresLineasDosEstrategias = (ArrayList<Linea>) request.getAttribute("mejoresLineas");
+                int contadorEDE = 0, contadorFicheroEDE = 0; //Esta variable nos servirá para saber cuando cerrar los <ul>
+                String[] ficherosEDE = (String[]) request.getAttribute("algoritmosEDE");
+                String[] talla = {"500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"};
 
-                out.println("<h2>" + request.getAttribute("algoritmoPri") + "</h2>");
-                out.println("<ul>");
-                for (Linea linea : mejoresLineasDosEstrategias) {
-                    out.println("<li>Talla: " + tallaDosEstrategias + "   Tiempo: " + linea.getTiempoEjecucion() + "</li>");
-                    tallaDosEstrategias += 500;
-                }
-                out.println("</ul>");
-                
-                ArrayList<Linea> mejoresLineasDosEstrategiasSeg = (ArrayList<Linea>) request.getAttribute("mejoresLineasSeg");
-                tallaDosEstrategias = 500;
+                // Recorremos la lista y mostramos sus elementos
+                for (int i = 0; i < mejoresLineasDosEstrategias.size(); i++) {
+                    if (i % 10 == 0 || i == 0) {
+                        out.println("<h2>" + ficherosEDE[contadorFicheroEDE] + "</h2>");
+                        out.println("<ul>");
+                        contadorEDE = 0;
+                        contadorFicheroEDE++;
+                    }
 
-                out.println("<h2>" + request.getAttribute("algoritmoSeg") + "</h2>");
-                out.println("<ul>");
-                for (Linea linea : mejoresLineasDosEstrategiasSeg) {
-                    out.println("<li>Talla: " + tallaDosEstrategias + "   Tiempo: " + linea.getTiempoEjecucion() + "</li>");
-                    tallaDosEstrategias += 500;
+                    out.println("<li>Talla:" + talla[contadorEDE] + " Distancia: " + mejoresLineasDosEstrategias.get(i).getDistanciaEntrePuntos() + "   Puntos calculados: " + mejoresLineasDosEstrategias.get(i).getPuntosCalculados() + "   Tiempo: " + mejoresLineasDosEstrategias.get(i).getTiempoEjecucion() + "</li>");
+                    contadorEDE++;
+
+                    if (contadorEDE == 10) {
+                        out.println("</ul>");
+                    }
                 }
-                out.println("</ul>");
             %>
-            
+
             <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
+
+            <script>
+                //Declaramos las variables que serán utilizadas para rellenar la gráfica en el js
+                const nomArchivos = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
+                const algoritmos = [];
+                var mejoresAlgoritmosJSON = [];
+                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejoresLineasJSON")%>');
+            </script>
         </c:if>
         <c:if test="${requestScope.opcionMenuResult eq 'ficheroAleatorio_result'}">
             <h1>Fichero aleatorio creado</h1>
-            
+
             <%
                 ArrayList<Linea> mejoresLineasFicheroAleatorio = (ArrayList<Linea>) request.getAttribute("mejoresLineas");
 
@@ -143,7 +153,7 @@
                 }
                 out.println("</ul>");
             %>
-            
+
 
             <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
         </c:if>

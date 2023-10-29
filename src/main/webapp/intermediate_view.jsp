@@ -33,16 +33,15 @@
 
         </c:if>
         <c:if test="${requestScope.opcionMenu eq 'estudiarDosEstrategias'}">
-            <form>
-                <select id="algoritmoPri" name="algoritmos" title="algoritmos">
+            <form onsubmit="redirigirEstudiarDosEstrategias(event);">
+                <select id="algoritmoPri" name="algoritmoPri" title="Primer algoritmo">
                     <option value="exhaustivo">Exhaustivo</option>
                     <option value="exhaustivoPoda">Exhaustivo con poda</option>
                     <option value="dyv">Divide y venceras</option>
                     <option value="dyvMejorado">Divide y venceras Mejorado</option>
                 </select>
-            </form>
-            <form onsubmit="redirigirEstudiarDosEstrategias(event);">
-                <select id="algoritmoSeg" name="algoritmos" title="algoritmos">
+
+                <select id="algoritmoSeg" name="algoritmoSeg" title="Segundo Algoritmo">
                     <option value="exhaustivo">Exhaustivo</option>
                     <option value="exhaustivoPoda">Exhaustivo con poda</option>
                     <option value="dyv">Divide y venceras</option>

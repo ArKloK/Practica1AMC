@@ -639,11 +639,24 @@ public class AlgoritmosController extends HttpServlet {
 
                 ArrayList<Linea> mejoresLineas = estudiarUnaEstrategia(algoritmoPri);
                 mejoresLineas.addAll(estudiarUnaEstrategia(algoritmoSeg));
-                
+
+                for (int i = 0; i < mejoresLineas.size(); i++) {
+                    System.out.println("Lineas sin ordenar: " + mejoresLineas.get(i).getTiempoEjecucion());
+                }
+
+                // Crear una lista auxiliar para el reordenamiento
+                ArrayList<Linea> listaReordenada = new ArrayList<>();
+
+                // Reordenar el ArrayList según el patrón
+                for (int i = 0; i < 10; i++) {
+                    listaReordenada.add(mejoresLineas.get(i));          // Elemento i
+                    listaReordenada.add(mejoresLineas.get(i + 10));     // Elemento i + 10
+                }
+
                 request.setAttribute("mejoresLineas", mejoresLineas);
-                String mejoresLineasJSON = gson.toJson(mejoresLineas);
+                String mejoresLineasJSON = gson.toJson(listaReordenada);
                 request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
-                
+
                 request.setAttribute("algoritmosEDE", algoritmos);
 
                 request.setAttribute("opcionMenuResult", "estudiarDosEstrategias_result");
@@ -688,25 +701,25 @@ public class AlgoritmosController extends HttpServlet {
             case "/ficheroAleatorio_result": {
                 Gson gson = new Gson();
                 String talla = request.getParameter("talla");
-                System.out.println("Talla: "+talla);
-                String nombreFichero = "dataset"+talla+".tsp";
-                System.out.println("Nombre fichero: "+nombreFichero);
+                System.out.println("Talla: " + talla);
+                String nombreFichero = "dataset" + talla + ".tsp";
+                System.out.println("Nombre fichero: " + nombreFichero);
                 int tallaInt = Integer.parseInt(talla);
                 crearFicheroAleatorio(tallaInt);
-                
+
                 //Mostrar grafica del fichero creado
                 ArrayList<Punto> puntosAleatorio = leerPuntos(buscarRuta(nombreFichero));
                 ArrayList<Linea> mejoresLineas = ejecutarAlgoritmos(puntosAleatorio);
-                
+
                 request.setAttribute("nombreFichero", nombreFichero);
                 request.setAttribute("mejoresLineas", mejoresLineas);
-                
+
                 String mejoresLineasJSON = gson.toJson(mejoresLineas);
 
                 request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
-                
+
                 request.setAttribute("opcionMenuResult", "ficheroAleatorio_result");
-                
+
                 vista = "/result_view.jsp";
             }
             break;
@@ -727,7 +740,6 @@ public class AlgoritmosController extends HttpServlet {
             break;
 
             case "/index": {
-
                 ejecutarAlgoritmos(GenerarPuntosAleatorios(1000));
                 vista = "/index.jsp";
             }

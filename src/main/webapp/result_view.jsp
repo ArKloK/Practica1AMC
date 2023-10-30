@@ -115,6 +115,7 @@
                 for (int i = 0; i < mejoresLineasDosEstrategias.size(); i++) {
                     if (i % 10 == 0 || i == 0) {
                         out.println("<h2>" + ficherosEDE[contadorFicheroEDE] + "</h2>");
+                        out.println("<div style='display:flex'>");
                         out.println("<ul>");
                         contadorEDE = 0;
                         contadorFicheroEDE++;
@@ -125,10 +126,10 @@
 
                     if (contadorEDE == 10) {
                         out.println("</ul>");
+                        out.println("</div>");
                     }
                 }
             %>
-
             <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
 
             <script>
@@ -146,14 +147,13 @@
                 ArrayList<Linea> mejoresLineasFicheroAleatorio = (ArrayList<Linea>) request.getAttribute("mejoresLineas");
 
                 // Recorremos la lista y mostramos sus elementos
-                out.println("<h2>Fichero con nombre " + request.getParameter("nombreFichero") + "</h2>");
+                out.println("<h2>Fichero con nombre " + request.getAttribute("nombreFichero") + "</h2>");
                 out.println("<ul>");
                 for (Linea elemento : mejoresLineasFicheroAleatorio) {
                     out.println("<li> Distancia: " + elemento.getDistanciaEntrePuntos() + "   Puntos calculados: " + elemento.getPuntosCalculados() + "   Tiempo: " + elemento.getTiempoEjecucion() + "</li>");
                 }
                 out.println("</ul>");
             %>
-
 
             <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
         </c:if>

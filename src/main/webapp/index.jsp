@@ -11,7 +11,7 @@
     <body>
         <h1 style="text-align: center">Practica 1 AMC *Antonio Toro y Carlos Camacho*</h1>
         <h2 style="text-align: center">Menú Principal</h2>
-        <h2 style="text-align: right; padding-right: 10%">Peor Caso:</h2>
+        <h2 style="text-align: right; padding-right: 10%">Peor Caso: ${requestScope.peorCaso}</h2>
         <ol class="centered-list">
             <li><a href="/Practica1AMC/AlgoritmosController/comprobarDatasets">COMPROBAR TODOS LOS DATASET (FICHEROS)</a></li>
             <li><a href="/Practica1AMC/AlgoritmosController/comprobarEstrategias">COMPROBAR TODAS LAS ESTRATEGIAS</a></li>
@@ -20,7 +20,7 @@
             <li><a href="/Practica1AMC/AlgoritmosController/compararEstrategias">COMPARAR TODAS LAS ESTRATEGIAS</a></li>
             <li><a href="/Practica1AMC/AlgoritmosController/peorCaso">ACTIVAR/DESACTIVAR PEOR CASO</a></li>
             <li><a href="/Practica1AMC/AlgoritmosController/ficheroAleatorio">CREAR FICHERO TSP ALEATORIO</a></li>
-            <li><a href="/Practica1AMC/AlgoritmosController/compararEstrategiasAleatorio">COMPARAR TODAS LAS ESTRATEGIAS DE UN FICHERO TSP CONCRETO</a></li>
+            <li><a href="/Practica1AMC/AlgoritmosController/compararEstrategiasFichero">COMPARAR TODAS LAS ESTRATEGIAS DE UN FICHERO TSP CONCRETO</a></li>
             <li><a href="/Practica1AMC/AlgoritmosController/verPuntosGrafica">VER PUNTOS EN LA GRÁFICA</a></li>
         </ol>
     </body>

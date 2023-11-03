@@ -7,6 +7,8 @@ var mejoresAlgoritmos = [];
 var talla = [];
 var tallaJSON = [];
 var algoritmoPri, algoritmoSeg;
+var nombreDelArchivo;
+
 window.addEventListener('load', function () {
     if (puntosJSON && lineaJSON) {
         // Llamar a la function cuando los datos de la grafica esten disponibles
@@ -30,7 +32,9 @@ function redirigirComprobarEstrategia(event) {
     window.location.href = urlDelServlet;
 }
 
-function redirigirShow() {
+function redirigirShow(event) {
+    event.preventDefault();
+    
     lineaJSON = null;
     puntosJSON = null;
     xyValues = [];
@@ -39,7 +43,7 @@ function redirigirShow() {
     var opcionAlgoritmo = document.getElementById("algoritmos").value;
 
     // Construye la URL del servlet con el parámetro
-    var urlDelServlet = "/Practica1AMC/AlgoritmosController/show?opcionFichero=" + opcionFichero + "&opcionAlgoritmo=" + opcionAlgoritmo;
+    var urlDelServlet = "/Practica1AMC/AlgoritmosController/verPuntosGrafica_result?opcionFichero=" + opcionFichero + "&opcionAlgoritmo=" + opcionAlgoritmo;
 
     // Redirige a la URL del servlet
     window.location.href = urlDelServlet;
@@ -78,14 +82,35 @@ function redirigirEstudiarDosEstrategias(event) {
     window.location.href = urlDelServlet;
 }
 
-function redirigirCrearArchivo(event) {
+//function redirigirCrearArchivo(event) {
+//    event.preventDefault();
+//
+//    talla = document.getElementById("talla").value;
+//
+//    localStorage.setItem('talla', talla);
+//
+//    var urlDelServlet = "/Practica1AMC/AlgoritmosController/ficheroAleatorio_result?talla=" + talla;
+//
+//    // Redirige a la URL del servlet
+//    window.location.href = urlDelServlet;
+//}
+
+function redirigircompararEstrategiasFichero(event) {
     event.preventDefault();
 
-    talla = document.getElementById("talla").value;
+    talla.push(document.getElementById("ficheros").value);
 
-    localStorage.setItem('talla', talla);
+    console.log("Nombre fichero " + document.getElementById("ficheros").value);
 
-    var urlDelServlet = "/Practica1AMC/AlgoritmosController/ficheroAleatorio_result?talla=" + talla;
+    tallaJSON = JSON.stringify(talla);
+
+    localStorage.setItem('tallaJSON', tallaJSON);
+
+    var urlDelServlet = "/Practica1AMC/AlgoritmosController/compararEstrategiasFichero_result?fichero=" + talla;
+
+//    setTimeout(function () {
+//        window.location.href = urlDelServlet;
+//    }, 3000); // 3000 ms = 3 segundos
 
     // Redirige a la URL del servlet
     window.location.href = urlDelServlet;

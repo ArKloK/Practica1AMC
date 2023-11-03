@@ -166,7 +166,8 @@
             <h1>Comparar Estrategias</h1>
             <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
 
-            <%                ArrayList<Linea> mejoresLineasCE = (ArrayList<Linea>) request.getAttribute("mejoresLineas");
+            <%
+                ArrayList<Linea> mejoresLineasCE = (ArrayList<Linea>) request.getAttribute("mejoresLineas");
                 int contadorCE = 0; //Esta variable nos servirá para saber cuando cerrar los <ul>
 
                 // Recorremos la lista y mostramos sus elementos
@@ -186,17 +187,51 @@
                 }
             %>
 
+            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
+
             <script>
                 const nomArchivos = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
                 const algoritmos = ["Exhaustivo", "Exhaustivo poda", "Divide y Venceras", "Divide y Venceras mejorado"];
                 var mejoresAlgoritmosJSON = [];
                 mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejoresLineasJSON")%>');
             </script>
-
-            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
         </c:if>
 
-        <c:if test="${requestScope.opcionMenuResult eq 'verPuntosGrafica'}">
+        <c:if test="${requestScope.opcionMenuResult eq 'compararEstrategiasFichero_result'}">
+            <h2>Comprobar Estrategias de un fichero concreto</h2>
+            <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
+
+            <%
+                ArrayList<Linea> mejoresLineasCEF = (ArrayList<Linea>) request.getAttribute("mejoresLineas");
+
+                out.println("<h2>Fichero: " + request.getAttribute("fichero") + "</h2>");
+                out.println("<ul>");
+
+                // Recorremos la lista y mostramos sus elementos
+                for (int i = 0; i < mejoresLineasCEF.size(); i++) {
+                    out.println("<li> Tiempo: " + mejoresLineasCEF.get(i).getTiempoEjecucion() + "</li>");
+                }
+
+                out.println("</ul>");
+            %>
+
+            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
+
+            <script>
+                const nomArchivos = ["Exhaustivo", "Exhaustivo poda", "Divide y Venceras", "Divide y Venceras mejorado"];
+                const algoritmos = [];
+                var mejoresAlgoritmosJSON = [];
+                mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejoresLineasJSON")%>');
+            </script>
+        </c:if>
+
+        <c:if test="${requestScope.opcionMenuResult eq 'ERRORcompararEstrategiasFichero_result'}">
+            <h1>ERROR, EL FICHERO INTRODUCIDO NO EXISTE, POR FAVOR INTRODUZCA OTRO FICHERO</h1>
+            
+            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volverIntermediateView'">Volver</button>
+        </c:if>
+
+        <c:if test="${requestScope.opcionMenuResult eq 'verPuntosGrafica_result'}">
             <h1>Los puntos mas cercanos son: ${requestScope.linea.p1.id} y ${requestScope.linea.p2.id}</h1>
             <canvas id="graficaPuntos" style="width:100%;max-width:1400px"></canvas>
 

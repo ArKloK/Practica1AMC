@@ -11,14 +11,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -40,6 +36,7 @@ public class AlgoritmosController extends HttpServlet {
     private String rutaDelProyecto;
     private File file;
     private boolean isPeorCaso;
+    int puntosCalculados;
 
     //****************************************MANEJO DE FICHERO**********************************************
     public ArrayList<Punto> leerPuntos(File archivo) {
@@ -84,7 +81,6 @@ public class AlgoritmosController extends HttpServlet {
         }
 
         file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + nombreFichero);
-        System.out.println("Ruta del fichero " + file.getAbsolutePath());
         return file;
     }
 
@@ -130,7 +126,6 @@ public class AlgoritmosController extends HttpServlet {
         }
         file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + fileName);
         String filePath = file.toString();
-        System.out.println(filePath);
         Random r = new Random();
         r.setSeed(System.nanoTime());
         DecimalFormat decimalFormat = new DecimalFormat("#.##########");
@@ -236,7 +231,6 @@ public class AlgoritmosController extends HttpServlet {
         //Declaración de variables
         double mejorCamino = Double.MAX_VALUE;
         Linea mejorLinea = new Linea();
-        int puntosCalculados = 0;
         //Empezamos la busqueda
         for (int i = 0; i < puntos.size(); i++) {
             for (int j = i + 1; j < puntos.size(); j++) {
@@ -248,7 +242,6 @@ public class AlgoritmosController extends HttpServlet {
                 }
             }
         }
-        mejorLinea.setPuntosCalculados(puntosCalculados);
         return mejorLinea;
     }
 
@@ -257,7 +250,6 @@ public class AlgoritmosController extends HttpServlet {
         Linea mejorLinea = new Linea();
         Linea actualLinea;
         Double distanciaMin;
-        int puntosCalculados = 0;
 
         //Asignamos los puntos que vamos a seleccionar en la primera iteración, definimos la linea que une a esos puntos y calculamos la distancia minima
         Punto punto1 = puntos.get(0);
@@ -287,7 +279,6 @@ public class AlgoritmosController extends HttpServlet {
             }
         }
 
-        mejorLinea.setPuntosCalculados(puntosCalculados);
         return mejorLinea;
     }
 
@@ -300,6 +291,7 @@ public class AlgoritmosController extends HttpServlet {
                 for (int j = i + 1; j <= derecha; j++) {
                     Linea actualLinea = new Linea(puntos.get(i), puntos.get(j));
                     double distancia = actualLinea.distancia();
+                    puntosCalculados++;
                     if (distancia < minDistancia) {
                         minDistancia = distancia;
                         mejorLinea = actualLinea;
@@ -357,6 +349,7 @@ public class AlgoritmosController extends HttpServlet {
                 for (int j = i + 1; j < fin; j++) {
                     Linea actualLinea = new Linea(puntosOrdenados.get(i), puntosOrdenados.get(j));
                     double distancia = actualLinea.distancia();
+                    puntosCalculados++;
                     if (distancia < distanciaMin) {
                         distanciaMin = distancia;
                         mejorLinea = actualLinea;
@@ -414,8 +407,9 @@ public class AlgoritmosController extends HttpServlet {
     public Linea calcularYCrearAlgoritmo(String algoritmoACalcular, ArrayList<Punto> puntos) {
         double tiempoEjecucion = 0;
         double endTime = 0;
-        Linea l = null;
+        Linea l = new Linea();
         double startTime = System.nanoTime();
+        puntosCalculados=0;
         switch (algoritmoACalcular) {
             case "exhaustivo":
                 l = exhaustivo(puntos);
@@ -433,6 +427,7 @@ public class AlgoritmosController extends HttpServlet {
                 break;
             case "dyv":
                 l = divideyvenceras(puntos, 0, puntos.size() - 1);
+                
                 endTime = System.nanoTime();
                 tiempoEjecucion = endTime - startTime;
                 tiempoEjecucion /= 1000000;
@@ -446,6 +441,7 @@ public class AlgoritmosController extends HttpServlet {
                 l.setTiempoEjecucion(tiempoEjecucion);
                 break;
         }
+        l.setPuntosCalculados(puntosCalculados);
         return l;
     }
 
@@ -477,9 +473,6 @@ public class AlgoritmosController extends HttpServlet {
                     break;
             }
             pos++;
-        }
-        for (int i = 0; i < lineas.size(); i++) {
-            System.out.println("Tiempo que tarda " + i + ": " + lineas.get(i).getTiempoEjecucion());
         }
         return lineas;
     }
@@ -615,10 +608,6 @@ public class AlgoritmosController extends HttpServlet {
                 ArrayList<Linea> mejoresLineas = estudiarUnaEstrategia(algoritmoPri);
                 mejoresLineas.addAll(estudiarUnaEstrategia(algoritmoSeg));
 
-                for (int i = 0; i < mejoresLineas.size(); i++) {
-                    System.out.println("Lineas sin ordenar: " + mejoresLineas.get(i).getTiempoEjecucion());
-                }
-
                 // Crear una lista auxiliar para el reordenamiento
                 ArrayList<Linea> listaReordenada = new ArrayList<>();
 
@@ -688,9 +677,7 @@ public class AlgoritmosController extends HttpServlet {
             case "/ficheroAleatorio_result": {
                 Gson gson = new Gson();
                 String talla = request.getParameter("talla");
-                System.out.println("Talla: " + talla);
                 String nombreFichero = "dataset" + talla + ".tsp";
-                System.out.println("Nombre fichero: " + nombreFichero);
                 int tallaInt = Integer.parseInt(talla);
                 crearFicheroAleatorio(tallaInt);
 

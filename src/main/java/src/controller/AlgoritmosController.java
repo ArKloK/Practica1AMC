@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package src.controller;
 
 import com.google.gson.Gson;
@@ -26,12 +22,12 @@ import src.model.Punto;
  */
 @WebServlet(name = "AlgoritmosController", urlPatterns = {"/AlgoritmosController/*"})
 public class AlgoritmosController extends HttpServlet {
-    
+
     private boolean isPeorCaso;
     Algoritmos algoritmos;
     Fichero fichero;
     GeneradorPuntos generadorPuntos;
-    
+
     public AlgoritmosController() {
         algoritmos = new Algoritmos();
         fichero = new Fichero();
@@ -78,7 +74,7 @@ public class AlgoritmosController extends HttpServlet {
         l.setPuntosCalculados(algoritmos.getPuntosCalculados());
         return l;
     }
-    
+
     public ArrayList<Linea> estudiarUnaEstrategia(String algoritmoSeleccionado) {
         ArrayList<Punto> puntosNuevo;
         ArrayList<Linea> lineas = new ArrayList<Linea>();
@@ -86,10 +82,10 @@ public class AlgoritmosController extends HttpServlet {
         for (int i = 500; i <= 5000; i += 500) {
             if (isPeorCaso) {
                 puntosNuevo = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
-                
+
             } else {
                 puntosNuevo = generadorPuntos.GenerarPuntosAleatorios(i);
-                
+
             }
             ArrayList<Punto> puntosOrdenadosX = algoritmos.quicksortX(puntosNuevo, 0, puntosNuevo.size() - 1);
             switch (algoritmoSeleccionado) {
@@ -110,7 +106,7 @@ public class AlgoritmosController extends HttpServlet {
         }
         return lineas;
     }
-    
+
     public ArrayList<Linea> ejecutarAlgoritmos(ArrayList<Punto> puntos) {
         ArrayList<Linea> mejoresLineas = new ArrayList<>();
         ArrayList<Punto> puntosOrdenadosX = algoritmos.quicksortX(puntos, 0, puntos.size() - 1);
@@ -132,49 +128,49 @@ public class AlgoritmosController extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String accion, vista = "";
         accion = request.getPathInfo();
-        
+
         ServletContext context = getServletContext();
         fichero.setRutaDelProyecto(context.getRealPath("/"));
         generadorPuntos.setFichero(fichero);
-        
+
         switch (accion) {
-            
+
             case "/comprobarDatasets": {
                 Gson gson = new Gson();
                 ArrayList<Linea> mejoresLineas = new ArrayList<>();
-                
+
                 mejoresLineas.addAll(ejecutarAlgoritmos(fichero.leerPuntos(fichero.buscarRuta("berlin52.tsp"))));
-                
+
                 mejoresLineas.addAll(ejecutarAlgoritmos(fichero.leerPuntos(fichero.buscarRuta("ch130.tsp"))));
-                
+
                 mejoresLineas.addAll(ejecutarAlgoritmos(fichero.leerPuntos(fichero.buscarRuta("ch150.tsp"))));
-                
+
                 mejoresLineas.addAll(ejecutarAlgoritmos(fichero.leerPuntos(fichero.buscarRuta("d493.tsp"))));
-                
+
                 mejoresLineas.addAll(ejecutarAlgoritmos(fichero.leerPuntos(fichero.buscarRuta("d657.tsp"))));
-                
+
                 request.setAttribute("mejoresLineas", mejoresLineas);
-                
+
                 String mejoresLineasJSON = gson.toJson(mejoresLineas);
-                
+
                 request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
                 request.setAttribute("opcionMenuResult", "comprobarDatasets");
-                
+
                 vista = "/result_view.jsp";
             }
             break;
             case "/comprobarEstrategias": {
-                
+
                 request.setAttribute("opcionMenu", "comprobarEstrategias");
-                
+
                 vista = "/intermediate_view.jsp";
-                
+
             }
             break;
-            
+
             case "/comprobarEstrategias_result": {
                 Gson gson = new Gson();
                 String talla = request.getParameter("talla");
@@ -186,51 +182,51 @@ public class AlgoritmosController extends HttpServlet {
                     puntosaux = generadorPuntos.GenerarPuntosAleatorios(tallaInt);
                 }
                 ArrayList<Linea> mejoresLineas = ejecutarAlgoritmos(puntosaux);
-                
+
                 request.setAttribute("mejoresLineas", mejoresLineas);
-                
+
                 String tallaJSON = gson.toJson(talla);
                 String mejoresLineasJSON = gson.toJson(mejoresLineas);
-                
+
                 request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
                 request.setAttribute("tallaJSON", tallaJSON);
-                
+
                 request.setAttribute("opcionMenuResult", "comprobarEstrategias_result");
-                
+
                 vista = "/result_view.jsp";
-                
+
             }
             break;
-            
+
             case "/estudiarUnaEstrategia": {
                 request.setAttribute("opcionMenu", "estudiarUnaEstrategia");
                 vista = "/intermediate_view.jsp";
             }
             break;
-            
+
             case "/estudiarUnaEstrategia_result": {
                 Gson gson = new Gson();
-                
+
                 String algoritmo = request.getParameter("algoritmo");
-                
+
                 ArrayList<Linea> mejoresLineas = estudiarUnaEstrategia(algoritmo);
-                
+
                 request.setAttribute("mejoresLineas", mejoresLineas);
-                
+
                 String mejoresLineasJSON = gson.toJson(mejoresLineas);
-                
+
                 request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
                 request.setAttribute("algoritmo", algoritmo);
-                
+
                 request.setAttribute("opcionMenuResult", "estudiarUnaEstrategia_result");
                 vista = "/result_view.jsp";
             }
             break;
-            
+
             case "/estudiarDosEstrategias": {
-                
+
                 request.setAttribute("opcionMenu", "estudiarDosEstrategias");
-                
+
                 vista = "/intermediate_view.jsp";
             }
             break;
@@ -239,7 +235,7 @@ public class AlgoritmosController extends HttpServlet {
                 String algoritmoPri = request.getParameter("algoritmoPri");
                 String algoritmoSeg = request.getParameter("algoritmoSeg");
                 String[] algoritmos = {algoritmoPri, algoritmoSeg};
-                
+
                 ArrayList<Linea> mejoresLineas = estudiarUnaEstrategia(algoritmoPri);
                 mejoresLineas.addAll(estudiarUnaEstrategia(algoritmoSeg));
 
@@ -251,24 +247,24 @@ public class AlgoritmosController extends HttpServlet {
                     listaReordenada.add(mejoresLineas.get(i));          // Elemento i
                     listaReordenada.add(mejoresLineas.get(i + 10));     // Elemento i + 10
                 }
-                
+
                 request.setAttribute("mejoresLineas", mejoresLineas);
                 String mejoresLineasJSON = gson.toJson(listaReordenada);
                 request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
-                
+
                 request.setAttribute("algoritmosEDE", algoritmos);
-                
+
                 request.setAttribute("opcionMenuResult", "estudiarDosEstrategias_result");
-                
+
                 vista = "/result_view.jsp";
             }
             break;
             case "/compararEstrategias": {
-                
+
                 ArrayList<Linea> mejoresLineas = new ArrayList<>();
                 ArrayList<Punto> puntosaux;
                 Gson gson = new Gson();
-                
+
                 for (int i = 500; i <= 5000; i += 500) {
                     if (isPeorCaso) {
                         puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
@@ -277,20 +273,20 @@ public class AlgoritmosController extends HttpServlet {
                     }
                     mejoresLineas.addAll(ejecutarAlgoritmos(puntosaux));
                 }
-                
+
                 request.setAttribute("mejoresLineas", mejoresLineas);
-                
+
                 String mejoresLineasJSON = gson.toJson(mejoresLineas);
-                
+
                 request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
-                
+
                 request.setAttribute("opcionMenuResult", "compararEstrategias");
-                
+
                 vista = "/result_view.jsp";
             }
             break;
             case "/peorCaso": {
-                
+
                 if (isPeorCaso) {
                     request.setAttribute("peorCaso", "OFF");
                     isPeorCaso = false;
@@ -298,14 +294,14 @@ public class AlgoritmosController extends HttpServlet {
                     request.setAttribute("peorCaso", "ON");
                     isPeorCaso = true;
                 }
-                
+
                 vista = "/index.jsp";
             }
             break;
             case "/ficheroAleatorio": {
-                
+
                 request.setAttribute("opcionMenu", "ficheroAleatorio");
-                
+
                 vista = "/intermediate_view.jsp";
             }
             break;
@@ -320,74 +316,74 @@ public class AlgoritmosController extends HttpServlet {
                 //Mostrar grafica del fichero creado
                 ArrayList<Punto> puntosAleatorio = fichero.leerPuntos(fichero.buscarRuta(nombreFichero));
                 ArrayList<Linea> mejoresLineas = ejecutarAlgoritmos(puntosAleatorio);
-                
+
                 request.setAttribute("nombreFichero", nombreFichero);
                 request.setAttribute("mejoresLineas", mejoresLineas);
-                
+
                 String mejoresLineasJSON = gson.toJson(mejoresLineas);
-                
+
                 request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
-                
+
                 request.setAttribute("opcionMenuResult", "ficheroAleatorio_result");
-                
+
                 vista = "/result_view.jsp";
             }
             break;
-            
+
             case "/compararEstrategiasFichero": {
-                
+
                 request.setAttribute("opcionMenu", "compararEstrategiasFichero");
-                
+
                 vista = "/intermediate_view.jsp";
             }
             break;
-            
+
             case "/compararEstrategiasFichero_result": {
-                
+
                 Gson gson = new Gson();
                 ArrayList<Linea> mejoresLineas = new ArrayList<>();
                 String nombreFichero = request.getParameter("fichero");
-                
+
                 ArrayList<Punto> puntosaux = fichero.leerPuntos(fichero.buscarRuta(nombreFichero));
-                
+
                 if (!puntosaux.isEmpty()) {
                     mejoresLineas.addAll(ejecutarAlgoritmos(puntosaux));
-                    
+
                     request.setAttribute("mejoresLineas", mejoresLineas);
-                    
+
                     String mejoresLineasJSON = gson.toJson(mejoresLineas);
-                    
+
                     request.setAttribute("fichero", nombreFichero);
                     request.setAttribute("mejoresLineasJSON", mejoresLineasJSON);
                     request.setAttribute("opcionMenuResult", "compararEstrategiasFichero_result");
-                    
+
                     vista = "/result_view.jsp";
                 } else {
                     request.setAttribute("opcionMenuResult", "ERRORcompararEstrategiasFichero_result");
-                    
+
                     vista = "/result_view.jsp";
                 }
-                
+
             }
             break;
-            
+
             case "/verPuntosGrafica": {
-                
+
                 request.setAttribute("opcionMenu", "verPuntosGrafica");
-                
+
                 vista = "/intermediate_view.jsp";
             }
             break;
-            
+
             case "/verPuntosGrafica_result": {
                 //Recoge las variables enviadas por la URL
                 String nombreFichero = request.getParameter("opcionFichero");
                 String algoritmo = request.getParameter("opcionAlgoritmo");
-                
+
                 Gson gson = new Gson();
                 Linea mejorLinea = new Linea();
                 ArrayList<Punto> puntos = fichero.leerPuntos(fichero.buscarRuta(nombreFichero));
-                
+
                 if (null != algoritmo) //Comprobar que algoritmo vamos a utilizar
                 {
                     switch (algoritmo) {
@@ -419,14 +415,38 @@ public class AlgoritmosController extends HttpServlet {
                 //Mandamos los datos convertidas en JSON para que sean tratadas en el JS
                 request.setAttribute("lineaJSON", lineaJSON);
                 request.setAttribute("puntosJSON", puntosJSON);
-                
+
                 request.setAttribute("opcionMenuResult", "verPuntosGrafica_result");
 
                 //Indicamos a que vista queremos que nos mande luego de ejecutar todo el codigo anterior
                 vista = "/result_view.jsp";
             }
             break;
-            
+
+            case "/dijkstra": {
+                ArrayList<Punto> puntos = fichero.leerPuntos(fichero.buscarRuta("berlin52.tsp"));
+                double pesos[][] = new double[puntos.size()][puntos.size()];
+
+                for (int i = 0; i < puntos.size(); i++) {
+                    for (int j = 0; j < puntos.size(); j++) {
+                        if (i != j) {
+                            Linea l = new Linea(puntos.get(i), puntos.get(j));
+                            pesos[i][j] = l.distancia();
+                        } else {
+                            pesos[i][j] = 0;
+                        }
+                    }
+                }
+
+                double distancia[] = algoritmos.vorazUnidireccional(puntos.get(0), pesos, puntos);
+
+                System.out.println("Los puntos visitados son: ");
+                for (int i = 0; i < distancia.length; i++) {
+                    System.out.println(distancia[i] + " ");
+                }
+            }
+            break;
+
             case "/index": {
                 ejecutarAlgoritmos(generadorPuntos.GenerarPuntosAleatorios(1000));
                 request.setAttribute("peorCaso", "OFF");
@@ -434,9 +454,9 @@ public class AlgoritmosController extends HttpServlet {
                 vista = "/index.jsp";
             }
             break;
-            
+
             case "/volver": {
-                
+
                 request.setAttribute("lineaJSON", null);
                 request.setAttribute("puntosJSON", null);
                 if (isPeorCaso) {
@@ -444,31 +464,31 @@ public class AlgoritmosController extends HttpServlet {
                 } else {
                     request.setAttribute("peorCaso", "OFF");
                 }
-                
+
                 vista = "/index.jsp";
             }
             break;
-            
+
             case "/volverIntermediateView": {
                 request.setAttribute("opcionMenu", "compararEstrategiasFichero");
-                
+
                 vista = "/intermediate_view.jsp";
             }
             break;
         }
-        
+
         try {
             if (!"".equals(vista)) {
                 RequestDispatcher rd = request.getRequestDispatcher(vista);
                 if (rd != null) {
                     rd.forward(request, response);
                 }
-                
+
             }
         } catch (Exception e) {
             e.getMessage();
         }
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

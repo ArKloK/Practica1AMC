@@ -116,4 +116,38 @@ public class GeneradorPuntos {
         }
         this.fichero.setFichero(file);
     }
+
+    public void crearFicheroCamino(String fichero) {
+        String fileName = fichero + ".opt.tour";
+        File file = new File(this.fichero.getRutaDelProyecto());
+        for (int i = 0; i < 2; i++) {
+            file = file.getParentFile();
+        }
+        file = new File(file.getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "TSP" + File.separator + fileName);
+        String filePath = file.toString();
+
+        //CAMBIAR STRING POR CAMINO
+        ArrayList<String> camino = null;
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+            writer.write("NAME : " + fileName);
+            writer.newLine();
+            writer.write("TYPE : TOUR");
+            writer.newLine();
+            writer.write("DIMENSION : " + camino.size());
+            writer.newLine();
+            //CAMBIAR SIZE POR SOLUCION
+            writer.write("SOLUTION : " + camino.size());
+            writer.newLine();
+            writer.write("TOUR_SECTION");
+            writer.newLine();
+            for (int i = 0; i < camino.size(); i++) {
+                writer.write(camino.get(i) + "," + camino.get(i + 1));
+                writer.newLine();
+            }
+            writer.write("EOF");
+        } catch (Exception e) {
+        }
+
+    }
 }

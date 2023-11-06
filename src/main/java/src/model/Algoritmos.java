@@ -5,6 +5,7 @@
 package src.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -262,5 +263,42 @@ public class Algoritmos {
         }
 
         return mejorLinea;
+    }
+
+    //****************************************ALGORITMOS VORACES**********************************************
+    public double[] vorazUnidireccional(Punto P, double[][] pesos, ArrayList<Punto> puntos) {
+        int n = puntos.size();
+        double[] distancias = new double[n];
+        boolean[] visitados = new boolean[n];
+
+        Arrays.fill(distancias, Double.MAX_VALUE);
+        distancias[0] = 0;
+
+        for (int i = 1; i < n; i++) {
+            int v = obtenerPuntoMasCercano(puntos, visitados, distancias);
+            visitados[v] = true;
+
+            for (int j = 1; j < n; j++) {
+                if (!visitados[j]) {
+                    distancias[j] = Math.min(distancias[j], distancias[v] + pesos[v][j]);
+                }
+            }
+        }
+
+        return distancias;
+    }
+
+    private int obtenerPuntoMasCercano(ArrayList<Punto> puntos, boolean[] visitados, double[] distancias) {
+        int puntoMasCercano = -1;
+        double distanciaMinima = Double.MAX_VALUE;
+
+        for (int i = 1; i < puntos.size(); i++) {
+            if (!visitados[i] && distancias[i] < distanciaMinima) {
+                puntoMasCercano = i;
+                distanciaMinima = distancias[i];
+            }
+        }
+
+        return puntoMasCercano;
     }
 }

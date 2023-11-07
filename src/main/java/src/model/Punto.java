@@ -64,6 +64,13 @@ public class Punto {
     public void setY(double y) {
         this.y = y;
     }
+    public double distancia(Punto otro) {
+        double distanciaEntrePuntos;
+        double distanciaX = this.x - otro.getX();
+        double distanciaY = this.y - otro.getY();
+        distanciaEntrePuntos = Math.abs(Math.sqrt(Math.pow(distanciaX, 2) + Math.pow(distanciaY, 2)));
+        return distanciaEntrePuntos;
+    }
     
     @Override
     public String toString() {

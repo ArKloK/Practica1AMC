@@ -423,34 +423,33 @@ public class AlgoritmosController extends HttpServlet {
             }
             break;
 
-            case "/dijkstra": {
-                ArrayList<Punto> puntos = fichero.leerPuntos(fichero.buscarRuta("berlin52.tsp"));
-                double pesos[][] = new double[puntos.size()][puntos.size()];
-
-                for (int i = 0; i < puntos.size(); i++) {
-                    for (int j = 0; j < puntos.size(); j++) {
-                        if (i != j) {
-                            Linea l = new Linea(puntos.get(i), puntos.get(j));
-                            pesos[i][j] = l.distancia();
-                        } else {
-                            pesos[i][j] = 0;
-                        }
-                    }
-                }
-
-                double distancia[] = algoritmos.vorazUnidireccional(puntos.get(0), pesos, puntos);
-
+            case "/unidireccional": {
+                ArrayList<Punto> puntos = fichero.leerPuntos(fichero.buscarRuta("prueba.tsp"));
+                ArrayList<Punto> recorrido = algoritmos.vorazUnidireccional(puntos);
+                
                 System.out.println("Los puntos visitados son: ");
-                for (int i = 0; i < distancia.length; i++) {
-                    System.out.println(distancia[i] + " ");
+                for (int i = 0; i < recorrido.size(); i++) {
+                    System.out.println(recorrido.get(i).getId() + " "+ recorrido.get(i));
                 }
+                System.out.println("El tamaño es: "+recorrido.size());
             }
             break;
+           /* case "/bidireccional": {
+                ArrayList<Punto> puntos = fichero.leerPuntos(fichero.buscarRuta("prueba.tsp"));
+                ArrayList<Punto> recorrido = algoritmos.vorazBidireccional(puntos);
 
+                System.out.println("Los puntos visitados son: ");
+                for (int i = 0; i < recorrido.size(); i++) {
+                    System.out.println(recorrido.get(i).getId() + " "+ recorrido.get(i));
+                }
+                System.out.println("El tamaño es: "+recorrido.size());
+            }
+            break;*/
             case "/index": {
                 ejecutarAlgoritmos(generadorPuntos.GenerarPuntosAleatorios(1000));
                 request.setAttribute("peorCaso", "OFF");
                 isPeorCaso = false;
+                
                 vista = "/index.jsp";
             }
             break;

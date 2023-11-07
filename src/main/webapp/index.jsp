@@ -22,6 +22,8 @@
             <li><a href="/Practica1AMC/AlgoritmosController/ficheroAleatorio">CREAR FICHERO TSP ALEATORIO</a></li>
             <li><a href="/Practica1AMC/AlgoritmosController/compararEstrategiasFichero">COMPARAR TODAS LAS ESTRATEGIAS DE UN FICHERO TSP CONCRETO</a></li>
             <li><a href="/Practica1AMC/AlgoritmosController/verPuntosGrafica">VER PUNTOS EN LA GRÁFICA</a></li>
+            <li><a href="/Practica1AMC/AlgoritmosController/unidireccional">ALGORITMO UNIDIRECCIONAL</a></li>
+            <li><a href="/Practica1AMC/AlgoritmosController/bidireccional">ALGORITMO BIDIRECCIONAL</a></li>
         </ol>
     </body>
 </html>

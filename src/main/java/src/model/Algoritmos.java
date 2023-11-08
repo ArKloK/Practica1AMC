@@ -5,10 +5,8 @@
 package src.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 /**
  *
@@ -16,12 +14,7 @@ import java.util.Random;
  */
 public class Algoritmos {
 
-    private ArrayList<Punto> puntos;
-    private ArrayList<Integer> rutaCompleta;
     int puntosCalculados;
-    private int n;
-    private ArrayList<Double> costeSolucion;
-    private boolean[] visitado;
 
     public void setPuntosCalculados(int pc) {
         this.puntosCalculados = pc;
@@ -300,10 +293,113 @@ public class Algoritmos {
         return tour;
     }
 
+    public ArrayList<Punto> vorazBidireccional(ArrayList<Punto> puntos) {
+
+        //tendremos dos variables Punto que irán apuntando a los puntos actuales tanto por la izquierda como por la derecha
+        Punto puntoActualIzq = new Punto(), puntoActualDer = new Punto();
+        Punto[] puntosaux = new Punto[puntos.size() * 2];
+        ArrayList<Punto> visitados = new ArrayList<>(), resultado = new ArrayList<>();
+        int n = puntosaux.length;
+        int contadorIzq = n / 2, contadorDer = (n / 2) + 1;
+        double distanciaMin = Double.MAX_VALUE;
+
+        //Colocamos el punto inicial en el centro del array
+        puntoActualIzq = puntosaux[contadorIzq] = puntos.get(0);
+        contadorIzq--;
+
+        //Calcular el punto más cercano al inicial
+        for (int i = 0; i < puntos.size(); i++) {
+            double distancia = calcularDistancia(puntosaux[n / 2], puntos.get(i));
+            if (distancia < distanciaMin) {
+                distanciaMin = distancia;
+                puntoActualDer = puntos.get(i);
+            }
+        }
+
+        //el punto más cercano al inicial se coloca en la derecha
+        puntosaux[contadorDer] = puntoActualDer;
+        contadorDer++;
+
+        visitados.add(puntoActualIzq);
+        visitados.add(puntoActualDer);
+
+        //Recorremos todo el arraylist para rellenar el array
+        for (int i = 0; i < puntos.size(); i++) {
+            Punto puntoMasCercanoIzq = new Punto(), puntoMasCercanoDer = new Punto();
+            double distanciaMinIzq = Double.MAX_VALUE, distanciaMinDer = Double.MAX_VALUE;
+
+            //Para el punto actual izquierdo comprobamos cual es su punto mas cercano que no haya sido visitado
+            for (int j = 0; j < puntos.size(); j++) {
+                if (!visitados.contains(puntos.get(j))) {
+                    System.out.println("ENTRA EN EL IF IZQ");
+                    double distancia = calcularDistancia(puntoActualIzq, puntos.get(j));
+                    if (distancia < distanciaMinIzq) {
+                        distanciaMinIzq = distancia;
+                        puntoMasCercanoIzq = puntos.get(j);
+                    }
+                }
+            }
+
+            //Para el punto actual derecho comprobamos cual es su punto mas cercano que no haya sido visitado
+            for (int j = 0; j < puntos.size(); j++) {
+                if (!visitados.contains(puntos.get(j))) {
+                    System.out.println("ENTRA EN EL IF DER");
+                    double distancia = calcularDistancia(puntoActualDer, puntos.get(j));
+                    if (distancia < distanciaMinDer) {
+                        distanciaMinDer = distancia;
+                        puntoMasCercanoDer = puntos.get(j);
+                    }
+                }
+            }
+
+            //Comprobamos cual de las dos distancias calculadas es menor, añadimos ese punto donde corresponde y actualizamos el punto actual
+            if (distanciaMinIzq < distanciaMinDer) {
+                puntosaux[contadorIzq] = puntoMasCercanoIzq;
+                puntoActualIzq = puntoMasCercanoIzq;
+                contadorIzq--;
+                visitados.add(puntoMasCercanoIzq);
+            } else {
+                puntosaux[contadorDer] = puntoMasCercanoDer;
+                puntoActualDer = puntoMasCercanoDer;
+                contadorDer++;
+                visitados.add(puntoMasCercanoDer);
+            }
+        }
+
+        System.out.println("PUNTOSAUX IZQ" + contadorIzq);
+        System.out.println("PUNTOSAUX DER" + contadorDer);
+
+        for (int i = 0; i < puntosaux.length; i++) {
+            if (puntosaux[i] != null && puntosaux[i].getId() != 0) {
+                resultado.add(puntosaux[i]);
+            }
+        }
+        
+        System.out.println("ARRAY RESULTADO " + resultado);
+        
+        //parará cuando el punto de la izquierda y el punto de la derecha sean los mismos
+        //para finalizar, reordenamos el array para que el resultado sea ciclico
+        return null;
+    }
+
+    /*public boolean puntoEnArray(Punto[] arrayDePuntos, Punto puntoBuscado) {
+        for (Punto punto : arrayDePuntos) {
+            System.out.println("PUNTO " + punto);
+            System.out.println("ARRAYPUNTO " + arrayDePuntos);
+            System.out.println("PUNTO BUSCADO " + puntoBuscado);
+
+            if (punto.equals(puntoBuscado)) {
+                // El punto buscado está en el array
+                return true;
+            }
+        }
+        // El punto buscado no está en el array
+        return false;
+    }*/
     //El nodo inicial va a moverse al hijo mas cercano y al segundo mas cercano
     //En cada ruta parcial se va a realizar un algoritmo unidireccional hasta llegar al nodo inicial
     //Una vez que se ha realizado el proceso por cada una de las rutas parciales, comparamos los costes y nos quedamos con la que menos coste tenga
-    public ArrayList<Punto> vorazBidireccional(ArrayList<Punto> puntos) {
+    /*public ArrayList<Punto> vorazBidireccional(ArrayList<Punto> puntos) {
         ArrayList<Punto> rutaResult = new ArrayList<>();
         ArrayList<Punto> visitadosDer = new ArrayList<>();
         ArrayList<Punto> visitadosIzq = new ArrayList<>();
@@ -400,18 +496,16 @@ public class Algoritmos {
         }
 
         return rutaResult;
-    }
-
-    private double calcularDistancia(Punto p1, Punto p2) {
+    }*/
+ /*private double calcularDistancia(Punto p1, Punto p2) {
         if (p1 == p2) {
             return Double.MAX_VALUE;
         }
         double dx = p1.getX() - p2.getX();
         double dy = p1.getY() - p2.getY();
         return Math.sqrt(dx * dx + dy * dy);
-    }
-    
-    /*private double calcularDistancia(Punto p1, Punto p2) {
+    }*/
+    private double calcularDistancia(Punto p1, Punto p2) {
         double[][] matriz = {
             {-1, -1, -1, -1, -1, -1},
             {-1, -1, 12, 30, 100, 10},
@@ -423,6 +517,5 @@ public class Algoritmos {
             matriz[p1.getId()][p2.getId()] = Double.MAX_VALUE;
         }
         return matriz[p1.getId()][p2.getId()];
-    }*/
-
+    }
 }

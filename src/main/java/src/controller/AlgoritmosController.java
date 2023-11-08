@@ -434,17 +434,22 @@ public class AlgoritmosController extends HttpServlet {
                 System.out.println("El tamaño es: "+recorrido.size());
             }
             break;
-           /* case "/bidireccional": {
-                ArrayList<Punto> puntos = fichero.leerPuntos(fichero.buscarRuta("prueba.tsp"));
+            case "/bidireccional": {
+                ArrayList<Punto> puntos = fichero.leerPuntos(fichero.buscarRuta("berlin52.tsp"));
+                
+                System.out.println("puntos " + puntos);
+                
                 ArrayList<Punto> recorrido = algoritmos.vorazBidireccional(puntos);
-
+                
+                System.out.println("recorrido " + recorrido);
+                
                 System.out.println("Los puntos visitados son: ");
                 for (int i = 0; i < recorrido.size(); i++) {
                     System.out.println(recorrido.get(i).getId() + " "+ recorrido.get(i));
                 }
                 System.out.println("El tamaño es: "+recorrido.size());
             }
-            break;*/
+            break;
             case "/index": {
                 ejecutarAlgoritmos(generadorPuntos.GenerarPuntosAleatorios(1000));
                 request.setAttribute("peorCaso", "OFF");

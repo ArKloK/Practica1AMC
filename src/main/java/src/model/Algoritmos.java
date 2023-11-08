@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
@@ -273,7 +274,6 @@ public class Algoritmos {
     //****************************************ALGORITMOS VORACES**********************************************
     public ArrayList<Punto> vorazUnidireccional(ArrayList<Punto> puntos) {
         double distanciaTotal = 0;
-        int n = puntos.size();
         ArrayList<Punto> tour = new ArrayList<>();
         Punto primerPunto = puntos.get(0);
         tour.add(primerPunto);
@@ -281,16 +281,11 @@ public class Algoritmos {
             Punto actual = tour.get(tour.size() - 1);
             Punto masCercano = null;
             double distanciaMin = Double.MAX_VALUE;
-            int contador = 0;
-            System.out.println("Punto actual es: " + actual.getId());
             for (Punto punto : puntos) {
-                contador++;
                 if (!tour.contains(punto)) {
                     double distancia = calcularDistancia(actual, punto);
-                    System.out.println("Distancia del punto: " + actual.getId() + " al " + contador + " es : " + distancia);
                     if (distancia < distanciaMin) {
                         distanciaMin = distancia;
-                        System.out.println("Me quedo con: " + distanciaMin);
                         masCercano = punto;
                     }
                 }
@@ -305,193 +300,129 @@ public class Algoritmos {
         return tour;
     }
 
-   /* public ArrayList<Punto> vorazBidireccional(ArrayList<Punto> puntos) {
-        ArrayList<Punto> tour = new ArrayList<>();
-        int c = 0;
-        Punto primerPunto = puntos.get(0);
-        tour.add(primerPunto);
-        ArrayList<Punto> tourFinal = new ArrayList<>();
-        ArrayList<Punto> tourPrincipio = new ArrayList<>();
-        ArrayList<Punto> tourTotalmenteFinal = new ArrayList<>();
-        while (tour.size() < puntos.size() || c < 10) {
-            c++;
-            Punto actual = tour.get(tour.size() - 1);
-            Punto masCercanoInicio = null;
-            Punto masCercanoFinal = null;
-            double distanciaMinInicio = Double.MAX_VALUE;
-            double distanciaMinFinal = Double.MAX_VALUE;
-            int contador = 0;
-            for (Punto punto : puntos) {
-                contador++; 
-                if (!tour.contains(punto)) {
-                    //double distanciaInicio = actual.distancia(punto);
-                    double distanciaInicio = calcularDistancia(actual, punto);
-                    //double distanciaFinal = tour.get(0).distancia(punto);
-                    double distanciaFinal = calcularDistancia(tour.get(0), punto);
-                    if (distanciaInicio < distanciaMinInicio) {
-                        distanciaMinInicio = distanciaInicio;
-                        masCercanoInicio = punto;
-                    }
-                    if (distanciaFinal < distanciaMinFinal) {
-                        distanciaMinFinal = distanciaFinal;
-                        masCercanoFinal = punto;
+    //El nodo inicial va a moverse al hijo mas cercano y al segundo mas cercano
+    //En cada ruta parcial se va a realizar un algoritmo unidireccional hasta llegar al nodo inicial
+    //Una vez que se ha realizado el proceso por cada una de las rutas parciales, comparamos los costes y nos quedamos con la que menos coste tenga
+    public ArrayList<Punto> vorazBidireccional(ArrayList<Punto> puntos) {
+        ArrayList<Punto> rutaResult = new ArrayList<>();
+        ArrayList<Punto> visitadosDer = new ArrayList<>();
+        ArrayList<Punto> visitadosIzq = new ArrayList<>();
+        double distanciaMinIzq = Double.MAX_VALUE;
+        double distanciaMinDer = Double.MAX_VALUE;
+
+        double costeIzq = 0, costeDer = 0;
+
+        Punto puntoIzq = new Punto();
+        Punto puntoDer = new Punto();
+
+        //Añadimos tanto en los arrays visitados como en los de ruta el punto inicial
+        visitadosDer.add(puntos.get(0));
+        visitadosIzq.add(puntos.get(0));
+
+        //Calculamos los dos puntos más cercanos al punto inicial
+        for (int i = 0; i < puntos.size(); i++) {
+            double distancia = calcularDistancia(puntos.get(0), puntos.get(i));
+            if (distancia < distanciaMinIzq) {
+                distanciaMinIzq = distancia;
+                puntoIzq = puntos.get(i);
+            }
+        }
+
+        //Asignamos el punto más cercano a la rutaIzq y el segundo punto más cercano a la rutaDer
+        visitadosIzq.add(puntoIzq);
+
+        for (int i = 0; i < puntos.size(); i++) {
+            if (!visitadosIzq.contains(puntos.get(i))) {
+                double distancia = calcularDistancia(puntos.get(0), puntos.get(i));
+                if (distancia < distanciaMinDer) {
+                    distanciaMinDer = distancia;
+                    puntoDer = puntos.get(i);
+                }
+            }
+
+        }
+
+        visitadosDer.add(puntoDer);
+
+        System.out.println("Mas cercano : " + puntoIzq);
+        System.out.println("Mas cercano 2 : " + puntoDer);
+
+        while (visitadosIzq.size() < puntos.size()) {
+            Punto puntoActual = visitadosIzq.get(visitadosIzq.size() - 1);
+            System.out.println("PUNTO ACTUAL " + puntoActual.getId());
+            Punto puntoMasCercano = new Punto();
+            double distanciaMin = Double.MAX_VALUE;
+
+            for (int i = 0; i < puntos.size(); i++) {
+                if (!visitadosIzq.contains(puntos.get(i))) {
+                    double distancia = calcularDistancia(puntoActual, puntos.get(i));
+                    if (distancia < distanciaMin) {
+                        distanciaMin = distancia;
+                        puntoMasCercano = puntos.get(i);
+                        System.out.println("PUNTO MAS CERCANO " + puntoMasCercano);
                     }
                 }
             }
-            if (distanciaMinInicio < distanciaMinFinal) {
-                tourPrincipio.add(masCercanoInicio);
-                tour.add(masCercanoInicio);
-            } else {
-                //Esto esta mal 
-                tourFinal.add(masCercanoFinal);
-                tour.add(0, masCercanoFinal);
+            costeIzq += distanciaMin;
+            visitadosIzq.add(puntoMasCercano);
+        }
+
+        costeIzq += calcularDistancia(visitadosIzq.get(visitadosIzq.size() - 1), visitadosIzq.get(0));
+        visitadosIzq.add(visitadosIzq.get(0));
+
+        while (visitadosDer.size() < puntos.size()) {
+            Punto puntoActual = visitadosDer.get(visitadosDer.size() - 1);
+            System.out.println("PUNTO ACTUAL " + puntoActual.getId());
+            Punto puntoMasCercano = new Punto();
+            double distanciaMin = Double.MAX_VALUE;
+
+            for (int i = 0; i < puntos.size(); i++) {
+                if (!visitadosDer.contains(puntos.get(i))) {
+                    double distancia = calcularDistancia(puntoActual, puntos.get(i));
+                    if (distancia < distanciaMin) {
+                        distanciaMin = distancia;
+                        puntoMasCercano = puntos.get(i);
+                        System.out.println("PUNTO MAS CERCANO " + puntoMasCercano);
+                    }
+                }
             }
-        }
-        return tour;
-    } 
-    public ArrayList<Integer> vorazUnidireccional(ArrayList<Punto> puntos) {
-        
-        this.puntos = puntos;
-        this.n = puntos.size();
-        costeSolucion = new double[n];
-        visitado = new boolean[n];
-
-        int ciudadActual = 0;
-        visitado[ciudadActual] = true;
-        ArrayList<Integer> ruta = new ArrayList<>();
-        ruta.add(ciudadActual);
-
-        while (ruta.size() < n) {
-            ciudadActual = calcularMasCercano(ciudadActual);
-            visitado[ciudadActual] = true;
-            ruta.add(ciudadActual);
+            costeDer += distanciaMin;
+            visitadosDer.add(puntoMasCercano);
         }
 
-        rutaCompleta = new ArrayList<>(ruta);
-        rutaCompleta.add(ruta.get(0)); // Agregar el primer punto al final para completar el ciclo
+        costeDer += calcularDistancia(visitadosDer.get(visitadosDer.size() - 1), visitadosDer.get(0));
+        visitadosDer.add(visitadosDer.get(0));
 
-        costeSolucion[n - 1] = calcularDistancia(puntos.get(n - 1), puntos.get(0));
-
-        return rutaCompleta;
-    }
-    public ArrayList<Punto> vorazBidireccional(ArrayList<Punto> puntos) {
-        int n = puntos.size();
-        costeSolucion = new ArrayList<>();
-        ArrayList<Punto> masCerca;
-        int contador = 0, contadorA = 0, contadorB = 0;
-        ArrayList<Punto> tour = new ArrayList<>();
-
-        ArrayList<Punto> ruta = new ArrayList<>();
-        ArrayList<Punto> rutaA = new ArrayList<>();
-        ArrayList<Punto> rutaB = new ArrayList<>();
-
-        Punto puntoActual = puntos.get(0);
-        Punto puntoExtremoA = puntoActual;
-        Punto puntoExtremoB = puntoActual;
-
-        ruta.add(contador, puntoActual);
-        rutaA.add(contadorA, puntoActual);
-        rutaB.add(contadorB, puntoActual);
-
-        tour.add(puntoActual); //AÑADIR PARA VER QUE ESTA VISITADO
-
-        contador++;
-        contadorA++;
-        contadorB++;
-
-        for (int i = 1; i < n; i++) {
-            masCerca = calcularMasCercano(puntos, n, puntoExtremoA, puntoExtremoB, tour, costeSolucion, contador);
-            if (masCerca.get(0) == null) {
-                puntoExtremoB = masCerca.get(1);
-                puntoActual = puntoExtremoB;
-                rutaB.add(contadorB, puntoActual);
-                contadorB++;
-            } else {
-                puntoExtremoA = masCerca.get(0);
-                puntoActual = puntoExtremoA;
-                rutaA.add(contadorA, puntoActual);
-                ruta.add(contador, puntoActual);
-                contador++;
-                contadorA++;
-            }
-            tour.add(puntoActual);
-        }
-        for (int i = 1; i <= contadorB; i++) {
-            ruta.add(contadorA - 1 + i, rutaB.get(contadorB - i));
-        }
-
-        costeSolucion.add(n - 1, calcularDistancia(puntos.get(n - 1), puntos.get(0)));
-        return ruta;
-    }
-
-    public ArrayList<Punto> calcularMasCercano(ArrayList<Punto> puntos, int size, Punto puntoActualA, Punto puntoActualB, ArrayList<Punto> tour, ArrayList<Double> costeSolucion, int contador) {
-        double distanciaMinA = Integer.MAX_VALUE;
-        double distanciaMinB = Integer.MAX_VALUE;
-        ArrayList<Punto> masCerca = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            if (!tour.contains(puntos.get(i)) && calcularDistancia(puntos.get(i), puntoActualA) < distanciaMinA) {
-                distanciaMinA = calcularDistancia(puntos.get(i), puntoActualA);
-                masCerca.add(0, puntos.get(i));
-            }
-        }
-        for (int j = 0; j < size; j++) {
-            if (!tour.contains(puntos.get(j)) && calcularDistancia(puntos.get(j), puntoActualB) < distanciaMinB) {
-                distanciaMinB = calcularDistancia(puntos.get(j), puntoActualB);
-                masCerca.add(1, puntos.get(j));
-            }
-        }
-        if (distanciaMinA < distanciaMinB) {
-            masCerca.add(1, null);
-            costeSolucion.add(contador - 1, distanciaMinA);
+        if (costeIzq < costeDer) {
+            rutaResult = visitadosIzq;
         } else {
-            masCerca.add(0, null);
-            costeSolucion.add(contador - 1, distanciaMinB);
+            rutaResult = visitadosDer;
         }
-        return masCerca;
+
+        return rutaResult;
     }
 
-    public double calcularCosteTotal() {
-        double costeTotal = 0.0;
-        for (int i = 0; i < n - 1; i++) {
-            costeTotal += calcularDistancia(puntos.get(rutaCompleta.get(i)), puntos.get(rutaCompleta.get(i + 1)));
-        }
-        return costeTotal;
-    }
-*/
     private double calcularDistancia(Punto p1, Punto p2) {
-        double[][] matriz = {{-1, -1, -1, -1, -1, -1},
-                            {-1, -1, 12, 30, 100, 10},
-                            {-1, 12, -1, 5, 13, -1},
-                            {-1, 30, 5, -1, 15, -1},
-                            {-1, 100, 13, 15, -1, 10},
-                            {-1, 10, -1, -1, 10, -1}};
-        if (matriz[p1.getId()][p2.getId()] == -1) {
-            matriz[p1.getId()][p2.getId()] = Double.MAX_VALUE;
+        if (p1 == p2) {
+            return Double.MAX_VALUE;
         }
-        return matriz[p1.getId()][p2.getId()];
-    }
-
-    /*private double calcularDistancia(Punto p1, Punto p2) {
         double dx = p1.getX() - p2.getX();
         double dy = p1.getY() - p2.getY();
         return Math.sqrt(dx * dx + dy * dy);
     }
     
-    private int calcularMasCercano(int ciudadActual) {
-        int masCercano = -1;
-        double distanciaMinima = Double.MAX_VALUE;
-        Punto puntoActual = puntos.get(ciudadActual);
-        System.out.println("Punto " + ciudadActual);
-        for (int i = 0; i < n; i++) {
-            if (!visitado[i]) {
-                double distancia = calcularDistancia(puntoActual, puntos.get(i));
-                System.out.println("La distancia al punto " + i + " es de " + distancia);
-                if (distancia < distanciaMinima) {
-                    distanciaMinima = distancia;
-                    masCercano = i;
-                }
-            }
+    /*private double calcularDistancia(Punto p1, Punto p2) {
+        double[][] matriz = {
+            {-1, -1, -1, -1, -1, -1},
+            {-1, -1, 12, 30, 100, 10},
+            {-1, 12, -1, 5, 13, -1},
+            {-1, 30, 5, -1, 15, -1},
+            {-1, 100, 13, 15, -1, 10},
+            {-1, 10, -1, -1, 10, -1}};
+        if (matriz[p1.getId()][p2.getId()] == -1) {
+            matriz[p1.getId()][p2.getId()] = Double.MAX_VALUE;
         }
-        return masCercano;
+        return matriz[p1.getId()][p2.getId()];
     }*/
+
 }

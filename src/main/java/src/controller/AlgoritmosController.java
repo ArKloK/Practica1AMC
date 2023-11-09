@@ -489,15 +489,18 @@ public class AlgoritmosController extends HttpServlet {
                 Camino caminoUnidireccional;
                 Camino caminoBidireccional;
                 ArrayList<Punto> puntosaux;
-                for (int i = 500; i <= 5000; i += 500) {
-                    if (isPeorCaso) {
-                        puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
-                    } else {
-                        puntosaux = generadorPuntos.GenerarPuntosAleatorios(i);
+                for (int j = 0; j < 100; j++) {
+                    for (int i = 500; i <= 5000; i += 500) {
+                        if (isPeorCaso) {
+                            puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
+                        } else {
+                            puntosaux = generadorPuntos.GenerarPuntosAleatorios(i);
+                        }
+                        caminoUnidireccional = algoritmos.vorazUnidireccional(puntosaux);
+                        caminoBidireccional = algoritmos.vorazBidireccional(puntosaux);
                     }
-                    caminoUnidireccional = algoritmos.vorazUnidireccional(puntosaux);
-                    caminoBidireccional = algoritmos.vorazBidireccional(puntosaux);
                 }
+
             }
             break;
             case "/index": {

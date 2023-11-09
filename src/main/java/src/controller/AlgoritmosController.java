@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import src.model.Algoritmos;
+import src.model.Camino;
 import src.model.Fichero;
 import src.model.GeneradorPuntos;
 import src.model.Linea;
@@ -105,6 +106,22 @@ public class AlgoritmosController extends HttpServlet {
             pos++;
         }
         return lineas;
+    }
+
+    public void compararAlgortimosVoraces() {
+        Camino caminoUnidireccional;
+        Camino caminoBidireccional;
+        ArrayList<Punto> puntosaux;
+
+        for (int i = 500; i <= 5000; i += 500) {
+            if (isPeorCaso) {
+                puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
+            } else {
+                puntosaux = generadorPuntos.GenerarPuntosAleatorios(i);
+            }
+            caminoUnidireccional = algoritmos.vorazUnidireccional(puntosaux);
+            caminoBidireccional = algoritmos.vorazBidireccional(puntosaux);
+        }
     }
 
     public ArrayList<Linea> ejecutarAlgoritmos(ArrayList<Punto> puntos) {
@@ -425,34 +442,69 @@ public class AlgoritmosController extends HttpServlet {
 
             case "/unidireccional": {
                 ArrayList<Punto> puntos = fichero.leerPuntos(fichero.buscarRuta("prueba.tsp"));
-                ArrayList<Punto> recorrido = algoritmos.vorazUnidireccional(puntos);
-                
+                Camino recorrido = algoritmos.vorazUnidireccional(puntos);
+
                 System.out.println("Los puntos visitados son: ");
-                for (int i = 0; i < recorrido.size(); i++) {
-                    System.out.println(recorrido.get(i).getId() + " "+ recorrido.get(i));
+                for (int i = 0; i < recorrido.getPuntos().size(); i++) {
+                    System.out.println(recorrido.getPuntos().get(i).getId() + " " + recorrido.getPuntos().get(i));
                 }
-                System.out.println("El tamaño es: "+recorrido.size());
+                System.out.println("El tamaño es: " + recorrido.getPuntos().size());
+                Camino caminoUnidireccional;
+                ArrayList<Punto> puntosaux;
+
+                for (int i = 500; i <= 5000; i += 500) {
+                    if (isPeorCaso) {
+                        puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
+                    } else {
+                        puntosaux = generadorPuntos.GenerarPuntosAleatorios(i);
+                    }
+                    caminoUnidireccional = algoritmos.vorazUnidireccional(puntosaux);
+                }
             }
             break;
             case "/bidireccional": {
                 ArrayList<Punto> puntos = fichero.leerPuntos(fichero.buscarRuta("berlin52.tsp"));
-                
-                 ArrayList<Punto> recorrido = algoritmos.vorazBidireccional(puntos);
-                
+
+                Camino recorrido = algoritmos.vorazBidireccional(puntos);
+
                 System.out.println("recorrido " + recorrido);
-                
+
                 System.out.println("Los puntos visitados son: ");
-                for (int i = 0; i < recorrido.size(); i++) {
-                    System.out.println(recorrido.get(i).getId() + " "+ recorrido.get(i));
+                for (int i = 0; i < recorrido.getPuntos().size(); i++) {
+                    System.out.println(recorrido.getPuntos().get(i).getId() + " " + recorrido.getPuntos().get(i));
                 }
-                System.out.println("El tamaño es: "+recorrido.size());
+                System.out.println("El tamaño es: " + recorrido.getPuntos().size());
+                Camino caminoBidireccional;
+                ArrayList<Punto> puntosaux;
+                for (int i = 500; i <= 5000; i += 500) {
+                    if (isPeorCaso) {
+                        puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
+                    } else {
+                        puntosaux = generadorPuntos.GenerarPuntosAleatorios(i);
+                    }
+                    caminoBidireccional = algoritmos.vorazBidireccional(puntosaux);
+                }
+            }
+            case "/compararvoraces": {
+                Camino caminoUnidireccional;
+                Camino caminoBidireccional;
+                ArrayList<Punto> puntosaux;
+                for (int i = 500; i <= 5000; i += 500) {
+                    if (isPeorCaso) {
+                        puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
+                    } else {
+                        puntosaux = generadorPuntos.GenerarPuntosAleatorios(i);
+                    }
+                    caminoUnidireccional = algoritmos.vorazUnidireccional(puntosaux);
+                    caminoBidireccional = algoritmos.vorazBidireccional(puntosaux);
+                }
             }
             break;
             case "/index": {
                 ejecutarAlgoritmos(generadorPuntos.GenerarPuntosAleatorios(1000));
                 request.setAttribute("peorCaso", "OFF");
                 isPeorCaso = false;
-                
+
                 vista = "/index.jsp";
             }
             break;

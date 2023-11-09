@@ -13,7 +13,16 @@ import java.util.ArrayList;
 public class Camino {
 
     private ArrayList<Punto> puntos;
-    private int coste;
+    private ArrayList<Double> costePorAvance;
+    private double coste;
+
+    public ArrayList<Double> getCostePorAvance() {
+        return costePorAvance;
+    }
+
+    public void setCostePorAvance(ArrayList<Double> costePorAvance) {
+        this.costePorAvance = costePorAvance;
+    }
 
     public ArrayList<Punto> getPuntos() {
         return puntos;
@@ -23,11 +32,11 @@ public class Camino {
         this.puntos = puntos;
     }
 
-    public int getCoste() {
+    public double getCoste() {
         return coste;
     }
 
-    public void setCoste(int coste) {
+    public void setCoste(double coste) {
         this.coste = coste;
     }
 }

@@ -70,7 +70,7 @@
         </c:if>
         <c:if test="${requestScope.opcionMenu eq 'verPuntosGrafica'}">
             <h1>Fichero: </h1>
-            <form onsubmit="redirigirShow(event)">
+            <form onsubmit="redirigirVerPuntosGrafica(event)">
                 <select id="ficheros" name="ficheros" title="ficheros">
                     <option value="berlin52.tsp">Berlin52</option>
                     <option value="ch130.tsp">Ch130</option>
@@ -89,6 +89,25 @@
 
         </c:if>
 
+        <c:if test="${requestScope.opcionMenu eq 'comprobarVoracesFichero'}">
+
+            <form onsubmit="redirigirComprobarVoracesFichero(event);" method="post" enctype="multipart/form-data">
+                <label for="ficheros">Selecciona un archivo .tsp:</label>
+                <input type="text" name="ficheros" id="ficheros" accept=".tsp">
+                <input type="submit" value="Aceptar">
+            </form>
+
+        </c:if>
+
+        <c:if test="${requestScope.opcionMenu eq 'comprobarVoraces'}">
+
+            <form onsubmit="redirigirComprobarVoraces(event);" method="post" enctype="multipart/form-data">
+                <label for="talla">Introduce una talla:</label>
+                <input type="number" name="talla" id="talla" >
+                <input type="submit" value="Aceptar">
+            </form>
+
+        </c:if>
         <script src="/Practica1AMC/main.js"></script>
     </body>
 </html>

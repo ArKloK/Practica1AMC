@@ -4,8 +4,10 @@ var puntosJSON;
 var mejorBerlin52JSON, mejorCh130JSON, mejorCh150JSON, mejorD493JSON, mejorD657JSON;
 var mejoresAlgoritmosJSON;
 var mejoresAlgoritmos = [];
-var talla = [];
-var tallaJSON = [];
+var caminosJSON;
+var caminos = [];
+var leyenda = [];
+var leyendaJSON = [];
 var algoritmoPri, algoritmoSeg;
 var nombreDelArchivo;
 
@@ -15,26 +17,28 @@ window.addEventListener('load', function () {
         cargarGraficaPuntos();
     } else if (mejoresAlgoritmosJSON) {
         cargarGraficaComparar();
+    } else if (caminosJSON) {
+        cargarGraficaVoraces();
     }
 });
 
 function redirigirComprobarEstrategia(event) {
     event.preventDefault();
 
-    talla.push(document.getElementById("talla").value);
-    tallaJSON = JSON.stringify(talla);
+    leyenda.push(document.getElementById("talla").value);
+    leyendaJSON = JSON.stringify(leyenda);
 
-    localStorage.setItem('tallaJSON', tallaJSON);
+    localStorage.setItem('leyendaJSON', leyendaJSON);
 
-    var urlDelServlet = "/Practica1AMC/AlgoritmosController/comprobarEstrategias_result?talla=" + talla;
+    var urlDelServlet = "/Practica1AMC/AlgoritmosController/comprobarEstrategias_result?talla=" + leyenda;
 
     // Redirige a la URL del servlet
     window.location.href = urlDelServlet;
 }
 
-function redirigirShow(event) {
+function redirigirVerPuntosGrafica(event) {
     event.preventDefault();
-    
+
     lineaJSON = null;
     puntosJSON = null;
     xyValues = [];
@@ -53,12 +57,12 @@ function redirigirEstudiarUnaEstrategia(event) {
 
     event.preventDefault();
 
-    talla.push(document.getElementById("algoritmos").value);
-    tallaJSON = JSON.stringify(talla);
+    leyenda.push(document.getElementById("algoritmos").value);
+    leyendaJSON = JSON.stringify(leyenda);
 
-    localStorage.setItem('tallaJSON', tallaJSON);
+    localStorage.setItem('leyendaJSON', leyendaJSON);
 
-    var urlDelServlet = "/Practica1AMC/AlgoritmosController/estudiarUnaEstrategia_result?algoritmo=" + talla;
+    var urlDelServlet = "/Practica1AMC/AlgoritmosController/estudiarUnaEstrategia_result?algoritmo=" + leyenda;
 
     // Redirige a la URL del servlet
     window.location.href = urlDelServlet;
@@ -71,10 +75,10 @@ function redirigirEstudiarDosEstrategias(event) {
     algoritmoPri = document.getElementById("algoritmoPri").value;
     algoritmoSeg = document.getElementById("algoritmoSeg").value;
 
-    talla = [algoritmoPri, algoritmoSeg];
-    tallaJSON = JSON.stringify(talla);
+    leyenda = [algoritmoPri, algoritmoSeg];
+    leyendaJSON = JSON.stringify(leyenda);
 
-    localStorage.setItem('tallaJSON', tallaJSON);
+    localStorage.setItem('leyendaJSON', leyendaJSON);
 
     var urlDelServlet = "/Practica1AMC/AlgoritmosController/estudiarDosEstrategias_result?algoritmoPri=" + algoritmoPri + "&algoritmoSeg=" + algoritmoSeg;
 
@@ -82,31 +86,18 @@ function redirigirEstudiarDosEstrategias(event) {
     window.location.href = urlDelServlet;
 }
 
-//function redirigirCrearArchivo(event) {
-//    event.preventDefault();
-//
-//    talla = document.getElementById("talla").value;
-//
-//    localStorage.setItem('talla', talla);
-//
-//    var urlDelServlet = "/Practica1AMC/AlgoritmosController/ficheroAleatorio_result?talla=" + talla;
-//
-//    // Redirige a la URL del servlet
-//    window.location.href = urlDelServlet;
-//}
-
 function redirigircompararEstrategiasFichero(event) {
     event.preventDefault();
 
-    talla.push(document.getElementById("ficheros").value);
+    leyenda.push(document.getElementById("ficheros").value);
 
     console.log("Nombre fichero " + document.getElementById("ficheros").value);
 
-    tallaJSON = JSON.stringify(talla);
+    leyendaJSON = JSON.stringify(leyenda);
 
-    localStorage.setItem('tallaJSON', tallaJSON);
+    localStorage.setItem('leyendaJSON', leyendaJSON);
 
-    var urlDelServlet = "/Practica1AMC/AlgoritmosController/compararEstrategiasFichero_result?fichero=" + talla;
+    var urlDelServlet = "/Practica1AMC/AlgoritmosController/compararEstrategiasFichero_result?fichero=" + leyenda;
 
 //    setTimeout(function () {
 //        window.location.href = urlDelServlet;
@@ -114,6 +105,237 @@ function redirigircompararEstrategiasFichero(event) {
 
     // Redirige a la URL del servlet
     window.location.href = urlDelServlet;
+}
+
+function redirigirComprobarVoracesFichero(event) {
+    event.preventDefault();
+
+    leyenda.push(document.getElementById("ficheros").value);
+
+    leyendaJSON = JSON.stringify(leyenda);
+
+    localStorage.setItem('leyendaJSON', leyendaJSON);
+
+    var urlDelServlet = "/Practica1AMC/AlgoritmosController/comprobarVoracesFichero_result?fichero=" + leyenda;
+
+//    setTimeout(function () {
+//        window.location.href = urlDelServlet;
+//    }, 3000); // 3000 ms = 3 segundos
+
+    // Redirige a la URL del servlet
+    window.location.href = urlDelServlet;
+}
+
+function redirigirComprobarVoraces(event) {
+    event.preventDefault();
+
+    leyenda.push(document.getElementById("talla").value);
+
+    leyendaJSON = JSON.stringify(leyenda);
+
+    localStorage.setItem('leyendaJSON', leyendaJSON);
+
+    var urlDelServlet = "/Practica1AMC/AlgoritmosController/comprobarVoraces_result?talla=" + leyenda;
+
+//    setTimeout(function () {
+//        window.location.href = urlDelServlet;
+//    }, 3000); // 3000 ms = 3 segundos
+
+    // Redirige a la URL del servlet
+    window.location.href = urlDelServlet;
+}
+
+//Es necesario rehacer la conversion a JSON para poder acceder a los atributos de cada elemento
+function parseJSON(jsonStr) {
+    try {
+        return JSON.parse(jsonStr);
+    } catch (e) {
+        console.error("Error al analizar JSON:", e);
+        return null;
+    }
+}
+
+//Rehace la conversion a JSON y guarda el objeto en otro array que será con el que trabajaremos
+function rehacerJSON() {
+    for (var i = 0; i < mejoresAlgoritmosJSON.length; i++) {
+        mejoresAlgoritmos.push(parseJSON(mejoresAlgoritmosJSON[i]));
+    }
+}
+
+/*function rehacerJSONVoraces() {
+ console.log("CAMINOS JSON " + caminosJSON);
+ for (var i = 0; i < caminosJSON.length; i++) {
+ caminos.push(parseJSON(caminosJSON[i]));
+ }
+ console.log("CAMINOS " + caminos);
+ }*/
+
+function cargarGraficaComparar() {
+
+    rehacerJSON();
+    leyenda = localStorage.getItem('leyenda');
+    leyendaJSON = localStorage.getItem('leyendaJSON');
+
+    if (leyendaJSON !== 'null') {
+        console.log("ENTRA");
+        leyenda = JSON.parse(leyendaJSON);
+        console.log("Tamano leyenda " + leyenda.length);
+        localStorage.setItem('leyendaJSON', 'null');
+    }
+
+    if (leyenda !== 'null') {
+        for (var i = 0; i < leyenda.length; i++) {
+            algoritmos.push(leyenda[i]);
+        }
+        localStorage.setItem('leyenda', 'null');
+    }
+
+    var datos = [], pos = algoritmos.length; // Aquí almacenaremos los objetos de datos
+
+    for (var i = 0; i < algoritmos.length; i++) {
+        var dato = {
+            label: algoritmos[i],
+            data: [],
+            borderColor: "",
+            backgroundColor: ""
+        };
+
+        //La operación [j*pos+k] funciona de la siguiente manera:
+        //  j va a representar el número de ficheros que tenemos que recorrer, es decir, si hemos generado 10 fichero aleatorios, la j irá hasta 10.
+        //  pos es el número de algoritmos que vamos a comprobar, es decir, si queremos estudiar todos, sería un total de 4.
+        //  i se incrementa en el bucle anterior y nos ayudará a que cada vez que entremos en el segundo bucle no nos recoja los mismos j*pos valores.
+
+        for (var j = 0; j < ejeX.length; j++) {
+            if (mejoresAlgoritmos[0][j * pos + i] && mejoresAlgoritmos[0][j * pos + i].tiempoEjecucion !== undefined) {
+                dato.data.push(mejoresAlgoritmos[0][j * pos + i].tiempoEjecucion);
+            }
+        }
+
+        // Asigna colores de borde y fondo según corresponda
+        switch (i) {
+            case 0:
+                dato.borderColor = "rgba(75, 192, 192, 1)";
+                dato.backgroundColor = "rgba(75, 192, 192, 0.5)";
+                break;
+            case 1:
+                dato.borderColor = "rgba(255, 0, 0, 0.6)";
+                dato.backgroundColor = "rgba(255, 0, 0, 0.8)";
+                break;
+            case 2:
+                dato.borderColor = "rgba(255, 53, 157, 0.8)";
+                dato.backgroundColor = "rgba(255, 124, 192, 0.8)";
+                break;
+            case 3:
+                dato.borderColor = "rgba(93, 53, 255, 0.8)";
+                dato.backgroundColor = "rgba(163, 140, 255, 0.8)";
+                break;
+                // Agrega más casos según sea necesario
+        }
+
+        datos.push(dato);
+    }
+
+
+    var barData = {
+        labels: ejeX,
+        datasets: datos
+    };
+    var barOptions = {
+        scales: {
+            y: {
+                begginAtZero: true
+            }
+        }
+    };
+
+    var barChart = new Chart("grafica", {
+        type: 'bar',
+        data: barData,
+        options: barOptions
+    });
+}
+
+function cargarGraficaVoraces() {
+
+    leyenda = localStorage.getItem('leyenda');
+    leyendaJSON = localStorage.getItem('leyendaJSON');
+
+    if (leyendaJSON !== 'null') {
+        console.log("ENTRA");
+        leyenda = JSON.parse(leyendaJSON);
+        localStorage.setItem('leyendaJSON', 'null');
+    }
+
+    if (leyenda !== 'null') {
+        for (var i = 0; i < leyenda.length; i++) {
+            algoritmos.push(leyenda[i]);
+        }
+        localStorage.setItem('leyenda', 'null');
+    }
+
+    var datos = [], pos = algoritmos.length; // Aquí almacenaremos los objetos de datos
+
+    for (var i = 0; i < algoritmos.length; i++) {
+        var dato = {
+            label: algoritmos[i],
+            data: [],
+            borderColor: "",
+            backgroundColor: ""
+        };
+
+        //La operación [j*pos+k] funciona de la siguiente manera:
+        //  j va a representar el número de ficheros que tenemos que recorrer, es decir, si hemos generado 10 fichero aleatorios, la j irá hasta 10.
+        //  pos es el número de algoritmos que vamos a comprobar, es decir, si queremos estudiar todos, sería un total de 4.
+        //  i se incrementa en el bucle anterior y nos ayudará a que cada vez que entremos en el segundo bucle no nos recoja los mismos j*pos valores.
+
+        for (var j = 0; j < ejeX.length; j++) {
+            if (caminosJSON[j * pos + i] && caminosJSON[j * pos + i].coste !== undefined) {
+                dato.data.push(caminosJSON[j * pos + i].coste);
+            }
+        }
+
+        // Asigna colores de borde y fondo según corresponda
+        switch (i) {
+            case 0:
+                dato.borderColor = "rgba(75, 192, 192, 1)";
+                dato.backgroundColor = "rgba(75, 192, 192, 0.5)";
+                break;
+            case 1:
+                dato.borderColor = "rgba(255, 0, 0, 0.6)";
+                dato.backgroundColor = "rgba(255, 0, 0, 0.8)";
+                break;
+            case 2:
+                dato.borderColor = "rgba(255, 53, 157, 0.8)";
+                dato.backgroundColor = "rgba(255, 124, 192, 0.8)";
+                break;
+            case 3:
+                dato.borderColor = "rgba(93, 53, 255, 0.8)";
+                dato.backgroundColor = "rgba(163, 140, 255, 0.8)";
+                break;
+                // Agrega más casos según sea necesario
+        }
+
+        datos.push(dato);
+    }
+
+
+    var barData = {
+        labels: ejeX,
+        datasets: datos
+    };
+    var barOptions = {
+        scales: {
+            y: {
+                begginAtZero: true
+            }
+        }
+    };
+
+    var barChart = new Chart("grafica", {
+        type: 'bar',
+        data: barData,
+        options: barOptions
+    });
 }
 
 function cargarGraficaPuntos() {
@@ -175,110 +397,3 @@ function cargarGraficaPuntos() {
         options: scatterOptions
     });
 }
-
-//Es necesario rehacer la conversion a JSON para poder acceder a los atributos de cada elemento
-function parseJSON(jsonStr) {
-    try {
-        return JSON.parse(jsonStr);
-    } catch (e) {
-        console.error("Error al analizar JSON:", e);
-        return null;
-    }
-}
-
-var tiempoEjecucion = [];
-
-//Rehace la conversion a JSON y guarda el objeto en otro array que será con el que trabajaremos
-function rehacerJSON() {
-    for (var i = 0; i < mejoresAlgoritmosJSON.length; i++) {
-        mejoresAlgoritmos.push(parseJSON(mejoresAlgoritmosJSON[i]));
-    }
-}
-
-function cargarGraficaComparar() {
-
-    rehacerJSON();
-    talla = localStorage.getItem('talla');
-    tallaJSON = localStorage.getItem('tallaJSON');
-
-    if (tallaJSON !== 'null') {
-        console.log("ENTRA");
-        talla = JSON.parse(tallaJSON);
-        console.log("Tamano talla " + talla.length);
-        localStorage.setItem('tallaJSON', 'null');
-    }
-
-    if (talla !== 'null') {
-        for (var i = 0; i < talla.length; i++) {
-            algoritmos.push(talla[i]);
-        }
-        console.log("Talla dentro del js " + talla);
-        localStorage.setItem('talla', 'null');
-    }
-
-    var datos = [], pos = algoritmos.length; // Aquí almacenaremos los objetos de datos
-
-    for (var i = 0; i < algoritmos.length; i++) {
-        var dato = {
-            label: algoritmos[i],
-            data: [],
-            borderColor: "",
-            backgroundColor: ""
-        };
-
-        //La operación [j*pos+k] funciona de la siguiente manera:
-        //  j va a representar el número de ficheros que tenemos que recorrer, es decir, si hemos generado 10 fichero aleatorios, la j irá hasta 10.
-        //  pos es el número de algoritmos que vamos a comprobar, es decir, si queremos estudiar todos, sería un total de 4.
-        //  i se incrementa en el bucle anterior y nos ayudará a que cada vez que entremos en el segundo bucle no nos recoja los mismos j*pos valores.
-
-        for (var j = 0; j < nomArchivos.length; j++) {
-            if (mejoresAlgoritmos[0][j * pos + i] && mejoresAlgoritmos[0][j * pos + i].tiempoEjecucion !== undefined) {
-                dato.data.push(mejoresAlgoritmos[0][j * pos + i].tiempoEjecucion);
-            }
-        }
-
-        // Asigna colores de borde y fondo según corresponda
-        switch (i) {
-            case 0:
-                dato.borderColor = "rgba(75, 192, 192, 1)";
-                dato.backgroundColor = "rgba(75, 192, 192, 0.5)";
-                break;
-            case 1:
-                dato.borderColor = "rgba(255, 0, 0, 0.6)";
-                dato.backgroundColor = "rgba(255, 0, 0, 0.8)";
-                break;
-            case 2:
-                dato.borderColor = "rgba(255, 53, 157, 0.8)";
-                dato.backgroundColor = "rgba(255, 124, 192, 0.8)";
-                break;
-            case 3:
-                dato.borderColor = "rgba(93, 53, 255, 0.8)";
-                dato.backgroundColor = "rgba(163, 140, 255, 0.8)";
-                break;
-                // Agrega más casos según sea necesario
-        }
-
-        datos.push(dato);
-    }
-
-
-    var barData = {
-        //Nombre del archivo / talla
-        labels: nomArchivos,
-        datasets: datos
-    };
-    var barOptions = {
-        scales: {
-            y: {
-                begginAtZero: true
-            }
-        }
-    };
-
-    var barChart = new Chart("grafica", {
-        type: 'bar',
-        data: barData,
-        options: barOptions
-    });
-}
-

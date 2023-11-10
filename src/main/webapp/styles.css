@@ -16,9 +16,13 @@ li a:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100vh; /* Esto centrará verticalmente en la ventana completa */
-    margin-top: 5%;
 }
+
+/* Ajusta el margen inferior del primer bloque */
+.centered-list:first-child {
+    margin-bottom: 2%; /* Puedes ajustar el valor según tu preferencia */
+}
+
 
 .centered-list li {
     text-align: center; /* Para centrar el texto horizontalmente en cada elemento de la lista */

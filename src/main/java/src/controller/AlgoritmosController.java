@@ -152,11 +152,12 @@ public class AlgoritmosController extends HttpServlet {
         ServletContext context = getServletContext();
         fichero.setRutaDelProyecto(context.getRealPath("/"));
         generadorPuntos.setFichero(fichero);
+        Gson gson = new Gson();
 
         switch (accion) {
 
             case "/comprobarDatasets": {
-                Gson gson = new Gson();
+
                 ArrayList<Linea> mejoresLineas = new ArrayList<>();
 
                 mejoresLineas.addAll(ejecutarAlgoritmos(fichero.leerPuntos(fichero.buscarRuta("berlin52.tsp"))));
@@ -189,7 +190,6 @@ public class AlgoritmosController extends HttpServlet {
             break;
 
             case "/comprobarEstrategias_result": {
-                Gson gson = new Gson();
                 String talla = request.getParameter("talla");
                 int tallaInt = Integer.parseInt(talla);
                 ArrayList<Punto> puntosaux;
@@ -222,7 +222,6 @@ public class AlgoritmosController extends HttpServlet {
             break;
 
             case "/estudiarUnaEstrategia_result": {
-                Gson gson = new Gson();
 
                 String algoritmo = request.getParameter("algoritmo");
 
@@ -248,7 +247,6 @@ public class AlgoritmosController extends HttpServlet {
             }
             break;
             case "/estudiarDosEstrategias_result": {
-                Gson gson = new Gson();
                 String algoritmoPri = request.getParameter("algoritmoPri");
                 String algoritmoSeg = request.getParameter("algoritmoSeg");
                 String[] algoritmos = {algoritmoPri, algoritmoSeg};
@@ -280,7 +278,6 @@ public class AlgoritmosController extends HttpServlet {
 
                 ArrayList<Linea> mejoresLineas = new ArrayList<>();
                 ArrayList<Punto> puntosaux;
-                Gson gson = new Gson();
 
                 for (int i = 500; i <= 5000; i += 500) {
                     if (isPeorCaso) {
@@ -323,7 +320,6 @@ public class AlgoritmosController extends HttpServlet {
             }
             break;
             case "/ficheroAleatorio_result": {
-                Gson gson = new Gson();
                 String talla = request.getParameter("talla");
                 String nombreFichero = "dataset" + talla + ".tsp";
                 int tallaInt = Integer.parseInt(talla);
@@ -357,7 +353,6 @@ public class AlgoritmosController extends HttpServlet {
 
             case "/compararEstrategiasFichero_result": {
 
-                Gson gson = new Gson();
                 ArrayList<Linea> mejoresLineas = new ArrayList<>();
                 String nombreFichero = request.getParameter("fichero");
 
@@ -397,7 +392,6 @@ public class AlgoritmosController extends HttpServlet {
                 String nombreFichero = request.getParameter("opcionFichero");
                 String algoritmo = request.getParameter("opcionAlgoritmo");
 
-                Gson gson = new Gson();
                 Linea mejorLinea = new Linea();
                 ArrayList<Punto> puntos = fichero.leerPuntos(fichero.buscarRuta(nombreFichero));
 
@@ -440,67 +434,117 @@ public class AlgoritmosController extends HttpServlet {
             }
             break;
 
-            case "/unidireccional": {
-                ArrayList<Punto> puntos = fichero.leerPuntos(fichero.buscarRuta("prueba.tsp"));
-                Camino recorrido = algoritmos.vorazUnidireccional(puntos);
+            case "/comprobarVoracesMEM": {
+                ArrayList<Camino> caminos = new ArrayList<>();
+                caminos.add(algoritmos.vorazUnidireccional(fichero.leerPuntos(fichero.buscarRuta("berlin52.tsp"))));
+                caminos.add(algoritmos.vorazBidireccional(fichero.leerPuntos(fichero.buscarRuta("berlin52.tsp"))));
 
-                System.out.println("Los puntos visitados son: ");
-                for (int i = 0; i < recorrido.getPuntos().size(); i++) {
-                    System.out.println(recorrido.getPuntos().get(i).getId() + " " + recorrido.getPuntos().get(i));
-                }
-                System.out.println("El tamaño es: " + recorrido.getPuntos().size());
-                Camino caminoUnidireccional;
-                ArrayList<Punto> puntosaux;
+                caminos.add(algoritmos.vorazUnidireccional(fichero.leerPuntos(fichero.buscarRuta("ch130.tsp"))));
+                caminos.add(algoritmos.vorazBidireccional(fichero.leerPuntos(fichero.buscarRuta("ch130.tsp"))));
 
-                for (int i = 500; i <= 5000; i += 500) {
-                    if (isPeorCaso) {
-                        puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
-                    } else {
-                        puntosaux = generadorPuntos.GenerarPuntosAleatorios(i);
-                    }
-                    caminoUnidireccional = algoritmos.vorazUnidireccional(puntosaux);
-                }
+                caminos.add(algoritmos.vorazUnidireccional(fichero.leerPuntos(fichero.buscarRuta("ch150.tsp"))));
+                caminos.add(algoritmos.vorazBidireccional(fichero.leerPuntos(fichero.buscarRuta("ch150.tsp"))));
+
+                caminos.add(algoritmos.vorazUnidireccional(fichero.leerPuntos(fichero.buscarRuta("d493.tsp"))));
+                caminos.add(algoritmos.vorazBidireccional(fichero.leerPuntos(fichero.buscarRuta("d493.tsp"))));
+
+                caminos.add(algoritmos.vorazUnidireccional(fichero.leerPuntos(fichero.buscarRuta("d657.tsp"))));
+                caminos.add(algoritmos.vorazBidireccional(fichero.leerPuntos(fichero.buscarRuta("d657.tsp"))));
+
+                request.setAttribute("caminos", caminos);
+
+                String caminosJSON = gson.toJson(caminos);
+
+                request.setAttribute("caminosJSON", caminosJSON);
+                request.setAttribute("opcionMenuResult", "comprobarVoraces_resultMEM");
+
+                vista = "/result_view.jsp";
             }
             break;
-            case "/bidireccional": {
-                ArrayList<Punto> puntos = fichero.leerPuntos(fichero.buscarRuta("berlin52.tsp"));
 
-                Camino recorrido = algoritmos.vorazBidireccional(puntos);
+            case "/comprobarVoracesFichero": {
 
-                System.out.println("recorrido " + recorrido);
+                request.setAttribute("opcionMenu", "comprobarVoracesFichero");
 
-                System.out.println("Los puntos visitados son: ");
-                for (int i = 0; i < recorrido.getPuntos().size(); i++) {
-                    System.out.println(recorrido.getPuntos().get(i).getId() + " " + recorrido.getPuntos().get(i));
-                }
-                System.out.println("El tamaño es: " + recorrido.getPuntos().size());
-                Camino caminoBidireccional;
-                ArrayList<Punto> puntosaux;
-                for (int i = 500; i <= 5000; i += 500) {
-                    if (isPeorCaso) {
-                        puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
-                    } else {
-                        puntosaux = generadorPuntos.GenerarPuntosAleatorios(i);
-                    }
-                    caminoBidireccional = algoritmos.vorazBidireccional(puntosaux);
-                }
+                vista = "/intermediate_view.jsp";
             }
-            case "/compararvoraces": {
-                Camino caminoUnidireccional;
-                Camino caminoBidireccional;
+            break;
+
+            case "/comprobarVoracesFichero_result": {
+
+                ArrayList<Camino> caminos = new ArrayList<>();
+                String nombreFichero = request.getParameter("fichero");
+
+                ArrayList<Punto> puntosaux = fichero.leerPuntos(fichero.buscarRuta(nombreFichero));
+
+                if (!puntosaux.isEmpty()) {
+                    caminos.add(algoritmos.vorazUnidireccional(puntosaux));
+                    caminos.add(algoritmos.vorazBidireccional(puntosaux));
+
+                    request.setAttribute("caminos", caminos);
+
+                    String caminosJSON = gson.toJson(caminos);
+
+                    request.setAttribute("fichero", nombreFichero);
+                    request.setAttribute("caminosJSON", caminosJSON);
+                    request.setAttribute("opcionMenuResult", "comprobarVoracesFichero_result");
+                } else {
+                    request.setAttribute("opcionMenuResult", "ERRORcompararEstrategiasFichero_result");
+                }
+
+                vista = "/result_view.jsp";
+            }
+            break;
+
+            case "/comprobarVoraces": {
+                request.setAttribute("opcionMenu", "comprobarVoraces");
+
+                vista = "/intermediate_view.jsp";
+            }
+            break;
+            case "/comprobarVoraces_result": {
                 ArrayList<Punto> puntosaux;
+                ArrayList<Camino> caminos = new ArrayList<>();
+                int talla = Integer.parseInt(request.getParameter("talla"));
+
+                if (isPeorCaso) {
+                    puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(talla);
+                } else {
+                    puntosaux = generadorPuntos.GenerarPuntosAleatorios(talla);
+                }
+
+                caminos.add(algoritmos.vorazUnidireccional(puntosaux));
+                caminos.add(algoritmos.vorazBidireccional(puntosaux));
+
+                request.setAttribute("caminos", caminos);
+
+                String caminosJSON = gson.toJson(caminos);
+
+                request.setAttribute("talla", talla);
+                request.setAttribute("caminosJSON", caminosJSON);
+                request.setAttribute("opcionMenuResult", "comprobarVoraces_result");
+
+                vista = "/result_view.jsp";
+                /*double tinicio = System.nanoTime();
+
                 for (int j = 0; j < 100; j++) {
                     for (int i = 500; i <= 5000; i += 500) {
                         if (isPeorCaso) {
                             puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
                         } else {
                             puntosaux = generadorPuntos.GenerarPuntosAleatorios(i);
+
                         }
                         caminoUnidireccional = algoritmos.vorazUnidireccional(puntosaux);
                         caminoBidireccional = algoritmos.vorazBidireccional(puntosaux);
+                        System.out.println("Coste UNIDIRECCIONAL con " + i + " puntos: " + caminoUnidireccional.getCoste());
+                        System.out.println("Coste BIDIRECCIONAL con " + i + " puntos: " + caminoBidireccional.getCoste());
                     }
                 }
 
+                double tfin = System.nanoTime();
+                double tfinal = (tfin - tinicio) / 1000000000;
+                System.out.println("Tiempo total en segundos " + tfinal);*/
             }
             break;
             case "/index": {
@@ -523,13 +567,6 @@ public class AlgoritmosController extends HttpServlet {
                 }
 
                 vista = "/index.jsp";
-            }
-            break;
-
-            case "/volverIntermediateView": {
-                request.setAttribute("opcionMenu", "compararEstrategiasFichero");
-
-                vista = "/intermediate_view.jsp";
             }
             break;
         }

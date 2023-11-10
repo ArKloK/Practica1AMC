@@ -268,16 +268,16 @@ public class Algoritmos {
     public Camino vorazUnidireccional(ArrayList<Punto> puntos) {
         double distanciaTotal = 0;
         Camino devuelve = new Camino();
-        ArrayList<Punto> tour = new ArrayList<>();
+        ArrayList<Punto> visitados = new ArrayList<>();
         ArrayList<Double> costes = new ArrayList<>();
         Punto primerPunto = puntos.get(0);
-        tour.add(primerPunto);
-        while (tour.size() < puntos.size()) {
-            Punto actual = tour.get(tour.size() - 1);
+        visitados.add(primerPunto);
+        while (visitados.size() < puntos.size()) {
+            Punto actual = visitados.get(visitados.size() - 1);
             Punto masCercano = null;
             double distanciaMin = Double.MAX_VALUE;
             for (Punto punto : puntos) {
-                if (!tour.contains(punto)) {
+                if (!visitados.contains(punto)) {
                     double distancia = calcularDistancia(actual, punto);
                     if (distancia < distanciaMin) {
                         distanciaMin = distancia;
@@ -288,19 +288,18 @@ public class Algoritmos {
             costes.add(distanciaMin);
             distanciaTotal = distanciaTotal + distanciaMin;
             if (masCercano != null) {
-                tour.add(masCercano);
+                visitados.add(masCercano);
             }
         }
-        tour.add(tour.get(0));
-        devuelve.setPuntos(tour);
+        visitados.add(visitados.get(0));
+        devuelve.setPuntos(visitados);
         devuelve.setCoste(distanciaTotal);
         devuelve.setCostePorAvance(costes);
-        System.out.println("Distancia total: " + distanciaTotal);
         return devuelve;
     }
 
     public Camino vorazBidireccional(ArrayList<Punto> puntos) {
-        
+
         Camino devuelve = new Camino();
         //tendremos dos variables Punto que irán apuntando a los puntos actuales tanto por la izquierda como por la derecha
         Punto puntoActualIzq = new Punto(), puntoActualDer = new Punto();
@@ -372,7 +371,7 @@ public class Algoritmos {
                 contadorDer++;
                 visitados.add(puntoMasCercanoDer);
                 distanciaTotal = distanciaTotal + distanciaMinDer;
-                 costes.add(distanciaMinDer);
+                costes.add(distanciaMinDer);
             }
         }
         //Para unir los resultados
@@ -381,11 +380,16 @@ public class Algoritmos {
                 resultado.add(puntosaux[i]);
             }
         }
-        for (int i = contadorDer; i > (n / 2)-1; i--) {
-            if (puntosaux[i] != null && puntosaux[i].getId() != 0) {
+        for (int i = contadorDer - 1; i >= n / 2; i--) {
+            if (i >= 0 && puntosaux[i] != null && puntosaux[i].getId() != 0) {
                 resultado.add(puntosaux[i]);
             }
         }
+        /*for (int i = contadorDer; i > (n / 2) - 1; i--) {
+            if (puntosaux[i] != null && puntosaux[i].getId() != 0) {
+                resultado.add(puntosaux[i]);
+            }
+        }*/
         //parará cuando el punto de la izquierda y el punto de la derecha sean los mismos
         //para finalizar, reordenamos el array para que el resultado sea ciclico
         devuelve.setPuntos(resultado);
@@ -393,7 +397,7 @@ public class Algoritmos {
         devuelve.setCostePorAvance(costes);
         return devuelve;
     }
-    
+
     private double calcularDistancia(Punto p1, Punto p2) {
         if (p1 == p2) {
             return Double.MAX_VALUE;

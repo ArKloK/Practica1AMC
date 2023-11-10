@@ -1,3 +1,5 @@
+<%@page import="src.model.Punto"%>
+<%@page import="src.model.Camino"%>
 <%@page import="java.util.Arrays"%>
 <%@page import="java.util.ArrayList"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -39,7 +41,7 @@
             <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
             <script>
                 //Declaramos las variables que serán utilizadas para rellenar la gráfica en el js
-                const nomArchivos = ["berlin52", "ch130", "ch150", "d493", "d657"];
+                const ejeX = ["berlin52", "ch130", "ch150", "d493", "d657"];
                 const algoritmos = ["Exhaustivo", "Exhaustivo poda", "Divide y Venceras", "Divide y Venceras mejorado"];
                 var mejoresAlgoritmosJSON = [];
                 mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejoresLineasJSON")%>');
@@ -66,7 +68,7 @@
 
             <script>
                 //Declaramos las variables que serán utilizadas para rellenar la gráfica en el js
-                const nomArchivos = ["Exhaustivo", "Exhaustivo poda", "Divide y Venceras", "Divide y Venceras mejorado"];
+                const ejeX = ["Exhaustivo", "Exhaustivo poda", "Divide y Venceras", "Divide y Venceras mejorado"];
                 const algoritmos = [];
                 var mejoresAlgoritmosJSON = [];
                 mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejoresLineasJSON")%>');
@@ -94,7 +96,7 @@
 
             <script>
                 //Declaramos las variables que serán utilizadas para rellenar la gráfica en el js
-                const nomArchivos = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
+                const ejeX = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
                 const algoritmos = [];
                 var mejoresAlgoritmosJSON = [];
                 mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejoresLineasJSON")%>');
@@ -134,7 +136,7 @@
 
             <script>
                 //Declaramos las variables que serán utilizadas para rellenar la gráfica en el js
-                const nomArchivos = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
+                const ejeX = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
                 const algoritmos = [];
                 var mejoresAlgoritmosJSON = [];
                 mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejoresLineasJSON")%>');
@@ -190,7 +192,7 @@
             <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
 
             <script>
-                const nomArchivos = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
+                const ejeX = ["500", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000"];
                 const algoritmos = ["Exhaustivo", "Exhaustivo poda", "Divide y Venceras", "Divide y Venceras mejorado"];
                 var mejoresAlgoritmosJSON = [];
                 mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejoresLineasJSON")%>');
@@ -218,7 +220,7 @@
             <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
 
             <script>
-                const nomArchivos = ["Exhaustivo", "Exhaustivo poda", "Divide y Venceras", "Divide y Venceras mejorado"];
+                const ejeX = ["Exhaustivo", "Exhaustivo poda", "Divide y Venceras", "Divide y Venceras mejorado"];
                 const algoritmos = [];
                 var mejoresAlgoritmosJSON = [];
                 mejoresAlgoritmosJSON.push('<%= request.getAttribute("mejoresLineasJSON")%>');
@@ -227,8 +229,8 @@
 
         <c:if test="${requestScope.opcionMenuResult eq 'ERRORcompararEstrategiasFichero_result'}">
             <h1>ERROR, EL FICHERO INTRODUCIDO NO EXISTE, POR FAVOR INTRODUZCA OTRO FICHERO</h1>
-            
-            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volverIntermediateView'">Volver</button>
+
+            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
         </c:if>
 
         <c:if test="${requestScope.opcionMenuResult eq 'verPuntosGrafica_result'}">
@@ -245,6 +247,126 @@
             </script>
         </c:if>
 
+        <c:if test="${requestScope.opcionMenuResult eq 'comprobarVoraces_resultMEM'}">
+            <h1>Comprobar Voraces (Ficheros) </h1>
+            <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
+                <%
+                    ArrayList<Camino> caminos = (ArrayList<Camino>) request.getAttribute("caminos");
+                    int contadorCV = 0, contadorFicheroCV = 0; //Esta variable nos servirá para saber cuando cerrar los <ul>
+                    String[] ficherosCV = {"Berlin52", "Ch130", "Ch150", "D493", "D657"};
+
+                    // Recorremos la lista y mostramos sus elementos
+                    for (int i = 0; i < caminos.size(); i++) {
+                        if (i % 2 == 0 || i == 0) {
+                            out.println("<h2>" + ficherosCV[contadorFicheroCV] + "</h2>");
+                            out.println("<ul>");
+                            contadorCV = 0;
+                            contadorFicheroCV++;
+                        }
+
+                        out.println("<li> Coste " + caminos.get(i).getCoste() + "</li>");
+                        contadorCV++;
+
+                        if (contadorCV == 2) {
+                            out.println("</ul>");
+                        }
+                    }
+                %> 
+            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
+            <script>
+                //Declaramos las variables que serán utilizadas para rellenar la gráfica en el js
+                const ejeX = ["berlin52", "ch130", "ch150", "d493", "d657"];
+                const algoritmos = ["Voraz Unidireccional", "Voraz Bidireccional"];
+                var caminosJSON = [];
+                caminosJSON = <%= request.getAttribute("caminosJSON")%>;
+            </script>
+        </c:if>
+
+        <c:if test="${requestScope.opcionMenuResult eq 'comprobarVoracesFichero_result'}">
+            <h1>Comprobar Voraces TSP Concreto</h1>
+            <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
+
+            <%
+                ArrayList<Camino> caminosCVF = (ArrayList<Camino>) request.getAttribute("caminos");
+
+                out.println("<h2>Fichero: " + request.getAttribute("fichero") + "</h2>");
+                out.println("<ul>");
+
+                // Recorremos la lista y mostramos sus elementos
+                for (int i = 0; i < caminosCVF.size(); i++) {
+                    if (i == 0) {
+                        out.println("<li> Coste Unidireccional: " + caminosCVF.get(i).getCoste() + "</li>");
+                    } else {
+                        out.println("<li> Coste Bidireccional: " + caminosCVF.get(i).getCoste() + "</li>");
+                    }
+                }
+
+                out.println("</ul>");
+
+                out.println("<h3>Recorrido de la ruta usando Voraz Unidirecional</h3>");
+                for (Punto punto : caminosCVF.get(0).getPuntos()) {
+                    out.print(punto.getId() + " ");
+                }
+                out.println("<h3>Recorrido de la ruta usando Voraz Bidirecional</h3>");
+                for (Punto punto : caminosCVF.get(1).getPuntos()) {
+                    out.print(punto.getId() + " ");
+                }
+            %>
+            <br><br>
+            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
+
+            <script>
+                //Declaramos las variables que serán utilizadas para rellenar la gráfica en el js
+                const ejeX = ["Voraz Unidireccional", "Voraz Bidireccional"];
+                const algoritmos = [];
+                var caminosJSON = [];
+                caminosJSON = <%= request.getAttribute("caminosJSON")%>;
+            </script>
+
+        </c:if>
+
+        <c:if test="${requestScope.opcionMenuResult eq 'comprobarVoraces_result'}">
+            <h1>Comprobar Voraces</h1>
+            <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
+
+            <%
+                ArrayList<Camino> caminosCV = (ArrayList<Camino>) request.getAttribute("caminos");
+
+                out.println("<h2>Talla " + request.getAttribute("talla") + "</h2>");
+                out.println("<ul>");
+
+                // Recorremos la lista y mostramos sus elementos
+                for (int i = 0; i < caminosCV.size(); i++) {
+                    if (i == 0) {
+                        out.println("<li> Coste Unidireccional: " + caminosCV.get(i).getCoste() + "</li>");
+                    } else {
+                        out.println("<li> Coste Bidireccional: " + caminosCV.get(i).getCoste() + "</li>");
+                    }
+                }
+
+                out.println("</ul>");
+
+                out.println("<h3>Recorrido de la ruta usando Voraz Unidirecional</h3>");
+                for (Punto punto : caminosCV.get(0).getPuntos()) {
+                    out.print(punto.getId() + " ");
+                }
+                out.println("<h3>Recorrido de la ruta usando Voraz Bidirecional</h3>");
+                for (Punto punto : caminosCV.get(1).getPuntos()) {
+                    out.print(punto.getId() + " ");
+                }
+            %>
+            <br><br>
+            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
+
+            <script>
+                //Declaramos las variables que serán utilizadas para rellenar la gráfica en el js
+                const ejeX = ["Voraz Unidireccional", "Voraz Bidireccional"];
+                const algoritmos = [];
+                var caminosJSON = [];
+                caminosJSON = <%= request.getAttribute("caminosJSON")%>;
+            </script>
+
+        </c:if>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
         <script src="/Practica1AMC/main.js"></script>
 

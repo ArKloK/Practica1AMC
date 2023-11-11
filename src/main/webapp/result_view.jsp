@@ -368,6 +368,21 @@
             </script>
 
         </c:if>
+
+        <c:if test="${requestScope.opcionMenuResult eq 'compararVoraces_result'}">
+            <h1>Comprobar Voraces</h1>
+            <c:set var="tiempoFinal" value="${requestScope.tiempoFinal}" />
+            <c:set var="contUni" value="${requestScope.contUni}" />
+            <c:set var="contBi" value="${requestScope.contBi}" />
+
+            <h2> El metodo ha tardado en ejecutarse ${tiempoFinal} segundos</h2>
+            <h2> El algoritmo Voraz Unidireccional ha sido mejor ${contUni} veces</h2>
+            <h2> El algoritmo Voraz Bidireccional ha sido mejor ${contBi} veces</h2>
+
+            <br><br>
+            <button type="button" onclick="window.location.href = '/Practica1AMC/AlgoritmosController/volver'">Volver</button>
+
+        </c:if>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
         <script src="/Practica1AMC/main.js"></script>
 

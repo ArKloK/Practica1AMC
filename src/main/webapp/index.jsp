@@ -29,7 +29,8 @@
             <!-- ESTA OPCION ES SOLO PARA LA MEMORIA-->
             <!--<li><a href="/Practica1AMC/AlgoritmosController/comprobarVoracesMEM">COMPROBAR ESTRATEGIAS VORACES (FICHEROS) **MEMORIA**</a></li>-->
             <li><a href="/Practica1AMC/AlgoritmosController/comprobarVoracesFichero">COMPROBAR ESTRATEGIAS VORACES DE UN FICHERO TSP CONCRETO</a></li>
-            <li><a href="/Practica1AMC/AlgoritmosController/comprobarVoraces">COMPROBAR TODOS LOS ALGORITMOS VORACES</a></li>      
+            <li><a href="/Practica1AMC/AlgoritmosController/comprobarVoraces">COMPROBAR TODOS LOS ALGORITMOS VORACES</a></li>    
+            <li><a href="/Practica1AMC/AlgoritmosController/compararVoraces">COMPARAR ESTRATEGIAS VORACES</a></li>
         </ol>
     </body>
 </html>

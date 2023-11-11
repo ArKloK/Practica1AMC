@@ -514,7 +514,7 @@ public class AlgoritmosController extends HttpServlet {
 
                 this.caminos.add(algoritmos.vorazUnidireccional(puntosaux));
                 this.caminos.add(algoritmos.vorazBidireccional(puntosaux));
-                
+
                 request.setAttribute("caminos", caminos);
 
                 String caminosJSON = gson.toJson(caminos);
@@ -522,8 +522,15 @@ public class AlgoritmosController extends HttpServlet {
                 request.setAttribute("talla", talla);
                 request.setAttribute("caminosJSON", caminosJSON);
                 request.setAttribute("opcionMenuResult", "comprobarVoraces_result");
-
                 vista = "/result_view.jsp";
+
+            }
+            break;
+
+            case "/compararVoraces": {
+                int contUni = 0;
+                int contBi = 0;
+                ArrayList<Punto> puntosaux;
                 double tinicio = System.nanoTime();
                 Camino caminoUnidireccional, caminoBidireccional;
 
@@ -538,23 +545,34 @@ public class AlgoritmosController extends HttpServlet {
                         caminoUnidireccional = algoritmos.vorazUnidireccional(puntosaux);
                         caminoBidireccional = algoritmos.vorazBidireccional(puntosaux);
                         if (caminoUnidireccional.getCoste() < caminoBidireccional.getCoste()) {
-                            cont++;
+                            contUni++;
+                        } else {
+                            contBi++;
                         }
                     }
                 }
 
                 double tfin = System.nanoTime();
                 double tfinal = (tfin - tinicio) / 1000000000;
-                contBi = 100 - cont;
-                System.out.println("El unidireccional ha ganado un total de: " + cont + " veces, y el bidireccional " + contBi);
-                System.out.println("Tiempo total en segundos " + tfinal);
+
+                request.setAttribute("tiempoFinal", tfinal);
+                request.setAttribute("contUni", contUni);
+                request.setAttribute("contBi", contBi);
+                request.setAttribute("opcionMenuResult", "compararVoraces_result");
+                vista = "/result_view.jsp";
             }
             break;
+
             case "/crearFicheroVoraz": {
                 for (int i = 0; i < this.caminos.size(); i++) {
-                     this.caminos.get(i).setCostePorAvance(algoritmos.calcularCostePorAvance(this.caminos.get(i)));
-                     generadorPuntos.crearFicheroCamino(this.nombreFicheroVoraz, this.caminos.get(i), i);
+                    this.caminos.get(i).setCostePorAvance(algoritmos.calcularCostePorAvance(this.caminos.get(i)));
+                    if (nombreFicheroVoraz.contains(".tsp")) {
+                        nombreFicheroVoraz = nombreFicheroVoraz.substring(0, nombreFicheroVoraz.length() - 4);
+                    }
+                    generadorPuntos.crearFicheroCamino(this.nombreFicheroVoraz, this.caminos.get(i), i);
                 }
+
+                vista = "/index.jsp";
             }
             break;
             case "/index": {

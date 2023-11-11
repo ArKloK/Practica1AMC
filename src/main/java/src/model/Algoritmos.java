@@ -269,7 +269,6 @@ public class Algoritmos {
         double distanciaTotal = 0;
         Camino devuelve = new Camino();
         ArrayList<Punto> visitados = new ArrayList<>();
-        ArrayList<Double> costes = new ArrayList<>();
         Punto primerPunto = puntos.get(0);
         visitados.add(primerPunto);
         while (visitados.size() < puntos.size()) {
@@ -285,16 +284,16 @@ public class Algoritmos {
                     }
                 }
             }
-            costes.add(distanciaMin);
             distanciaTotal = distanciaTotal + distanciaMin;
             if (masCercano != null) {
                 visitados.add(masCercano);
             }
         }
+        double distanciaFinal = calcularDistancia(visitados.get(visitados.size() - 1), visitados.get(0));
         visitados.add(visitados.get(0));
+        distanciaTotal = distanciaTotal + distanciaFinal;
         devuelve.setPuntos(visitados);
         devuelve.setCoste(distanciaTotal);
-        devuelve.setCostePorAvance(costes);
         return devuelve;
     }
 
@@ -305,7 +304,6 @@ public class Algoritmos {
         Punto puntoActualIzq = new Punto(), puntoActualDer = new Punto();
         Punto[] puntosaux = new Punto[puntos.size() * 2];
         ArrayList<Punto> visitados = new ArrayList<>(), resultado = new ArrayList<>();
-        ArrayList<Double> costes = new ArrayList<>();
         int n = puntosaux.length;
         int contadorIzq = n / 2, contadorDer = (n / 2) + 1;
         double distanciaMin = Double.MAX_VALUE, distanciaTotal = 0;
@@ -322,7 +320,7 @@ public class Algoritmos {
                 puntoActualDer = puntos.get(i);
             }
         }
-
+        distanciaTotal = distanciaTotal + distanciaMin;
         //el punto más cercano al inicial se coloca en la derecha
         puntosaux[contadorDer] = puntoActualDer;
         contadorDer++;
@@ -364,16 +362,17 @@ public class Algoritmos {
                 contadorIzq--;
                 visitados.add(puntoMasCercanoIzq);
                 distanciaTotal = distanciaTotal + distanciaMinIzq;
-                costes.add(distanciaMinIzq);
             } else {
                 puntosaux[contadorDer] = puntoMasCercanoDer;
                 puntoActualDer = puntoMasCercanoDer;
                 contadorDer++;
                 visitados.add(puntoMasCercanoDer);
                 distanciaTotal = distanciaTotal + distanciaMinDer;
-                costes.add(distanciaMinDer);
             }
         }
+        //Calcular y sumar la ultima distancia
+        double distanciaFinal = calcularDistancia(puntosaux[contadorDer-1], puntosaux[contadorIzq+1]);
+        distanciaTotal = distanciaTotal + distanciaFinal;
         //Para unir los resultados
         for (int i = (n / 2); i > contadorIzq; i--) {
             if (puntosaux[i] != null && puntosaux[i].getId() != 0) {
@@ -394,8 +393,18 @@ public class Algoritmos {
         //para finalizar, reordenamos el array para que el resultado sea ciclico
         devuelve.setPuntos(resultado);
         devuelve.setCoste(distanciaTotal);
-        devuelve.setCostePorAvance(costes);
         return devuelve;
+    }
+
+    public ArrayList<Double> calcularCostePorAvance(Camino camino) {
+        ArrayList<Double> costesPorAvance = new ArrayList<>();
+        ArrayList<Punto> puntos = camino.getPuntos();
+        double coste = 0;
+        for (int i = 0; i < puntos.size() - 1; i++) {
+            coste = calcularDistancia(puntos.get(i), puntos.get(i + 1));
+            costesPorAvance.add(coste);
+        }
+        return costesPorAvance;
     }
 
     private double calcularDistancia(Punto p1, Punto p2) {

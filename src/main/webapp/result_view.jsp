@@ -284,6 +284,7 @@
 
         <c:if test="${requestScope.opcionMenuResult eq 'comprobarVoracesFichero_result'}">
             <h1>Comprobar Voraces TSP Concreto</h1>
+            <button onclick="window.location.href = '/Practica1AMC/AlgoritmosController/crearFicheroVoraz'" type="button">Crear ficheros</button>
             <canvas id="grafica" style="width:100%;max-width:1400px"></canvas>
 
             <%

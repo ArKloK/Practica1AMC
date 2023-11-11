@@ -117,8 +117,14 @@ public class GeneradorPuntos {
         this.fichero.setFichero(file);
     }
 
-    public void crearFicheroCamino(String fichero) {
-        String fileName = fichero + ".opt.tour";
+    public void crearFicheroCamino(String fichero, Camino camino, int index) {
+        String fileName;
+        if (index == 0) {
+            fileName = fichero + "unidireccional.opt.tour";
+        } else {
+            fileName = fichero + "bidireccional.opt.tour";
+        }
+
         File file = new File(this.fichero.getRutaDelProyecto());
         for (int i = 0; i < 2; i++) {
             file = file.getParentFile();
@@ -127,26 +133,32 @@ public class GeneradorPuntos {
         String filePath = file.toString();
 
         //CAMBIAR STRING POR CAMINO
-        ArrayList<String> camino = null;
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
             writer.write("NAME : " + fileName);
             writer.newLine();
             writer.write("TYPE : TOUR");
             writer.newLine();
-            writer.write("DIMENSION : " + camino.size());
+            writer.write("DIMENSION : " + (camino.getPuntos().size()-1));
             writer.newLine();
             //CAMBIAR SIZE POR SOLUCION
-            writer.write("SOLUTION : " + camino.size());
+            writer.write("SOLUTION : " + camino.getCoste());
             writer.newLine();
             writer.write("TOUR_SECTION");
             writer.newLine();
-            for (int i = 0; i < camino.size(); i++) {
-                writer.write(camino.get(i) + "," + camino.get(i + 1));
+            for (int i = 0; i < camino.getPuntos().size(); i++) {
+                writer.write(camino.getPuntos().get(i).getId() + ", ");
+            }
+            writer.newLine();
+            for (int i = 0; i < camino.getCostePorAvance().size(); i++) {
+                writer.write(camino.getCostePorAvance().get(i) + " - " + camino.getPuntos().get(i).getId() + "," + camino.getPuntos().get(i + 1).getId());
                 writer.newLine();
             }
             writer.write("EOF");
+            //forzar escritura
+            writer.flush();
         } catch (Exception e) {
+            System.out.println("ERROR: " + e.getMessage());
         }
 
     }

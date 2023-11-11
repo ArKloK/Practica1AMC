@@ -28,6 +28,8 @@ public class AlgoritmosController extends HttpServlet {
     Algoritmos algoritmos;
     Fichero fichero;
     GeneradorPuntos generadorPuntos;
+    ArrayList<Camino> caminos = new ArrayList<>();
+    String nombreFicheroVoraz = "";
 
     public AlgoritmosController() {
         algoritmos = new Algoritmos();
@@ -148,7 +150,6 @@ public class AlgoritmosController extends HttpServlet {
 
         String accion, vista = "";
         accion = request.getPathInfo();
-
         ServletContext context = getServletContext();
         fichero.setRutaDelProyecto(context.getRealPath("/"));
         generadorPuntos.setFichero(fichero);
@@ -471,19 +472,16 @@ public class AlgoritmosController extends HttpServlet {
             break;
 
             case "/comprobarVoracesFichero_result": {
-
-                ArrayList<Camino> caminos = new ArrayList<>();
                 String nombreFichero = request.getParameter("fichero");
-
+                this.nombreFicheroVoraz = nombreFichero;
                 ArrayList<Punto> puntosaux = fichero.leerPuntos(fichero.buscarRuta(nombreFichero));
 
                 if (!puntosaux.isEmpty()) {
-                    caminos.add(algoritmos.vorazUnidireccional(puntosaux));
-                    caminos.add(algoritmos.vorazBidireccional(puntosaux));
+                    this.caminos.add(algoritmos.vorazUnidireccional(puntosaux));
+                    this.caminos.add(algoritmos.vorazBidireccional(puntosaux));
+                    request.setAttribute("caminos", this.caminos);
 
-                    request.setAttribute("caminos", caminos);
-
-                    String caminosJSON = gson.toJson(caminos);
+                    String caminosJSON = gson.toJson(this.caminos);
 
                     request.setAttribute("fichero", nombreFichero);
                     request.setAttribute("caminosJSON", caminosJSON);
@@ -503,8 +501,9 @@ public class AlgoritmosController extends HttpServlet {
             }
             break;
             case "/comprobarVoraces_result": {
+                int cont = 0;
+                int contBi;
                 ArrayList<Punto> puntosaux;
-                ArrayList<Camino> caminos = new ArrayList<>();
                 int talla = Integer.parseInt(request.getParameter("talla"));
 
                 if (isPeorCaso) {
@@ -513,9 +512,9 @@ public class AlgoritmosController extends HttpServlet {
                     puntosaux = generadorPuntos.GenerarPuntosAleatorios(talla);
                 }
 
-                caminos.add(algoritmos.vorazUnidireccional(puntosaux));
-                caminos.add(algoritmos.vorazBidireccional(puntosaux));
-
+                this.caminos.add(algoritmos.vorazUnidireccional(puntosaux));
+                this.caminos.add(algoritmos.vorazBidireccional(puntosaux));
+                
                 request.setAttribute("caminos", caminos);
 
                 String caminosJSON = gson.toJson(caminos);
@@ -525,10 +524,11 @@ public class AlgoritmosController extends HttpServlet {
                 request.setAttribute("opcionMenuResult", "comprobarVoraces_result");
 
                 vista = "/result_view.jsp";
-                /*double tinicio = System.nanoTime();
+                double tinicio = System.nanoTime();
+                Camino caminoUnidireccional, caminoBidireccional;
 
                 for (int j = 0; j < 100; j++) {
-                    for (int i = 500; i <= 5000; i += 500) {
+                    for (int i = 500; i <= 1000; i += 500) {
                         if (isPeorCaso) {
                             puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
                         } else {
@@ -537,14 +537,24 @@ public class AlgoritmosController extends HttpServlet {
                         }
                         caminoUnidireccional = algoritmos.vorazUnidireccional(puntosaux);
                         caminoBidireccional = algoritmos.vorazBidireccional(puntosaux);
-                        System.out.println("Coste UNIDIRECCIONAL con " + i + " puntos: " + caminoUnidireccional.getCoste());
-                        System.out.println("Coste BIDIRECCIONAL con " + i + " puntos: " + caminoBidireccional.getCoste());
+                        if (caminoUnidireccional.getCoste() < caminoBidireccional.getCoste()) {
+                            cont++;
+                        }
                     }
                 }
 
                 double tfin = System.nanoTime();
                 double tfinal = (tfin - tinicio) / 1000000000;
-                System.out.println("Tiempo total en segundos " + tfinal);*/
+                contBi = 100 - cont;
+                System.out.println("El unidireccional ha ganado un total de: " + cont + " veces, y el bidireccional " + contBi);
+                System.out.println("Tiempo total en segundos " + tfinal);
+            }
+            break;
+            case "/crearFicheroVoraz": {
+                for (int i = 0; i < this.caminos.size(); i++) {
+                     this.caminos.get(i).setCostePorAvance(algoritmos.calcularCostePorAvance(this.caminos.get(i)));
+                     generadorPuntos.crearFicheroCamino(this.nombreFicheroVoraz, this.caminos.get(i), i);
+                }
             }
             break;
             case "/index": {

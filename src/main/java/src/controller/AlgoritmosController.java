@@ -110,22 +110,6 @@ public class AlgoritmosController extends HttpServlet {
         return lineas;
     }
 
-    public void compararAlgortimosVoraces() {
-        Camino caminoUnidireccional;
-        Camino caminoBidireccional;
-        ArrayList<Punto> puntosaux;
-
-        for (int i = 500; i <= 5000; i += 500) {
-            if (isPeorCaso) {
-                puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
-            } else {
-                puntosaux = generadorPuntos.GenerarPuntosAleatorios(i);
-            }
-            caminoUnidireccional = algoritmos.vorazUnidireccional(puntosaux);
-            caminoBidireccional = algoritmos.vorazBidireccional(puntosaux);
-        }
-    }
-
     public ArrayList<Linea> ejecutarAlgoritmos(ArrayList<Punto> puntos) {
         ArrayList<Linea> mejoresLineas = new ArrayList<>();
         ArrayList<Punto> puntosOrdenadosX = algoritmos.quicksortX(puntos, 0, puntos.size() - 1);
@@ -153,6 +137,7 @@ public class AlgoritmosController extends HttpServlet {
         ServletContext context = getServletContext();
         fichero.setRutaDelProyecto(context.getRealPath("/"));
         generadorPuntos.setFichero(fichero);
+        this.caminos.clear();
         Gson gson = new Gson();
 
         switch (accion) {
@@ -534,21 +519,19 @@ public class AlgoritmosController extends HttpServlet {
                 double tinicio = System.nanoTime();
                 Camino caminoUnidireccional, caminoBidireccional;
 
-                for (int j = 0; j < 100; j++) {
-                    for (int i = 500; i <= 1000; i += 500) {
-                        if (isPeorCaso) {
-                            puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
-                        } else {
-                            puntosaux = generadorPuntos.GenerarPuntosAleatorios(i);
+                for (int i = 500; i <= 5000; i += 500) {
+                    if (isPeorCaso) {
+                        puntosaux = generadorPuntos.GenerarPuntosAleatoriosPeor(i);
+                    } else {
+                        puntosaux = generadorPuntos.GenerarPuntosAleatorios(i);
 
-                        }
-                        caminoUnidireccional = algoritmos.vorazUnidireccional(puntosaux);
-                        caminoBidireccional = algoritmos.vorazBidireccional(puntosaux);
-                        if (caminoUnidireccional.getCoste() < caminoBidireccional.getCoste()) {
-                            contUni++;
-                        } else {
-                            contBi++;
-                        }
+                    }
+                    caminoUnidireccional = algoritmos.vorazUnidireccional(puntosaux);
+                    caminoBidireccional = algoritmos.vorazBidireccional(puntosaux);
+                    if (caminoUnidireccional.getCoste() < caminoBidireccional.getCoste()) {
+                        contUni++;
+                    } else {
+                        contBi++;
                     }
                 }
 

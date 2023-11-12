@@ -206,8 +206,8 @@ function cargarGraficaComparar() {
         //  i se incrementa en el bucle anterior y nos ayudará a que cada vez que entremos en el segundo bucle no nos recoja los mismos j*pos valores.
 
         for (var j = 0; j < ejeX.length; j++) {
-            if (mejoresAlgoritmos[0][j * pos + i] && mejoresAlgoritmos[0][j * pos + i].tiempoEjecucion !== undefined) {
-                dato.data.push(mejoresAlgoritmos[0][j * pos + i].tiempoEjecucion);
+            if (mejoresAlgoritmos[0][j * pos + i] && mejoresAlgoritmos[0][j * pos + i].puntosCalculados !== undefined) {
+                dato.data.push(mejoresAlgoritmos[0][j * pos + i].puntosCalculados);
             }
         }
 

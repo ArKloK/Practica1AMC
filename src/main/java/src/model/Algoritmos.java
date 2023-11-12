@@ -186,11 +186,9 @@ public class Algoritmos {
             }
         }
 
-        // Ordenar la lista de puntos en la banda por coordenada Y
-        puntosEnRango = quicksortY(puntosEnRango, 0, puntosEnRango.size() - 1);
         // Búsqueda en la banda de distanciaMin
-        for (int i = 0; i < puntosEnRango.size(); i++) {
-            for (int j = i + 1; j < puntosEnRango.size() && (puntosEnRango.get(j).getY() - puntosEnRango.get(i).getY()) < distanciaMin; j++) {
+        for (int i = 0; i < puntosEnRango.size() - 1; i++) {
+            for (int j = i + 1; j < puntosEnRango.size(); j++) {
                 Linea l = new Linea(puntosEnRango.get(i), puntosEnRango.get(j));
                 if (l.distancia() < distanciaMin) {
                     distanciaMin = l.distancia();
@@ -201,14 +199,14 @@ public class Algoritmos {
         return mejorLinea;
     }
 
-    public Linea dyvMejorado(ArrayList<Punto> puntosOrdenados, int inicio, int fin) {
+    public Linea dyvMejorado(ArrayList<Punto> puntos, int izquierda, int derecha) {
         Linea mejorLinea = null;
-        if (fin - inicio <= 3) {
+        if (derecha - izquierda <= 3) {
             double distanciaMin = Double.POSITIVE_INFINITY;
             // Caso base: Fuerza bruta para un número pequeño de puntos
-            for (int i = inicio; i < fin - 1; i++) {
-                for (int j = i + 1; j < fin; j++) {
-                    Linea actualLinea = new Linea(puntosOrdenados.get(i), puntosOrdenados.get(j));
+            for (int i = izquierda; i < derecha - 1; i++) {
+                for (int j = i + 1; j < derecha; j++) {
+                    Linea actualLinea = new Linea(puntos.get(i), puntos.get(j));
                     double distancia = actualLinea.distancia();
                     puntosCalculados++;
                     if (distancia < distanciaMin) {
@@ -222,11 +220,11 @@ public class Algoritmos {
         }
 
         // Divide los puntos en dos mitades
-        int mitad = (inicio + fin) / 2;
-        Punto puntoMedio = puntosOrdenados.get(mitad);
+        int mitad = (izquierda + derecha) / 2;
+        Punto puntoMedio = puntos.get(mitad);
 
-        Linea lineaIzquierda = dyvMejorado(puntosOrdenados, inicio, mitad);
-        Linea lineaDerecha = dyvMejorado(puntosOrdenados, mitad, fin);
+        Linea lineaIzquierda = dyvMejorado(puntos, izquierda, mitad);
+        Linea lineaDerecha = dyvMejorado(puntos, mitad, derecha);
 
         double distanciaMin;
         // Elegir la línea más corta de las dos
@@ -240,9 +238,9 @@ public class Algoritmos {
 
         // Filtrar los puntos en la franja por coordenada x
         List<Punto> puntosEnRango = new ArrayList<>();
-        for (int i = inicio; i < fin; i++) {
-            if (Math.abs(puntosOrdenados.get(i).getX() - puntoMedio.getX()) < distanciaMin) {
-                puntosEnRango.add(puntosOrdenados.get(i));
+        for (int i = izquierda; i < derecha; i++) {
+            if (Math.abs(puntos.get(i).getX() - puntoMedio.getX()) < distanciaMin) {
+                puntosEnRango.add(puntos.get(i));
             }
         }
 
@@ -371,7 +369,7 @@ public class Algoritmos {
             }
         }
         //Calcular y sumar la ultima distancia
-        double distanciaFinal = calcularDistancia(puntosaux[contadorDer-1], puntosaux[contadorIzq+1]);
+        double distanciaFinal = calcularDistancia(puntosaux[contadorDer - 1], puntosaux[contadorIzq + 1]);
         distanciaTotal = distanciaTotal + distanciaFinal;
         //Para unir los resultados
         for (int i = (n / 2); i > contadorIzq; i--) {

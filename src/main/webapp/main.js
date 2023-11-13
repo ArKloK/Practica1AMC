@@ -175,20 +175,22 @@ function cargarGraficaComparar() {
     rehacerJSON();
     leyenda = localStorage.getItem('leyenda');
     leyendaJSON = localStorage.getItem('leyendaJSON');
-
-    if (leyendaJSON !== 'null') {
-        console.log("ENTRA");
-        leyenda = JSON.parse(leyendaJSON);
-        console.log("Tamano leyenda " + leyenda.length);
-        localStorage.setItem('leyendaJSON', 'null');
-    }
-
-    if (leyenda !== 'null') {
-        for (var i = 0; i < leyenda.length; i++) {
-            algoritmos.push(leyenda[i]);
+    if (leyenda !== null && leyendaJSON !== null) {
+        if (leyendaJSON !== 'null') {
+            console.log("ENTRA");
+            leyenda = JSON.parse(leyendaJSON);
+            console.log("Tamano leyenda " + leyenda.length);
+            localStorage.setItem('leyendaJSON', 'null');
         }
-        localStorage.setItem('leyenda', 'null');
+
+        if (leyenda !== 'null') {
+            for (var i = 0; i < leyenda.length; i++) {
+                algoritmos.push(leyenda[i]);
+            }
+            localStorage.setItem('leyenda', 'null');
+        }
     }
+
 
     var datos = [], pos = algoritmos.length; // Aquí almacenaremos los objetos de datos
 

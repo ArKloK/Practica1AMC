@@ -123,7 +123,6 @@ public class Algoritmos {
             for (int j = i + 1; j < puntos.size(); j++) {
                 Punto puntoActual = puntos.get(j);
                 actualLinea = new Linea(puntoBase, puntoActual);
-                puntosCalculados++;
 
                 //Comprobamos si la distancia minima tiene que ser actualizada
                 if (actualLinea.distancia() < distanciaMin) {
@@ -137,6 +136,7 @@ public class Algoritmos {
                 if (Math.abs(puntoBase.getX() - puntoActual.getX()) >= distanciaMin) {
                     break;
                 }
+                puntosCalculados++;
             }
         }
 
@@ -190,6 +190,7 @@ public class Algoritmos {
         for (int i = 0; i < puntosEnRango.size() - 1; i++) {
             for (int j = i + 1; j < puntosEnRango.size(); j++) {
                 Linea l = new Linea(puntosEnRango.get(i), puntosEnRango.get(j));
+                puntosCalculados++;
                 if (l.distancia() < distanciaMin) {
                     distanciaMin = l.distancia();
                     mejorLinea = l;
@@ -252,6 +253,7 @@ public class Algoritmos {
             for (int j = i + 1; j < puntosEnRango.size() && j - i < 12; j++) {
                 Linea linea = new Linea(puntosEnRango.get(i), puntosEnRango.get(j));
                 double distancia = linea.distancia();
+                puntosCalculados++;
                 if (distancia < distanciaMin) {
                     distanciaMin = distancia;
                     mejorLinea = linea;
